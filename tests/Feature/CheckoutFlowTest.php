@@ -182,4 +182,47 @@ class CheckoutFlowTest extends TestCase
 
         $this->assertSame('success', $transaction->fresh()->status);
     }
+
+    public function test_topup_pay_records_gateway_charge_information()
+    {
+        config(['payment.driver' => 'simulation']);
+
+        $user = User::factory()->create();
+        $game = GameTitle::first();
+        $product = Product::where('game_title_id', $game->id)->first();
+
+        $this->actingAs($user)->post(route('topup.checkout.store'), [
+            'game_slug'    => $game->slug,
+            'user_game_id' => '12345678',
+            'product_id'   => $product->id,
+        ]);
+
+        $this->actingAs($user)->post(route('topup.pay'), ['payment_method' => 'QRIS']);
+
+        $transaction = Transaction::first();
+
+        $this->assertSame('simulation', $transaction->payment_provider);
+        $this->assertNotNull($transaction->payment_reference);
+        // Driver simulasi tidak mengarahkan ke halaman eksternal.
+        $this->assertNull($transaction->payment_url);
+    }
+
+    public function test_marketplace_checkout_records_gateway_charge_information()
+    {
+        config(['payment.driver' => 'simulation']);
+
+        $user = User::factory()->create();
+        $product = MarketplaceProduct::where('stock', '>', 0)->first();
+
+        $this->actingAs($user)
+            ->post(route('marketplace.add-to-cart', $product->slug), ['quantity' => 1]);
+
+        $this->actingAs($user)
+            ->post(route('marketplace.checkout.process'), ['payment_method' => 'QRIS']);
+
+        $order = MarketplaceOrder::first();
+
+        $this->assertSame('simulation', $order->payment_provider);
+        $this->assertNotNull($order->payment_reference);
+    }
 }

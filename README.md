@@ -10,11 +10,13 @@ Aplikasi web **top up game** dan **marketplace item game** berbasis Laravel 8. P
 - Marketplace: katalog dengan pencarian, filter kategori, dan pagination.
 - Keranjang (session) dengan validasi stok di server.
 - Pembayaran simulasi: `pending` → `success` (konfirmasi) atau `cancelled` (batal, stok dikembalikan).
-- Halaman pembayaran dengan kode QR (simulasi), instruksi, dan tombol konfirmasi/batal.
+- **Gateway pembayaran pluggable**: `simulation` (default, tanpa jaringan) atau **Midtrans Snap** — cukup ubah `PAYMENT_DRIVER` di `.env`.
+- **Webhook pembayaran** dengan verifikasi signature + **idempotency** (event duplikat dari gateway tidak diproses dua kali).
+- Halaman pembayaran dengan kode QR (simulasi), instruksi, dan tombol konfirmasi/batal. Bila gateway mengembalikan URL pembayaran, tombol "Buka Halaman Pembayaran" muncul otomatis.
 - Area **Akun Saya** dengan sub-navigasi tab: Riwayat Top Up, Pesanan Saya, dan Profil.
 - Riwayat transaksi top up dan pesanan marketplace, lengkap dengan filter status.
 - Profil: ubah nama/password, statistik belanja.
-- **Notifikasi email** untuk status pembayaran (top up & marketplace) dan email selamat datang.
+- **Notifikasi email** untuk status pembayaran (top up & marketplace) dan email selamat datang — dikirim lewat **antrean (queue)** agar tidak memblokir request.
 - **Lupa password**: reset password lewat email.
 
 ### Navigasi & Penempatan Fitur
@@ -29,13 +31,20 @@ Aplikasi web **top up game** dan **marketplace item game** berbasis Laravel 8. P
 - Kelola produk marketplace (upload gambar/edit/nonaktifkan/hapus).
 - Pantau transaksi & pesanan: pencarian, filter status, pagination, ubah status manual.
 - **Log aktivitas** (audit trail) untuk setiap aksi penting admin.
+- Penghapusan dijaga: game/produk yang sudah punya transaksi tidak bisa dihapus (riwayat tetap utuh).
+
+### Keamanan
+- **Policy-based authorization** (`TransactionPolicy`, `MarketplaceOrderPolicy`) + Gate `manage-catalog` untuk area admin.
+- Middleware `admin` / `not-admin` memisahkan area pembeli dan admin.
+- Validasi terpusat lewat FormRequest; webhook diverifikasi dengan signature.
 
 ## Teknologi
 - PHP 8 / Laravel 8
 - MySQL (migrations + seeders); SQLite untuk testing
 - Blade + CSS custom (tanpa framework CSS)
 - Session-based cart
-- Queue (sync) untuk email notifikasi
+- Queue (database) untuk email notifikasi
+- Midtrans Snap (opsional) untuk pembayaran
 
 ## Instalasi
 
@@ -55,6 +64,42 @@ php artisan serve
 >
 > File `db_topup_market.sql` di root hanya **snapshot** lama. Sumber kebenaran skema adalah `database/migrations/` — selalu pakai `php artisan migrate --seed`.
 
+### Queue worker (email)
+
+Notifikasi email dikirim lewat antrean supaya request user tidak menunggu proses kirim.
+Default `.env.example` memakai `QUEUE_CONNECTION=database`, jadi jalankan worker:
+
+```bash
+php artisan queue:work --tries=3
+```
+
+Untuk produksi, jaga worker tetap hidup dengan Supervisor (contoh: `deploy/supervisor-topupmarket.conf`).
+Jika tidak ingin menjalankan worker, set `QUEUE_CONNECTION=sync` di `.env` (email dikirim langsung, request sedikit lebih lambat).
+
+### Payment gateway (opsional)
+
+```bash
+# .env
+PAYMENT_DRIVER=midtrans
+MIDTRANS_SERVER_KEY=SB-Mid-server-xxxx
+MIDTRANS_CLIENT_KEY=SB-Mid-client-xxxx
+MIDTRANS_IS_PRODUCTION=false
+```
+
+Daftarkan URL notifikasi di dashboard Midtrans:
+
+```
+https://domain-kamu.test/payment/webhook
+```
+
+Webhook diverifikasi dengan signature (`sha512(order_id + status_code + gross_amount + server_key)`) dan
+diproses **idempotent**: event yang sama dikirim berulang hanya diproses sekali (dicatat di tabel
+`payment_webhook_events`).
+
+### SMTP
+
+Untuk produksi ganti `MAIL_*` di `.env` ke SMTP provider (Mailtrap/Mailgun/Postmark/Gmail). Lihat contoh di `.env.example`.
+
 ## Akun Demo
 
 | Peran   | Email                    | Password |
@@ -70,7 +115,7 @@ php artisan serve
 php vendor/bin/phpunit
 ```
 
-Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **44 test / 172 assertion** hijau, mencakup alur checkout, reservasi & pengembalian stok, notifikasi, reset password, aksi admin, serta pencarian & filter katalog.
+Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **103 test / 384 assertion** hijau, mencakup alur checkout, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), serta pencarian & filter katalog.
 
 ## CI
 
@@ -83,18 +128,24 @@ app/Http/Controllers/         # Logika pembeli
 app/Http/Controllers/Admin/   # Logika admin
 app/Http/Requests/            # Validasi terpusat (FormRequest)
 app/Models/                   # Eloquent models
-app/Notifications/            # Email notifikasi
+app/Notifications/            # Email notifikasi (queue)
+app/Policies/                 # Otorisasi berbasis policy
 app/Services/                 # Logika transisi status + stok
+app/Services/Payment/         # Abstraksi gateway + processor webhook
 app/Support/                  # Helper (metode bayar, audit log)
+config/payment.php            # Konfigurasi gateway pembayaran
 database/migrations/          # Skema database
 database/seeders/             # Data awal
+deploy/                       # Contoh konfigurasi Supervisor
 resources/views/              # Blade templates
 resources/views/partials/     # Komponen bersama (ikon, tab akun, gambar produk)
 public/css/style.css          # Design system
-routes/web.php                # Semua route
+routes/web.php                # Route aplikasi
+routes/webhooks.php           # Route webhook (stateless)
 ```
 
 ## Catatan
-- Pembayaran masih **simulasi** (tanpa gateway). Integrasikan Midtrans/Xendit untuk produksi.
+- Pembayaran default **simulasi**; set `PAYMENT_DRIVER=midtrans` + kredensial untuk memakai Midtrans Snap.
 - Email memakai driver dari `.env` (default `mailhog` untuk dev). Ganti ke SMTP provider untuk produksi.
+- Jalankan `php artisan queue:work` bila `QUEUE_CONNECTION=database` agar email notifikasi terkirim.
 - `.env` default menunjuk ke MySQL. Untuk sekadar mencoba tanpa MySQL, set `DB_CONNECTION=sqlite` dan `DB_DATABASE=:memory:`.
