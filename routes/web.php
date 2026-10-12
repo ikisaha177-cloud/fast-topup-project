@@ -1,0 +1,129 @@
+<?php
+
+use App\Http\Controllers\Admin;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\TopUpController;
+use App\Http\Controllers\TransactionController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes - TopUpMarket
+|--------------------------------------------------------------------------
+*/
+
+/* ---------- Home ---------- */
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+/* ---------- Login & Register (hanya untuk yang belum login) ---------- */
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:10,1');
+
+    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register'])->middleware('throttle:10,1');
+
+    /* Lupa password */
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+        ->middleware('throttle:6,1')->name('password.email');
+
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
+        ->middleware('throttle:6,1')->name('password.update');
+});
+
+Route::post('/logout', [LoginController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
+
+/* ---------- Top Up Game (khusus pembeli, admin diblokir) ---------- */
+Route::middleware('not-admin')->group(function () {
+    Route::get('/top-up', [TopUpController::class, 'index'])->name('topup.index');
+    Route::get('/top-up/checkout', [TopUpController::class, 'checkout'])->name('topup.checkout');
+    Route::post('/top-up/checkout', [TopUpController::class, 'storeCheckout'])->name('topup.checkout.store');
+    Route::post('/top-up/checkout/pay', [TopUpController::class, 'pay'])->name('topup.pay');
+    Route::get('/top-up/success/{code}', [TopUpController::class, 'success'])->name('topup.success');
+    Route::post('/top-up/payment/{code}/confirm', [TopUpController::class, 'confirmPayment'])->name('topup.payment.confirm');
+    Route::post('/top-up/payment/{code}/cancel', [TopUpController::class, 'cancelPayment'])->name('topup.payment.cancel');
+    Route::get('/top-up/{slug}', [TopUpController::class, 'show'])->name('topup.show');
+});
+
+/* ---------- Marketplace ---------- */
+Route::get('/marketplace', [MarketplaceController::class, 'index'])->name('marketplace.index');
+Route::get('/marketplace/checkout', [MarketplaceController::class, 'checkout'])
+    ->middleware(['auth', 'not-admin'])->name('marketplace.checkout');
+Route::post('/marketplace/checkout', [MarketplaceController::class, 'processCheckout'])
+    ->middleware(['auth', 'not-admin'])->name('marketplace.checkout.process');
+Route::get('/marketplace/success/{code}', [MarketplaceController::class, 'success'])
+    ->middleware(['auth', 'not-admin'])->name('marketplace.success');
+Route::post('/marketplace/payment/{code}/confirm', [MarketplaceController::class, 'confirmPayment'])
+    ->middleware(['auth', 'not-admin'])->name('marketplace.payment.confirm');
+Route::post('/marketplace/payment/{code}/cancel', [MarketplaceController::class, 'cancelPayment'])
+    ->middleware(['auth', 'not-admin'])->name('marketplace.payment.cancel');
+Route::get('/marketplace/{slug}', [MarketplaceController::class, 'show'])->name('marketplace.show');
+Route::post('/marketplace/{slug}/add', [MarketplaceController::class, 'addToCart'])
+    ->middleware(['auth', 'not-admin'])->name('marketplace.add-to-cart');
+
+/* ---------- Keranjang / Cart (session, admin diblokir) ---------- */
+Route::middleware('not-admin')->group(function () {
+    Route::get('/cart', [MarketplaceController::class, 'cart'])->name('cart.index');
+    Route::post('/cart/update', [MarketplaceController::class, 'updateCart'])->name('cart.update');
+    Route::post('/cart/remove', [MarketplaceController::class, 'removeCart'])->name('cart.remove');
+});
+
+/* ---------- Halaman yang butuh login ---------- */
+Route::middleware('auth')->group(function () {
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transactions/{code}', [TransactionController::class, 'show'])->name('transactions.show');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{code}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+/* ---------- Admin (butuh login + role admin) ---------- */
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
+
+    /* Game */
+    Route::get('/games', [Admin\GameController::class, 'index'])->name('games.index');
+    Route::get('/games/create', [Admin\GameController::class, 'create'])->name('games.create');
+    Route::post('/games', [Admin\GameController::class, 'store'])->name('games.store');
+    Route::get('/games/{id}/edit', [Admin\GameController::class, 'edit'])->name('games.edit');
+    Route::put('/games/{id}', [Admin\GameController::class, 'update'])->name('games.update');
+    Route::delete('/games/{id}', [Admin\GameController::class, 'destroy'])->name('games.destroy');
+    Route::post('/games/{id}/toggle', [Admin\GameController::class, 'toggle'])->name('games.toggle');
+
+    /* Produk Top Up */
+    Route::get('/products', [Admin\ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/create', [Admin\ProductController::class, 'create'])->name('products.create');
+    Route::post('/products', [Admin\ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/{id}/edit', [Admin\ProductController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{id}', [Admin\ProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{id}', [Admin\ProductController::class, 'destroy'])->name('products.destroy');
+    Route::post('/products/{id}/toggle', [Admin\ProductController::class, 'toggle'])->name('products.toggle');
+
+    /* Produk Marketplace */
+    Route::get('/marketplace', [Admin\MarketplaceProductController::class, 'index'])->name('marketplace.index');
+    Route::get('/marketplace/{id}/edit', [Admin\MarketplaceProductController::class, 'edit'])->name('marketplace.edit');
+    Route::put('/marketplace/{id}', [Admin\MarketplaceProductController::class, 'update'])->name('marketplace.update');
+    Route::delete('/marketplace/{id}', [Admin\MarketplaceProductController::class, 'destroy'])->name('marketplace.destroy');
+    Route::post('/marketplace/{id}/toggle', [Admin\MarketplaceProductController::class, 'toggle'])->name('marketplace.toggle');
+
+    /* Transaksi Top Up & Pesanan Marketplace */
+    Route::get('/transactions', [Admin\TransactionController::class, 'index'])->name('transactions.index');
+    Route::post('/transactions/{id}/status', [Admin\TransactionController::class, 'updateStatus'])->name('transactions.status');
+    Route::get('/orders', [Admin\OrderController::class, 'index'])->name('orders.index');
+    Route::post('/orders/{id}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.status');
+
+    /* Log Aktivitas */
+    Route::get('/activity', [Admin\ActivityLogController::class, 'index'])->name('activity.index');
+});
