@@ -41,7 +41,7 @@ Ada **dua jalur menuju `success`**, dan mana yang dipakai dicatat jujur di kolom
 
 Dengan driver default `simulation`, tidak ada webhook yang datang sendiri, jadi seluruh pesanan melewati verifikasi admin. Saat `PAYMENT_DRIVER=midtrans`, pesanan yang pembayarannya sudah *settlement* langsung selesai tanpa perlu admin.
 
-- `success`, `failed`, dan `cancelled` bersifat **terminal** — tidak bisa diubah lagi.
+- `success`, `failed`, dan `cancelled` bersifat **terminal** — tidak bisa diubah lagi lewat aksi biasa. Satu-satunya pengecualian adalah tombol **Buka Kembali** khusus admin (lihat *Admin* di bawah), yang hanya boleh dipakai pada `failed`/`cancelled` dan mengunci ulang stok.
 - Admin hanya punya dua keputusan di UI: **Konfirmasi** (success) dan **Gagal** (failed). Pembatalan adalah tindakan pembeli, sehingga validasi admin sengaja dibatasi ke dua nilai itu (`OrderStatus::adminDecisions()`).
 
 ### Navigasi & Penempatan Fitur
@@ -53,6 +53,7 @@ Dengan driver default `simulation`, tidak ada webhook yang datang sendiri, jadi 
 ### Admin
 - Dashboard: KPI, grafik pendapatan 7 hari, transaksi & pesanan terbaru, serta penanda **Perlu Diverifikasi**.
 - **Konfirmasi pesanan**: tombol **Konfirmasi** / **Gagal** (+ alasan opsional) langsung pada baris transaksi/pesanan yang masih menunggu; baris yang sudah ditandai "Sudah Bayar" disorot.
+- **Detail transaksi & pesanan** (`/admin/transactions/{id}`, `/admin/orders/{id}`): data pembeli, item, jejak verifikasi (tandai bayar / pembayaran diterima / diverifikasi), riwayat aktivitas per objek, dan panel verifikasi berisi tombol Konfirmasi/Gagal — termasuk **Buka Kembali** bila keputusan salah klik. Saat membuka kembali, status kembali `pending`, seluruh jejak verifikasi dibersihkan, dan stok dikunci ulang (dibatalkan bila stok sudah habis, supaya tidak pernah minus).
 - **Laporan harian / bulanan / tahunan**: ringkasan KPI, grafik pendapatan, tabel rincian per periode, sebaran status, game & produk terlaris (hanya pesanan selesai), breakdown metode pembayaran, filter status, dan **ekspor CSV**.
 - CRUD game (dengan upload icon) dan produk top up.
 - Kelola produk marketplace (upload gambar/edit/nonaktifkan/hapus), termasuk harga jual & harga coret.
@@ -154,7 +155,7 @@ Akun ini hanya untuk pengembangan/testing — **tidak ditampilkan di UI** agar h
 php vendor/bin/phpunit
 ```
 
-Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **127 test / 492 assertion** hijau, mencakup alur checkout, konfirmasi pesanan oleh admin (berhasil/gagal + pengembalian stok + sumber konfirmasi), laporan harian/bulanan/tahunan & ekspor CSV, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), serta pencarian & filter katalog.
+Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **138 test / 535 assertion** hijau, mencakup alur checkout, konfirmasi pesanan oleh admin (berhasil/gagal + pengembalian stok + sumber konfirmasi), halaman detail pesanan admin & aksi buka kembali (re-lock stok), laporan harian/bulanan/tahunan & ekspor CSV, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), serta pencarian & filter katalog.
 
 ## CI
 

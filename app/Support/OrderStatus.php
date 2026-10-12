@@ -13,6 +13,9 @@ namespace App\Support;
  *   pending --(admin tolak)-------------> failed    : gagal, stok dikembalikan.
  *   pending --(pembeli batal)-----------> cancelled : dibatalkan, stok kembali.
  *
+ *   failed/cancelled --(admin buka ulang)--> pending : salah klik diperbaiki;
+ *                                                      stok dikunci ulang.
+ *
  * Perbedaan dua jalur menuju `success` dicatat pada kolom
  * `confirmation_source` (admin|gateway) supaya jejak audit tetap jujur.
  */
@@ -125,5 +128,23 @@ class OrderStatus
     public static function adminDecisions()
     {
         return [self::SUCCESS, self::FAILED];
+    }
+
+    /**
+     * Status yang boleh dibuka kembali oleh admin (salah klik).
+     *
+     * Hanya failed & cancelled — keduanya mengembalikan stok saat diputuskan,
+     * sehingga membukanya kembali wajib mengunci ulang stok.
+     *
+     * @return array<int, string>
+     */
+    public static function reopenable()
+    {
+        return [self::FAILED, self::CANCELLED];
+    }
+
+    public static function isReopenable($status)
+    {
+        return in_array($status, self::reopenable(), true);
     }
 }

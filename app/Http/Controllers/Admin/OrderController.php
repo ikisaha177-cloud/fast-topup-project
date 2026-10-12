@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ReopenOrderRequest;
 use App\Http\Requests\Admin\UpdateStatusRequest;
+use App\Models\ActivityLog;
 use App\Models\MarketplaceOrder;
 use App\Services\MarketplaceOrderService;
 use App\Support\ActivityLogger;
@@ -55,6 +57,63 @@ class OrderController extends Controller
         ];
 
         return view('admin.orders.index', compact('orders', 'summary', 'search', 'status'));
+    }
+
+    /**
+     * Detail satu pesanan marketplace + riwayat aktivitasnya.
+     */
+    public function show($id)
+    {
+        $order = MarketplaceOrder::with(['buyer', 'items.product', 'confirmedBy'])->findOrFail($id);
+
+        $this->authorize('view', $order);
+
+        $activity = $this->activityFor($order);
+
+        return view('admin.orders.show', compact('order', 'activity'));
+    }
+
+    /**
+     * Buka kembali pesanan yang sudah ditolak/dibatalkan (perbaiki salah klik).
+     */
+    public function reopen(ReopenOrderRequest $request, $id)
+    {
+        $order = MarketplaceOrder::findOrFail($id);
+
+        $this->authorize('reopen', $order);
+
+        if (! OrderStatus::isReopenable($order->status)) {
+            return back()->with('error', 'Hanya pesanan berstatus Gagal atau Dibatalkan yang dapat dibuka kembali.');
+        }
+
+        $changed = $this->orders->transitionTo($order, OrderStatus::PENDING, true, [
+            'actor_id' => auth()->id(),
+        ]);
+
+        if (! $changed) {
+            return back()->with('error', 'Pesanan ' . $order->order_code . ' tidak dapat dibuka kembali.');
+        }
+
+        ActivityLogger::log(
+            'order.reopen',
+            'Pesanan ' . $order->order_code . ' dibuka kembali menjadi Menunggu Konfirmasi oleh admin.',
+            $order
+        );
+
+        return back()->with('success', 'Pesanan ' . $order->order_code . ' dibuka kembali dan menunggu konfirmasi ulang.');
+    }
+
+    /**
+     * Riwayat aktivitas yang terkait pesanan ini.
+     */
+    private function activityFor(MarketplaceOrder $order)
+    {
+        return ActivityLog::where('subject_type', MarketplaceOrder::class)
+            ->where('subject_id', $order->id)
+            ->with('user')
+            ->latest()
+            ->take(20)
+            ->get();
     }
 
     /**

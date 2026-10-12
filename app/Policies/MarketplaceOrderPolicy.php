@@ -26,4 +26,12 @@ class MarketplaceOrderPolicy
     {
         return $user->isAdmin();
     }
+
+    /**
+     * Boleh membuka kembali keputusan yang salah? (admin saja)
+     */
+    public function reopen(User $user, MarketplaceOrder $order)
+    {
+        return $user->isAdmin();
+    }
 }

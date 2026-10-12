@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
  *   pending --admin konfirmasi--> success   (pesanan selesai)
  *   pending --admin tolak-------> failed    (stok tiap item dikembalikan)
  *   pending --pembeli batal-----> cancelled (stok tiap item dikembalikan)
+ *   failed/cancelled --admin buka ulang--> pending (stok tiap item dikunci ulang)
  */
 class MarketplaceOrderService
 {
@@ -38,28 +39,61 @@ class MarketplaceOrderService
             return false;
         }
 
-        if (! OrderStatus::canTransition($order->status, $status)) {
+        $reopening = $status === OrderStatus::PENDING && OrderStatus::isReopenable($order->status);
+
+        if (! $reopening && ! OrderStatus::canTransition($order->status, $status)) {
             return false;
         }
 
         $shouldRestoreStock = in_array($status, [OrderStatus::FAILED, OrderStatus::CANCELLED], true)
             && $order->status === OrderStatus::PENDING;
 
-        DB::transaction(function () use ($order, $status, $shouldRestoreStock, $context) {
-            if ($shouldRestoreStock) {
-                foreach ($order->items as $item) {
-                    $product = MarketplaceProduct::whereKey($item->marketplace_product_id)
-                        ->lockForUpdate()
-                        ->first();
+        $shouldReserveStock = $reopening;
 
-                    if ($product) {
-                        $product->increment('stock', $item->quantity);
-                    }
+        // Dipakai closure agar bisa membatalkan tanpa exception: stok tidak
+        // boleh pernah jadi negatif saat dikunci ulang.
+        $ok = true;
+
+        DB::transaction(function () use ($order, $status, $shouldRestoreStock, $shouldReserveStock, $context, &$ok) {
+            // Pass 1: kunci semua produk & pastikan stok cukup sebelum menulis
+            // apa pun. Keluar lebih dulu = tidak ada perubahan yang ter-commit.
+            $products = [];
+
+            foreach ($order->items as $item) {
+                $product = MarketplaceProduct::whereKey($item->marketplace_product_id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $product) {
+                    continue;
+                }
+
+                if ($shouldReserveStock && (int) $product->stock < (int) $item->quantity) {
+                    $ok = false;
+
+                    return;
+                }
+
+                $products[] = [$product, (int) $item->quantity];
+            }
+
+            // Pass 2: tulis perubahan stok.
+            foreach ($products as [$product, $quantity]) {
+                if ($shouldRestoreStock) {
+                    $product->increment('stock', $quantity);
+                }
+
+                if ($shouldReserveStock) {
+                    $product->decrement('stock', $quantity);
                 }
             }
 
             $order->update($this->attributesFor($order, $status, $context));
         });
+
+        if (! $ok) {
+            return false;
+        }
 
         if ($notify) {
             $this->notify($order->fresh(), $status, $context['source'] ?? null);
@@ -93,6 +127,18 @@ class MarketplaceOrderService
     private function attributesFor(MarketplaceOrder $order, string $status, array $context)
     {
         $attributes = ['status' => $status];
+
+        if ($status === OrderStatus::PENDING) {
+            // Buka ulang keputusan yang salah: bersihkan seluruh jejak verifikasi.
+            $attributes['paid_at']             = null;
+            $attributes['payment_claimed_at']  = null;
+            $attributes['confirmed_at']        = null;
+            $attributes['confirmed_by']        = null;
+            $attributes['confirmation_source'] = null;
+            $attributes['failure_reason']      = null;
+
+            return $attributes;
+        }
 
         if ($status === OrderStatus::SUCCESS) {
             $source = $this->normalizeSource($context);
@@ -158,7 +204,7 @@ class MarketplaceOrderService
             OrderStatus::FAILED    => $byGateway
                 ? 'Pembayaran gagal diproses'
                 : 'Pesanan gagal dikonfirmasi admin',
-            OrderStatus::PENDING   => 'Pesanan menunggu konfirmasi admin',
+            OrderStatus::PENDING   => 'Pesanan dibuka kembali, menunggu konfirmasi admin',
         ][$status] ?? 'Status pesanan diperbarui';
 
         $buyer->notify(new OrderStatusChanged($order, $headline));

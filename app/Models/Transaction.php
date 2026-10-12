@@ -93,6 +93,14 @@ class Transaction extends Model
     }
 
     /**
+     * Bisa dibuka kembali oleh admin? (keputusan gagal/batal yang salah klik)
+     */
+    public function canBeReopened()
+    {
+        return OrderStatus::isReopenable($this->status);
+    }
+
+    /**
      * Label status yang ramah pengguna, mis. "Menunggu Konfirmasi".
      */
     public function statusLabel()

@@ -76,7 +76,10 @@
         <tbody>
             @forelse($orders as $order)
                 <tr class="{{ $order->needsReview() ? 'row-highlight' : '' }}">
-                    <td class="mono">{{ $order->order_code }}</td>
+                    <td>
+                        <a class="cell-link mono" href="{{ route('admin.orders.show', $order->id) }}"
+                           title="Buka detail pesanan">{{ $order->order_code }}</a>
+                    </td>
                     <td>{{ $order->buyer->name ?? 'Guest' }}</td>
                     <td>{{ $order->items_count }}</td>
                     <td>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
@@ -113,9 +116,12 @@
                                     <input type="text" name="failure_reason" class="input-sm" placeholder="Alasan (opsional)" maxlength="255" aria-label="Alasan gagal">
                                     <button type="submit" class="btn btn-sm btn-danger">Gagal</button>
                                 </form>
+                                <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-ghost">Detail</a>
                             </div>
+                        @elseif($order->canBeReopened())
+                            <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-outline">Detail</a>
                         @else
-                            <span class="muted">—</span>
+                            <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-ghost">Detail</a>
                         @endif
                     </td>
                 </tr>

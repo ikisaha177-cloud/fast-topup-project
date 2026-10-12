@@ -77,7 +77,10 @@
         <tbody>
             @forelse($transactions as $trx)
                 <tr class="{{ $trx->needsReview() ? 'row-highlight' : '' }}">
-                    <td class="mono">{{ $trx->transaction_code }}</td>
+                    <td>
+                        <a class="cell-link mono" href="{{ route('admin.transactions.show', $trx->id) }}"
+                           title="Buka detail transaksi">{{ $trx->transaction_code }}</a>
+                    </td>
                     <td>{{ $trx->user->name ?? 'Guest' }}</td>
                     <td>
                         {{ $trx->gameTitle->name ?? '-' }}<br>
@@ -118,9 +121,12 @@
                                     <input type="text" name="failure_reason" class="input-sm" placeholder="Alasan (opsional)" maxlength="255" aria-label="Alasan gagal">
                                     <button type="submit" class="btn btn-sm btn-danger">Gagal</button>
                                 </form>
+                                <a href="{{ route('admin.transactions.show', $trx->id) }}" class="btn btn-sm btn-ghost">Detail</a>
                             </div>
+                        @elseif($trx->canBeReopened())
+                            <a href="{{ route('admin.transactions.show', $trx->id) }}" class="btn btn-sm btn-outline">Detail</a>
                         @else
-                            <span class="muted">—</span>
+                            <a href="{{ route('admin.transactions.show', $trx->id) }}" class="btn btn-sm btn-ghost">Detail</a>
                         @endif
                     </td>
                 </tr>

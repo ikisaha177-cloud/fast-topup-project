@@ -83,6 +83,14 @@
         @case('spark')
             <path d="M12 3.5 13.8 9l5.5 1.8-5.5 1.8L12 18l-1.8-5.4L4.7 10.8 10.2 9z"/>
             @break
+        @case('eye')
+            <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/>
+            <circle cx="12" cy="12" r="3"/>
+            @break
+        @case('rotate')
+            <path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/>
+            <path d="M20.5 4.5V10h-5.5"/>
+            @break
         @default
             <circle cx="12" cy="12" r="9"/>
     @endswitch

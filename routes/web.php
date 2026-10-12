@@ -120,9 +120,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     /* Transaksi Top Up & Pesanan Marketplace */
     Route::get('/transactions', [Admin\TransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transactions/{id}', [Admin\TransactionController::class, 'show'])->name('transactions.show');
     Route::post('/transactions/{id}/status', [Admin\TransactionController::class, 'updateStatus'])->name('transactions.status');
+    Route::post('/transactions/{id}/reopen', [Admin\TransactionController::class, 'reopen'])->name('transactions.reopen');
     Route::get('/orders', [Admin\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{id}', [Admin\OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{id}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.status');
+    Route::post('/orders/{id}/reopen', [Admin\OrderController::class, 'reopen'])->name('orders.reopen');
 
     /* Laporan Harian / Bulanan / Tahunan */
     Route::get('/reports', [Admin\ReportController::class, 'index'])->name('reports.index');

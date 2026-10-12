@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ReopenOrderRequest;
 use App\Http\Requests\Admin\UpdateStatusRequest;
+use App\Models\ActivityLog;
 use App\Models\Transaction;
 use App\Services\TransactionService;
 use App\Support\ActivityLogger;
@@ -56,6 +58,63 @@ class TransactionController extends Controller
         ];
 
         return view('admin.transactions.index', compact('transactions', 'summary', 'search', 'status'));
+    }
+
+    /**
+     * Detail satu transaksi + riwayat aktivitasnya (untuk verifikasi admin).
+     */
+    public function show($id)
+    {
+        $transaction = Transaction::with(['gameTitle', 'product', 'user', 'confirmedBy'])->findOrFail($id);
+
+        $this->authorize('view', $transaction);
+
+        $activity = $this->activityFor($transaction);
+
+        return view('admin.transactions.show', compact('transaction', 'activity'));
+    }
+
+    /**
+     * Buka kembali transaksi yang sudah ditolak/dibatalkan (perbaiki salah klik).
+     */
+    public function reopen(ReopenOrderRequest $request, $id)
+    {
+        $transaction = Transaction::findOrFail($id);
+
+        $this->authorize('reopen', $transaction);
+
+        if (! OrderStatus::isReopenable($transaction->status)) {
+            return back()->with('error', 'Hanya transaksi berstatus Gagal atau Dibatalkan yang dapat dibuka kembali.');
+        }
+
+        $changed = $this->transactions->transitionTo($transaction, OrderStatus::PENDING, true, [
+            'actor_id' => auth()->id(),
+        ]);
+
+        if (! $changed) {
+            return back()->with('error', 'Transaksi ' . $transaction->transaction_code . ' tidak dapat dibuka kembali.');
+        }
+
+        ActivityLogger::log(
+            'transaction.reopen',
+            'Transaksi ' . $transaction->transaction_code . ' dibuka kembali menjadi Menunggu Konfirmasi oleh admin.',
+            $transaction
+        );
+
+        return back()->with('success', 'Transaksi ' . $transaction->transaction_code . ' dibuka kembali dan menunggu konfirmasi ulang.');
+    }
+
+    /**
+     * Riwayat aktivitas yang terkait transaksi ini.
+     */
+    private function activityFor(Transaction $transaction)
+    {
+        return ActivityLog::where('subject_type', Transaction::class)
+            ->where('subject_id', $transaction->id)
+            ->with('user')
+            ->latest()
+            ->take(20)
+            ->get();
     }
 
     /**

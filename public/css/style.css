@@ -3191,3 +3191,100 @@ table.table tfoot th {
     .filter-form select { width: 100%; }
     .action-stack { min-width: 0; }
 }
+
+/* =========================================================
+   Detail & buka-kembali pesanan (v3.2)
+   ========================================================= */
+
+/* Riwayat aktivitas / jejak verifikasi */
+.timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.timeline-item {
+    position: relative;
+    padding: 0 0 18px 26px;
+    border-left: 2px solid var(--line-strong);
+}
+
+.timeline-item:last-child {
+    border-left-color: transparent;
+    padding-bottom: 0;
+}
+
+.timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -7px;
+    top: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--brand);
+    box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+.timeline-item.is-muted::before {
+    background: var(--muted-2);
+    box-shadow: 0 0 0 3px var(--surface-3);
+}
+
+.timeline-item .tl-time {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 3px;
+}
+
+.timeline-item .tl-body {
+    font-size: 13.5px;
+    color: var(--text);
+}
+
+.timeline-item .tl-actor {
+    color: var(--muted);
+    font-size: 12.5px;
+}
+
+/* Blok tindakan verifikasi pada halaman detail admin */
+.verify-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.verify-panel .verify-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.verify-panel .verify-actions .inline-form {
+    gap: 8px;
+}
+
+/* Kartu info ringkas dua kolom pada layar lebar */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 20px;
+}
+
+@media (max-width: 600px) {
+    .info-grid { grid-template-columns: 1fr; }
+}
+
+/* Tautan pada sel tabel (kode transaksi menuju detail) */
+.table a.cell-link {
+    font-weight: 700;
+    color: var(--brand-dark);
+    text-decoration: none;
+}
+
+.table a.cell-link:hover {
+    text-decoration: underline;
+}

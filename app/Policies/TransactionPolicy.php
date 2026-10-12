@@ -38,4 +38,12 @@ class TransactionPolicy
     {
         return $user->isAdmin();
     }
+
+    /**
+     * Boleh membuka kembali keputusan yang salah? (admin saja)
+     */
+    public function reopen(User $user, Transaction $transaction)
+    {
+        return $user->isAdmin();
+    }
 }
