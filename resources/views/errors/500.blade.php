@@ -1,0 +1,18 @@
+@extends('layouts.app')
+
+@section('title', 'Terjadi Kesalahan - TopUpMarket')
+
+@section('content')
+<section class="section">
+    <div class="container">
+        <div class="card empty" style="padding:72px 20px;">
+            <div class="error-code">500</div>
+            <h1 class="section-title">Terjadi Kesalahan</h1>
+            <p class="section-subtitle">Ada masalah di server kami. Silakan coba lagi sebentar.</p>
+            <div class="mt-16">
+                <a href="{{ route('home') }}" class="btn btn-primary">Kembali ke Home</a>
+            </div>
+        </div>
+    </div>
+</section>
+@endsection
