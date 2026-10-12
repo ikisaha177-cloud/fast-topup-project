@@ -6,14 +6,22 @@ Aplikasi web **top up game** dan **marketplace item game** berbasis Laravel 8. P
 
 ### Pembeli
 - Top up game: pilih game → isi User ID / Server ID → pilih nominal → bayar.
+- Katalog game dengan **pencarian + filter kategori** (konsisten dengan marketplace).
 - Marketplace: katalog dengan pencarian, filter kategori, dan pagination.
 - Keranjang (session) dengan validasi stok di server.
 - Pembayaran simulasi: `pending` → `success` (konfirmasi) atau `cancelled` (batal, stok dikembalikan).
 - Halaman pembayaran dengan kode QR (simulasi), instruksi, dan tombol konfirmasi/batal.
+- Area **Akun Saya** dengan sub-navigasi tab: Riwayat Top Up, Pesanan Saya, dan Profil.
 - Riwayat transaksi top up dan pesanan marketplace, lengkap dengan filter status.
 - Profil: ubah nama/password, statistik belanja.
 - **Notifikasi email** untuk status pembayaran (top up & marketplace) dan email selamat datang.
 - **Lupa password**: reset password lewat email.
+
+### Navigasi & Penempatan Fitur
+- Navbar pembeli ringkas: **Home · Top Up · Marketplace**, ikon **keranjang** dengan badge jumlah, dan **menu akun** (dropdown) berisi Riwayat Transaksi, Pesanan Saya, Profil, serta Keluar.
+- Navbar admin: tautan **Lihat Toko** (buka tab baru) + menu akun berisi Dashboard, Verifikasi Pembayaran, Pesanan Masuk, dan Keluar. Navigasi antar-halaman admin tetap tersedia lewat sub-nav di dalam panel.
+- Sub-navigasi akun (`partials/account-tabs`) menyatukan Riwayat/Pesanan/Profil sebagai satu section.
+- Dropdown dapat diakses keyboard (klik untuk buka, `Esc` untuk tutup) dan otomatis menumpuk pada tampilan mobile.
 
 ### Admin
 - Dashboard: KPI, grafik pendapatan 7 hari, transaksi & pesanan terbaru.
@@ -62,7 +70,7 @@ php artisan serve
 php vendor/bin/phpunit
 ```
 
-Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **38 test / 159 assertion** hijau, mencakup alur checkout, reservasi & pengembalian stok, notifikasi, reset password, dan aksi admin.
+Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **44 test / 172 assertion** hijau, mencakup alur checkout, reservasi & pengembalian stok, notifikasi, reset password, aksi admin, serta pencarian & filter katalog.
 
 ## CI
 
@@ -81,6 +89,7 @@ app/Support/                  # Helper (metode bayar, audit log)
 database/migrations/          # Skema database
 database/seeders/             # Data awal
 resources/views/              # Blade templates
+resources/views/partials/     # Komponen bersama (ikon, tab akun, gambar produk)
 public/css/style.css          # Design system
 routes/web.php                # Semua route
 ```

@@ -242,6 +242,13 @@ img {
     border-bottom: 1px solid var(--line);
 }
 
+/* Beri jarak saat lompat ke anchor (#faq, #cara-kerja, dst.)
+   supaya judul section tidak tertutup navbar yang sticky. */
+section[id],
+[id][data-anchor] {
+    scroll-margin-top: 84px;
+}
+
 .navbar-inner {
     display: flex;
     align-items: center;
