@@ -26,6 +26,8 @@ class DashboardController extends Controller
             'marketplace_orders'   => MarketplaceOrder::count(),
             'pending'              => Transaction::where('status', 'pending')->count()
                 + MarketplaceOrder::where('status', 'pending')->count(),
+            'review'               => Transaction::where('status', 'pending')->whereNotNull('payment_claimed_at')->count()
+                + MarketplaceOrder::where('status', 'pending')->whereNotNull('payment_claimed_at')->count(),
             'revenue'              => (int) Transaction::where('status', 'success')->sum('amount')
                 + (int) MarketplaceOrder::where('status', 'success')->sum('total_amount'),
         ];
