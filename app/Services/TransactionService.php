@@ -48,7 +48,10 @@ class TransactionService
                 }
             }
 
-            $transaction->update(['status' => $status]);
+            $transaction->update([
+                'status'  => $status,
+                'paid_at' => $status === 'success' ? ($transaction->paid_at ?: now()) : $transaction->paid_at,
+            ]);
         });
 
         if ($notify) {

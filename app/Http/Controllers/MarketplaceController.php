@@ -8,6 +8,7 @@ use App\Http\Requests\Marketplace\UpdateCartRequest;
 use App\Models\MarketplaceOrder;
 use App\Models\MarketplaceProduct;
 use App\Services\MarketplaceOrderService;
+use App\Services\Payment\PaymentGatewayManager;
 use App\Support\PaymentMethods;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,9 +19,13 @@ class MarketplaceController extends Controller
     /** @var \App\Services\MarketplaceOrderService */
     protected $orders;
 
-    public function __construct(MarketplaceOrderService $orders)
+    /** @var \App\Services\Payment\PaymentGatewayManager */
+    protected $gateways;
+
+    public function __construct(MarketplaceOrderService $orders, PaymentGatewayManager $gateways)
     {
-        $this->orders = $orders;
+        $this->orders   = $orders;
+        $this->gateways = $gateways;
     }
 
     /**
@@ -248,6 +253,30 @@ class MarketplaceController extends Controller
                 'status'         => 'pending',
             ]);
 
+            // Buat tagihan ke gateway. Kegagalan gateway tidak membatalkan order.
+            try {
+                $charge = $this->gateways->driver()->createCharge(
+                    $order->order_code,
+                    (int) $order->total_amount,
+                    (string) $order->payment_method,
+                    [
+                        'customer'   => array_filter([
+                            'first_name' => $order->buyer->name ?? 'Guest',
+                            'email'      => $order->buyer->email ?? null,
+                        ]),
+                        'finish_url' => route('marketplace.success', $order->order_code),
+                    ]
+                );
+
+                $order->update([
+                    'payment_provider'  => $this->gateways->driver()->name(),
+                    'payment_reference' => $charge->providerReference,
+                    'payment_url'       => $charge->redirectUrl,
+                ]);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             foreach ($cart as $item) {
                 $product  = $locked[$item['id']];
                 $subtotal = $item['price'] * $item['quantity'];
@@ -315,7 +344,7 @@ class MarketplaceController extends Controller
     }
 
     /**
-     * Ambil order milik user login.
+     * Ambil order yang boleh diakses user (dijaga oleh MarketplaceOrderPolicy).
      */
     private function findOwnedOrder($code)
     {
@@ -323,9 +352,7 @@ class MarketplaceController extends Controller
             ->with(['items.product', 'buyer'])
             ->firstOrFail();
 
-        if ($order->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('view', $order);
 
         return $order;
     }

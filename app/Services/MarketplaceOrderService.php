@@ -49,7 +49,10 @@ class MarketplaceOrderService
                 }
             }
 
-            $order->update(['status' => $status]);
+            $order->update([
+                'status'  => $status,
+                'paid_at' => $status === 'success' ? ($order->paid_at ?: now()) : $order->paid_at,
+            ]);
         });
 
         if ($notify) {

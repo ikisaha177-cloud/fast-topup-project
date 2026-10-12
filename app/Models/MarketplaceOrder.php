@@ -14,11 +14,16 @@ class MarketplaceOrder extends Model
         'user_id',
         'total_amount',
         'payment_method',
+        'payment_provider',
+        'payment_reference',
+        'payment_url',
         'status',
+        'paid_at',
     ];
 
     protected $casts = [
         'total_amount' => 'integer',
+        'paid_at'      => 'datetime',
     ];
 
     public function buyer()

@@ -46,6 +46,11 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
+
+            // Webhook pembayaran: stateless (tanpa session/CSRF).
+            Route::middleware('webhook')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/webhooks.php'));
         });
     }
 

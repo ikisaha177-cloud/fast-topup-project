@@ -36,6 +36,14 @@
 
                     <div class="pay-code mt-16">{{ $order->order_code }}</div>
 
+                    @if($order->payment_url)
+                        <div class="mt-16">
+                            <a href="{{ $order->payment_url }}" target="_blank" rel="noopener" class="btn btn-primary btn-block">
+                                Buka Halaman Pembayaran ({{ $order->payment_provider }})
+                            </a>
+                        </div>
+                    @endif
+
                     <div class="mt-24">
                         <form action="{{ route('marketplace.payment.confirm', $order->order_code) }}" method="POST" style="display:inline;">
                             @csrf

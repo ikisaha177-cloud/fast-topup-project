@@ -7,6 +7,7 @@ use App\Http\Requests\TopUp\StoreCheckoutRequest;
 use App\Models\GameTitle;
 use App\Models\Product;
 use App\Models\Transaction;
+use App\Services\Payment\PaymentGatewayManager;
 use App\Services\TransactionService;
 use App\Support\PaymentMethods;
 use Illuminate\Http\Request;
@@ -18,9 +19,13 @@ class TopUpController extends Controller
     /** @var \App\Services\TransactionService */
     protected $transactions;
 
-    public function __construct(TransactionService $transactions)
+    /** @var \App\Services\Payment\PaymentGatewayManager */
+    protected $gateways;
+
+    public function __construct(TransactionService $transactions, PaymentGatewayManager $gateways)
     {
         $this->transactions = $transactions;
+        $this->gateways     = $gateways;
     }
 
     /**
@@ -182,6 +187,28 @@ class TopUpController extends Controller
                 'status'           => 'pending',
             ]);
 
+            // Buat tagihan ke gateway (simulasi/Midtrans). Gagal gateway tidak
+            // boleh membatalkan transaksi yang sudah dibuat.
+            try {
+                $charge = $this->gateways->driver()->createCharge(
+                    $transaction->transaction_code,
+                    (int) $transaction->amount,
+                    (string) $transaction->payment_method,
+                    [
+                        'customer'   => $this->customerDetails($transaction),
+                        'finish_url' => route('topup.success', $transaction->transaction_code),
+                    ]
+                );
+
+                $transaction->update([
+                    'payment_provider'  => $this->gateways->driver()->name(),
+                    'payment_reference' => $charge->providerReference,
+                    'payment_url'       => $charge->redirectUrl,
+                ]);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             $product->decrement('stock');
 
             DB::commit();
@@ -193,6 +220,21 @@ class TopUpController extends Controller
         session()->forget('topup_draft');
 
         return redirect()->route('topup.success', $transaction->transaction_code);
+    }
+
+    /**
+     * Data pelanggan untuk gateway (bila tersedia).
+     *
+     * @return array<string, mixed>
+     */
+    private function customerDetails(Transaction $transaction)
+    {
+        $user = $transaction->user;
+
+        return array_filter([
+            'first_name' => $user->name ?? 'Guest',
+            'email'      => $user->email ?? null,
+        ]);
     }
 
     /**
@@ -236,15 +278,13 @@ class TopUpController extends Controller
     }
 
     /**
-     * Ambil transaksi milik user login (guest hanya boleh yang tidak terikat user).
+     * Ambil transaksi yang boleh diakses user (dijaga oleh TransactionPolicy).
      */
     private function findOwnedTransaction($code)
     {
         $transaction = Transaction::where('transaction_code', $code)->firstOrFail();
 
-        if (auth()->check() && $transaction->user_id && $transaction->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('view', $transaction);
 
         return $transaction;
     }

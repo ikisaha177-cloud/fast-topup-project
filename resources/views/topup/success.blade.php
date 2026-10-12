@@ -38,6 +38,14 @@
 
                     <div class="pay-code mt-16">{{ $transaction->transaction_code }}</div>
 
+                    @if($transaction->payment_url)
+                        <div class="mt-16">
+                            <a href="{{ $transaction->payment_url }}" target="_blank" rel="noopener" class="btn btn-primary btn-block">
+                                Buka Halaman Pembayaran ({{ $transaction->payment_provider }})
+                            </a>
+                        </div>
+                    @endif
+
                     <div class="mt-24">
                         <form action="{{ route('topup.payment.confirm', $transaction->transaction_code) }}" method="POST" style="display:inline;">
                             @csrf

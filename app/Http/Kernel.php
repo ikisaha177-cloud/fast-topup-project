@@ -44,6 +44,15 @@ class Kernel extends HttpKernel
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
+
+        /*
+         * Webhook pembayaran: stateless (tanpa session & CSRF) dan tanpa
+         * throttle ketat, karena gateway bisa mengirim ulang notifikasi.
+         * Keamanan bergantung pada verifikasi signature di driver gateway.
+         */
+        'webhook' => [
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ],
     ];
 
     /**

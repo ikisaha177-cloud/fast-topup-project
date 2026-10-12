@@ -17,8 +17,16 @@ class Transaction extends Model
         'user_game_id',
         'server_id',
         'payment_method',
+        'payment_provider',
+        'payment_reference',
+        'payment_url',
         'amount',
         'status',
+        'paid_at',
+    ];
+
+    protected $casts = [
+        'paid_at' => 'datetime',
     ];
 
     public function user()
