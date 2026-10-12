@@ -91,6 +91,9 @@
                         @if($trx->status === 'failed' && $trx->failure_reason)
                             <div class="muted" style="font-size:12px;">{{ $trx->failure_reason }}</div>
                         @endif
+                        @if($trx->confirmed_at)
+                            <div class="muted" style="font-size:12px;">{{ $trx->confirmationLabel() }}</div>
+                        @endif
                     </td>
                     <td>
                         @if($trx->isPaymentClaimed())

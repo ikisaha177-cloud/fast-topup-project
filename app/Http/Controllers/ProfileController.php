@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\UpdateProfileRequest;
+use App\Support\OrderStatus;
 use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
@@ -17,8 +18,8 @@ class ProfileController extends Controller
         $stats = [
             'transactions' => $user->transactions()->count(),
             'orders'       => $user->marketplaceOrders()->count(),
-            'topup_spent'  => (int) $user->transactions()->where('status', 'success')->sum('amount'),
-            'market_spent' => (int) $user->marketplaceOrders()->where('status', 'success')->sum('total_amount'),
+            'topup_spent'  => (int) $user->transactions()->where('status', OrderStatus::SUCCESS)->sum('amount'),
+            'market_spent' => (int) $user->marketplaceOrders()->where('status', OrderStatus::SUCCESS)->sum('total_amount'),
         ];
 
         $stats['total_spent'] = $stats['topup_spent'] + $stats['market_spent'];

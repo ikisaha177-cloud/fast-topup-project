@@ -86,6 +86,9 @@
                         @if($order->status === 'failed' && $order->failure_reason)
                             <div class="muted" style="font-size:12px;">{{ $order->failure_reason }}</div>
                         @endif
+                        @if($order->confirmed_at)
+                            <div class="muted" style="font-size:12px;">{{ $order->confirmationLabel() }}</div>
+                        @endif
                     </td>
                     <td>
                         @if($order->isPaymentClaimed())

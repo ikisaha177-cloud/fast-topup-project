@@ -68,7 +68,7 @@
             <div class="float-card">
                 <div class="float-card-head">
                     <strong>Pesanan Kamu</strong>
-                    <span class="chip-ok">● Berhasil</span>
+                    <span class="chip-ok">● Selesai</span>
                 </div>
                 @if($heroProduct)
                     <div class="float-row"><span>Game</span><span>{{ $heroProduct->gameTitle->name ?? 'Game' }}</span></div>

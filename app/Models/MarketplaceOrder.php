@@ -23,6 +23,7 @@ class MarketplaceOrder extends Model
         'payment_claimed_at',
         'confirmed_at',
         'confirmed_by',
+        'confirmation_source',
         'failure_reason',
     ];
 
@@ -53,7 +54,7 @@ class MarketplaceOrder extends Model
      */
     public function isSuccess()
     {
-        return $this->status === 'success';
+        return $this->status === OrderStatus::SUCCESS;
     }
 
     /**
@@ -61,7 +62,7 @@ class MarketplaceOrder extends Model
      */
     public function isPending()
     {
-        return $this->status === 'pending';
+        return $this->status === OrderStatus::PENDING;
     }
 
     /**
@@ -94,5 +95,29 @@ class MarketplaceOrder extends Model
     public function statusBadge()
     {
         return OrderStatus::badge($this->status);
+    }
+
+    /**
+     * Dikonfirmasi otomatis oleh webhook gateway (bukan admin)?
+     */
+    public function confirmedByGateway()
+    {
+        return $this->confirmation_source === OrderStatus::SOURCE_GATEWAY;
+    }
+
+    /**
+     * Label sumber konfirmasi untuk ditampilkan di UI.
+     */
+    public function confirmationLabel()
+    {
+        if ($this->confirmation_source === OrderStatus::SOURCE_GATEWAY) {
+            return 'Otomatis (gateway pembayaran)';
+        }
+
+        if ($this->confirmation_source === OrderStatus::SOURCE_ADMIN) {
+            return 'Admin' . ($this->confirmedBy ? ' · ' . $this->confirmedBy->name : '');
+        }
+
+        return '—';
     }
 }

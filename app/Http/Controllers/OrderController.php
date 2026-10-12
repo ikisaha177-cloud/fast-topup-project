@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MarketplaceOrder;
+use App\Support\OrderStatus;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -16,7 +17,7 @@ class OrderController extends Controller
 
         $orders = MarketplaceOrder::where('user_id', auth()->id())
             ->withCount('items')
-            ->when(in_array($status, ['pending', 'success', 'failed', 'cancelled'], true), function ($query) use ($status) {
+            ->when(in_array($status, OrderStatus::all(), true), function ($query) use ($status) {
                 $query->where('status', $status);
             })
             ->latest()

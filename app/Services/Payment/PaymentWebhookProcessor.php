@@ -7,6 +7,7 @@ use App\Models\PaymentWebhookEvent;
 use App\Models\Transaction;
 use App\Services\MarketplaceOrderService;
 use App\Services\TransactionService;
+use App\Support\OrderStatus;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
@@ -20,6 +21,13 @@ use Illuminate\Support\Facades\DB;
  *     duplikat dan tidak diproses lagi.
  *  2. Cari transaksi/pesanan berdasarkan referensi.
  *  3. Serahkan perubahan status ke service domain (stok + notifikasi konsisten).
+ *
+ * Catatan alur konfirmasi:
+ *  - Webhook = pembayaran digital yang sudah terverifikasi provider, sehingga
+ *    pesanan boleh langsung selesai tanpa campur tangan admin. Jejaknya
+ *    ditandai `confirmation_source = gateway` agar audit tetap jujur.
+ *  - Admin hanya mengonfirmasi pembayaran MANUAL (transfer/QRIS yang dicek
+ *    manusia). Jejaknya `confirmation_source = admin` + `confirmed_by`.
  *
  * Klaim dan perubahan status dibungkus SATU transaksi database: kalau
  * perubahan status gagal, baris klaim ikut di-rollback sehingga gateway
@@ -59,10 +67,14 @@ class PaymentWebhookProcessor
                 ]);
 
                 // 2) Cari target: transaksi top up dulu, lalu pesanan marketplace.
+                //    Sumber konfirmasi = 'gateway': pembayaran digital sudah
+                //    terverifikasi oleh provider, jadi tidak perlu admin.
                 $transaction = Transaction::where('transaction_code', $event->reference)->first();
 
                 if ($transaction) {
-                    $changed = $this->transactions->transitionTo($transaction, $event->status);
+                    $changed = $this->transactions->transitionTo($transaction, $event->status, true, [
+                        'source' => OrderStatus::SOURCE_GATEWAY,
+                    ]);
 
                     return [
                         'processed' => true,
@@ -74,7 +86,9 @@ class PaymentWebhookProcessor
                 $order = MarketplaceOrder::where('order_code', $event->reference)->first();
 
                 if ($order) {
-                    $changed = $this->orders->transitionTo($order, $event->status);
+                    $changed = $this->orders->transitionTo($order, $event->status, true, [
+                        'source' => OrderStatus::SOURCE_GATEWAY,
+                    ]);
 
                     return [
                         'processed' => true,

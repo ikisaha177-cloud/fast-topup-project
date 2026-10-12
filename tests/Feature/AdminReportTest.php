@@ -193,6 +193,37 @@ class AdminReportTest extends TestCase
             ->assertSee('Metode Pembayaran');
     }
 
+    public function test_top_lists_ignore_unsuccessful_orders()
+    {
+        $buyer = $this->buyer();
+        $product = Product::first();
+        $marketProduct = MarketplaceProduct::where('stock', '>', 0)->first();
+
+        // Satu pesanan selesai, satu pesanan gagal untuk game & produk yang sama.
+        $this->makeTransaction($buyer, $product, ['amount' => 40000, 'status' => 'success']);
+        $this->makeTransaction($buyer, $product, ['amount' => 40000, 'status' => 'failed']);
+        $this->makeOrder($buyer, $marketProduct, ['total_amount' => 20000, 'status' => 'success']);
+        $this->makeOrder($buyer, $marketProduct, ['total_amount' => 20000, 'status' => 'cancelled']);
+
+        $response = $this->actingAs($this->admin())->get(route('admin.reports.index', [
+            'periode' => 'harian',
+            'tahun'   => now()->year,
+            'bulan'   => now()->month,
+        ]));
+
+        $response->assertOk();
+
+        $report = $response->viewData('report');
+
+        // Game terlaris: hanya pesanan selesai yang dihitung.
+        $this->assertSame(1, $report['topGames'][0]['count']);
+        $this->assertSame(40000, $report['topGames'][0]['revenue']);
+
+        // Produk terlaris: hanya pesanan selesai yang dihitung.
+        $this->assertSame(1, $report['topProducts'][0]['quantity']);
+        $this->assertSame((int) $marketProduct->price, $report['topProducts'][0]['revenue']);
+    }
+
     public function test_report_csv_export_streams_file()
     {
         $buyer = $this->buyer();

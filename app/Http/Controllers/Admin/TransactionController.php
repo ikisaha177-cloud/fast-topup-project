@@ -28,7 +28,7 @@ class TransactionController extends Controller
         $search = trim((string) $request->query('q', ''));
         $status = $request->query('status');
 
-        $transactions = Transaction::with(['gameTitle', 'product', 'user'])
+        $transactions = Transaction::with(['gameTitle', 'product', 'user', 'confirmedBy'])
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($sub) use ($search) {
                     $sub->where('transaction_code', 'like', "%{$search}%")
@@ -39,7 +39,7 @@ class TransactionController extends Controller
                         });
                 });
             })
-            ->when(in_array($status, ['pending', 'success', 'cancelled', 'failed'], true), function ($query) use ($status) {
+            ->when(in_array($status, OrderStatus::all(), true), function ($query) use ($status) {
                 $query->where('status', $status);
             })
             ->latest()
@@ -48,11 +48,11 @@ class TransactionController extends Controller
 
         $summary = [
             'total'     => Transaction::count(),
-            'pending'   => Transaction::where('status', 'pending')->count(),
-            'review'    => Transaction::where('status', 'pending')->whereNotNull('payment_claimed_at')->count(),
-            'success'   => Transaction::where('status', 'success')->count(),
-            'cancelled' => Transaction::whereIn('status', ['cancelled', 'failed'])->count(),
-            'revenue'   => Transaction::where('status', 'success')->sum('amount'),
+            'pending'   => Transaction::where('status', OrderStatus::PENDING)->count(),
+            'review'    => Transaction::where('status', OrderStatus::PENDING)->whereNotNull('payment_claimed_at')->count(),
+            'success'   => Transaction::where('status', OrderStatus::SUCCESS)->count(),
+            'cancelled' => Transaction::whereIn('status', [OrderStatus::CANCELLED, OrderStatus::FAILED])->count(),
+            'revenue'   => Transaction::where('status', OrderStatus::SUCCESS)->sum('amount'),
         ];
 
         return view('admin.transactions.index', compact('transactions', 'summary', 'search', 'status'));
@@ -77,7 +77,11 @@ class TransactionController extends Controller
         ]);
 
         if (! $changed) {
-            return back()->with('success', 'Status transaksi ' . $transaction->transaction_code . ' tidak berubah.');
+            $message = OrderStatus::isFinal($transaction->status)
+                ? 'Transaksi ' . $transaction->transaction_code . ' sudah final (' . OrderStatus::label($transaction->status) . ') dan tidak dapat diubah lagi.'
+                : 'Status transaksi ' . $transaction->transaction_code . ' tidak berubah.';
+
+            return back()->with('success', $message);
         }
 
         ActivityLogger::log(

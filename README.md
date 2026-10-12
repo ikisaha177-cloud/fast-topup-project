@@ -10,7 +10,7 @@ Aplikasi web **top up game** dan **marketplace item game** berbasis Laravel 8. P
 - Marketplace: katalog dengan pencarian, filter kategori, dan pagination.
 - **Harga coret & badge diskon** pada produk marketplace (kolom `compare_at_price`), jadi diskon tampil sebagai potongan eksplisit, bukan sekadar angka.
 - Keranjang (session) dengan validasi stok di server.
-- **Alur konfirmasi pesanan**: pembeli memesan → menandai **"Saya Sudah Bayar"** → status **Menunggu Konfirmasi**; admin memverifikasi lalu menandai **Selesai** atau **Gagal** (stok otomatis dikembalikan). Pembeli juga bisa **membatalkan** pesanan selama masih menunggu konfirmasi.
+- **Alur konfirmasi pesanan**: pembeli memesan → menandai **"Saya Sudah Bayar"** → status **Menunggu Konfirmasi**; admin memverifikasi lalu menandai **Selesai** atau **Gagal** (stok otomatis dikembalikan). Pembeli juga bisa **membatalkan** pesanan selama masih menunggu konfirmasi. Untuk pembayaran digital, admin bisa lewat jalur otomatis — lihat *Alur Status Pesanan* di bawah.
 - **Gateway pembayaran pluggable**: `simulation` (default, tanpa jaringan) atau **Midtrans Snap** — cukup ubah `PAYMENT_DRIVER` di `.env`.
 - **Webhook pembayaran** dengan verifikasi signature + **idempotency** (event duplikat dari gateway tidak diproses dua kali).
 - Halaman status pesanan dengan kode QR (simulasi), instruksi, dan tombol aksi yang menyesuaikan keadaan (belum bayar / menunggu verifikasi / selesai / gagal + alasan). Bila gateway mengembalikan URL pembayaran, tombol "Buka Halaman Pembayaran" muncul otomatis.
@@ -25,15 +25,24 @@ Aplikasi web **top up game** dan **marketplace item game** berbasis Laravel 8. P
 Status dijaga satu pintu di `App\Support\OrderStatus` + `TransactionService` / `MarketplaceOrderService`, sehingga stok, jejak verifikasi, dan notifikasi selalu konsisten.
 
 ```
-pending ──(admin konfirmasi)──▶ success    (pesanan berhasil & selesai)
+pending ──(admin setujui)───────────▶ success    (pesanan selesai)
    │
-   ├────(admin tolak)─────────▶ failed     (gagal, stok dikembalikan)
+   ├────(webhook gateway sukses)────▶ success    (pembayaran digital terverifikasi otomatis)
    │
-   └────(pembeli batal)───────▶ cancelled  (stok dikembalikan)
+   ├────(admin tolak)───────────────▶ failed     (gagal, stok dikembalikan)
+   │
+   └────(pembeli batal)─────────────▶ cancelled  (stok dikembalikan)
 ```
 
+Ada **dua jalur menuju `success`**, dan mana yang dipakai dicatat jujur di kolom `confirmation_source`:
+
+- **`admin`** — verifikasi manual. Dipakai untuk pembayaran yang dicek manusia (transfer/QRIS tanpa gateway). Mengisi `confirmed_by`, `confirmed_at`, dan `failure_reason` bila ditolak.
+- **`gateway`** — webhook pembayaran (Midtrans/simulasi) menandai sukses otomatis. `confirmed_by` dibiarkan `NULL` karena tidak ada admin yang memutuskan; UI menampilkan **"Otomatis (gateway pembayaran)"**.
+
+Dengan driver default `simulation`, tidak ada webhook yang datang sendiri, jadi seluruh pesanan melewati verifikasi admin. Saat `PAYMENT_DRIVER=midtrans`, pesanan yang pembayarannya sudah *settlement* langsung selesai tanpa perlu admin.
+
 - `success`, `failed`, dan `cancelled` bersifat **terminal** — tidak bisa diubah lagi.
-- Setiap keputusan admin mencatat `confirmed_at` + `confirmed_by` (audit trail) dan `failure_reason` bila ditolak.
+- Admin hanya punya dua keputusan di UI: **Konfirmasi** (success) dan **Gagal** (failed). Pembatalan adalah tindakan pembeli, sehingga validasi admin sengaja dibatasi ke dua nilai itu (`OrderStatus::adminDecisions()`).
 
 ### Navigasi & Penempatan Fitur
 - Navbar pembeli ringkas: **Home · Top Up · Marketplace**, ikon **keranjang** dengan badge jumlah, dan **menu akun** (dropdown) berisi Riwayat Transaksi, Pesanan Saya, Profil, serta Keluar.
@@ -44,7 +53,7 @@ pending ──(admin konfirmasi)──▶ success    (pesanan berhasil & selesai
 ### Admin
 - Dashboard: KPI, grafik pendapatan 7 hari, transaksi & pesanan terbaru, serta penanda **Perlu Diverifikasi**.
 - **Konfirmasi pesanan**: tombol **Konfirmasi** / **Gagal** (+ alasan opsional) langsung pada baris transaksi/pesanan yang masih menunggu; baris yang sudah ditandai "Sudah Bayar" disorot.
-- **Laporan harian / bulanan / tahunan**: ringkasan KPI, grafik pendapatan, tabel rincian per periode, sebaran status, game & produk terlaris, breakdown metode pembayaran, filter status, dan **ekspor CSV**.
+- **Laporan harian / bulanan / tahunan**: ringkasan KPI, grafik pendapatan, tabel rincian per periode, sebaran status, game & produk terlaris (hanya pesanan selesai), breakdown metode pembayaran, filter status, dan **ekspor CSV**.
 - CRUD game (dengan upload icon) dan produk top up.
 - Kelola produk marketplace (upload gambar/edit/nonaktifkan/hapus), termasuk harga jual & harga coret.
 - Pantau transaksi & pesanan: pencarian, filter status, pagination, ubah status manual.
@@ -119,6 +128,11 @@ Webhook diverifikasi dengan signature (`sha512(order_id + status_code + gross_am
 diproses **idempotent**: event yang sama dikirim berulang hanya diproses sekali (dicatat di tabel
 `payment_webhook_events`).
 
+Saat gateway aktif, webhook yang melaporkan pembayaran **sukses** (settlement/capture) langsung menandai
+pesanan **Selesai** dengan `confirmation_source = gateway` — tanpa campur tangan admin. Webhook yang
+melaporkan pembayaran **gagal/kedaluwarsa** menandai pesanan `failed`/`cancelled` dan mengembalikan stok.
+Jadi admin hanya menangani pembayaran **manual** (mis. transfer yang perlu dicek manusia).
+
 ### SMTP
 
 Untuk produksi ganti `MAIL_*` di `.env` ke SMTP provider (Mailtrap/Mailgun/Postmark/Gmail). Lihat contoh di `.env.example`.
@@ -140,7 +154,7 @@ Akun ini hanya untuk pengembangan/testing — **tidak ditampilkan di UI** agar h
 php vendor/bin/phpunit
 ```
 
-Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **125 test / 476 assertion** hijau, mencakup alur checkout, konfirmasi pesanan oleh admin (berhasil/gagal + pengembalian stok), laporan harian/bulanan/tahunan & ekspor CSV, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), serta pencarian & filter katalog.
+Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **127 test / 492 assertion** hijau, mencakup alur checkout, konfirmasi pesanan oleh admin (berhasil/gagal + pengembalian stok + sumber konfirmasi), laporan harian/bulanan/tahunan & ekspor CSV, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), serta pencarian & filter katalog.
 
 ## CI
 

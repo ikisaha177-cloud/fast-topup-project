@@ -17,7 +17,7 @@ class UpdateStatusRequest extends FormRequest
     public function rules()
     {
         return [
-            'status'         => ['required', Rule::in(OrderStatus::all())],
+            'status'         => ['required', Rule::in(OrderStatus::adminDecisions())],
             'failure_reason' => ['nullable', 'string', 'max:255'],
         ];
     }
@@ -25,9 +25,9 @@ class UpdateStatusRequest extends FormRequest
     public function messages()
     {
         return [
-            'status.required'         => 'Status wajib dipilih.',
-            'status.in'               => 'Status tidak valid.',
-            'failure_reason.max'      => 'Alasan gagal maksimal 255 karakter.',
+            'status.required'    => 'Status wajib dipilih.',
+            'status.in'          => 'Admin hanya dapat menyetujui atau menolak pesanan.',
+            'failure_reason.max' => 'Alasan gagal maksimal 255 karakter.',
         ];
     }
 }

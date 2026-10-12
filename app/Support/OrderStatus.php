@@ -7,9 +7,14 @@ namespace App\Support;
  * pesanan (top up maupun marketplace).
  *
  * Alur bisnis:
- *   pending --(admin konfirmasi)--> success   : pesanan berhasil & selesai.
- *   pending --(admin tolak)-------> failed    : pesanan gagal, stok dikembalikan.
- *   pending --(pembeli batal)-----> cancelled : dibatalkan, stok dikembalikan.
+ *   pending --(admin setujui)------------> success   : pesanan selesai.
+ *   pending --(webhook gateway sukses)--> success   : pembayaran digital
+ *                                                      terverifikasi otomatis.
+ *   pending --(admin tolak)-------------> failed    : gagal, stok dikembalikan.
+ *   pending --(pembeli batal)-----------> cancelled : dibatalkan, stok kembali.
+ *
+ * Perbedaan dua jalur menuju `success` dicatat pada kolom
+ * `confirmation_source` (admin|gateway) supaya jejak audit tetap jujur.
  */
 class OrderStatus
 {
@@ -17,6 +22,12 @@ class OrderStatus
     public const SUCCESS   = 'success';
     public const FAILED    = 'failed';
     public const CANCELLED = 'cancelled';
+
+    /** Konfirmasi dilakukan admin (verifikasi manual). */
+    public const SOURCE_ADMIN = 'admin';
+
+    /** Konfirmasi dilakukan otomatis oleh webhook gateway pembayaran. */
+    public const SOURCE_GATEWAY = 'gateway';
 
     /**
      * Semua status yang sah.
@@ -78,6 +89,10 @@ class OrderStatus
      */
     public static function allowedTransitions($current)
     {
+        if (self::isFinal($current)) {
+            return [];
+        }
+
         if ($current === self::PENDING) {
             return [self::SUCCESS, self::FAILED, self::CANCELLED];
         }
@@ -96,5 +111,19 @@ class OrderStatus
     public static function isFinal($status)
     {
         return in_array($status, [self::SUCCESS, self::FAILED, self::CANCELLED], true);
+    }
+
+    /**
+     * Keputusan yang boleh diambil admin pada halaman verifikasi.
+     *
+     * Hanya dua: setujui (success) atau tolak (failed). Pembatalan adalah
+     * tindakan pembeli, bukan admin — jadi sengaja tidak disertakan agar
+     * aturan validasi persis sama dengan tombol yang tampil di UI.
+     *
+     * @return array<int, string>
+     */
+    public static function adminDecisions()
+    {
+        return [self::SUCCESS, self::FAILED];
     }
 }

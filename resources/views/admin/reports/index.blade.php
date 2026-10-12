@@ -43,14 +43,16 @@
                     </label>
                 @endif
 
-                <label>
-                    <span>Tahun</span>
-                    <select name="tahun">
-                        @for($y = now()->year; $y >= now()->year - 5; $y--)
-                            <option value="{{ $y }}" {{ (int) $year === $y ? 'selected' : '' }}>{{ $y }}</option>
-                        @endfor
-                    </select>
-                </label>
+                @if($type !== 'tahunan')
+                    <label>
+                        <span>Tahun</span>
+                        <select name="tahun">
+                            @for($y = now()->year; $y >= now()->year - 5; $y--)
+                                <option value="{{ $y }}" {{ (int) $year === $y ? 'selected' : '' }}>{{ $y }}</option>
+                            @endfor
+                        </select>
+                    </label>
+                @endif
 
                 <label>
                     <span>Status</span>
@@ -125,6 +127,8 @@
 
         {{-- Tabel rincian --}}
         <div class="card table-wrap mt-16">
+            <h3>Rincian per Periode</h3>
+            <p class="muted" style="margin:-6px 0 10px; font-size:13px;">Kolom jumlah menghitung semua pesanan; kolom pendapatan hanya pesanan berstatus <strong>Selesai</strong>.</p>
             <table class="table">
                 <thead>
                     <tr>
@@ -183,11 +187,12 @@
             {{-- Game terlaris --}}
             <div class="card table-wrap">
                 <h3>Game Terlaris</h3>
+                <p class="muted" style="font-size:13px; margin:-6px 0 10px;">Hanya menghitung pesanan berstatus <strong>Selesai</strong>.</p>
                 <table class="table">
                     <thead>
                         <tr>
                             <th>Game</th>
-                            <th class="text-right">Transaksi</th>
+                            <th class="text-right">Terjual</th>
                             <th class="text-right">Pendapatan</th>
                         </tr>
                     </thead>
@@ -208,6 +213,7 @@
             {{-- Produk marketplace terlaris --}}
             <div class="card table-wrap">
                 <h3>Produk Marketplace Terlaris</h3>
+                <p class="muted" style="font-size:13px; margin:-6px 0 10px;">Hanya menghitung pesanan berstatus <strong>Selesai</strong>.</p>
                 <table class="table">
                     <thead>
                         <tr>

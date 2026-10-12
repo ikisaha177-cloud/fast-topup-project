@@ -74,7 +74,13 @@
                     <div class="text-center">
                         <span class="badge badge-success">Pesanan Selesai</span>
                         <h1 style="font-size:24px; margin:14px 0 4px;">Terima Kasih!</h1>
-                        <p class="muted">Pesanan marketplace kamu sudah dikonfirmasi admin dan selesai. Cek detailnya di halaman Pesanan Saya.</p>
+                        <p class="muted">
+                            @if($order->confirmedByGateway())
+                                Pembayaranmu terverifikasi otomatis oleh penyedia pembayaran dan pesanan sudah selesai. Cek detailnya di halaman Pesanan Saya.
+                            @else
+                                Pesanan marketplace kamu sudah dikonfirmasi admin dan selesai. Cek detailnya di halaman Pesanan Saya.
+                            @endif
+                        </p>
                     </div>
                 </div>
             @else
@@ -104,7 +110,7 @@
                 <div class="summary-row"><span>Tanggal</span><span>{{ $order->created_at->format('d-m-Y H:i') }}</span></div>
                 <div class="summary-row"><span>Status</span><span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span></div>
                 @if($order->confirmed_at)
-                    <div class="summary-row"><span>Diverifikasi</span><span>{{ $order->confirmed_at->format('d-m-Y H:i') }}</span></div>
+                    <div class="summary-row"><span>Diverifikasi</span><span>{{ $order->confirmationLabel() }} &middot; {{ $order->confirmed_at->format('d-m-Y H:i') }}</span></div>
                 @endif
 
                 <h3 class="mt-24">Daftar Item</h3>

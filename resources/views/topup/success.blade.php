@@ -75,8 +75,14 @@
                 <div class="card">
                     <div class="text-center">
                         <span class="badge badge-success">Pesanan Selesai</span>
-                        <h1 style="font-size:24px; margin:14px 0 4px;">Top Up Berhasil</h1>
-                        <p class="muted">Terima kasih! Pesanan top up kamu sudah dikonfirmasi admin dan selesai diproses.</p>
+                        <h1 style="font-size:24px; margin:14px 0 4px;">Top Up Selesai</h1>
+                        <p class="muted">
+                            @if($transaction->confirmedByGateway())
+                                Pembayaranmu terverifikasi otomatis oleh penyedia pembayaran dan pesanan sudah selesai diproses.
+                            @else
+                                Terima kasih! Pesanan top up kamu sudah dikonfirmasi admin dan selesai diproses.
+                            @endif
+                        </p>
                     </div>
                 </div>
             @else
@@ -109,7 +115,7 @@
                 <div class="summary-row"><span>Tanggal</span><span>{{ $transaction->created_at->format('d-m-Y H:i') }}</span></div>
                 <div class="summary-row"><span>Status</span><span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span></div>
                 @if($transaction->confirmed_at)
-                    <div class="summary-row"><span>Diverifikasi</span><span>{{ $transaction->confirmed_at->format('d-m-Y H:i') }}</span></div>
+                    <div class="summary-row"><span>Diverifikasi</span><span>{{ $transaction->confirmationLabel() }} &middot; {{ $transaction->confirmed_at->format('d-m-Y H:i') }}</span></div>
                 @endif
                 <div class="summary-total">
                     <span>Total</span>

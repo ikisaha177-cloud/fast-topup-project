@@ -100,6 +100,10 @@ class PaymentWebhookTest extends TestCase
 
         $this->assertSame('success', $transaction->status);
         $this->assertNotNull($transaction->paid_at);
+        // Konfirmasi otomatis oleh gateway: jejaknya jujur, bukan admin.
+        $this->assertSame('gateway', $transaction->confirmation_source);
+        $this->assertNull($transaction->confirmed_by);
+        $this->assertTrue($transaction->confirmedByGateway());
         $this->assertDatabaseHas('payment_webhook_events', [
             'event_id' => 'evt-' . $transaction->transaction_code,
             'provider' => 'simulation',
@@ -194,6 +198,8 @@ class PaymentWebhookTest extends TestCase
         ])->assertOk()->assertJson(['reason' => 'status-updated']);
 
         $this->assertSame('success', $order->fresh()->status);
+        $this->assertSame('gateway', $order->fresh()->confirmation_source);
+        $this->assertNull($order->fresh()->confirmed_by);
     }
 
     public function test_webhook_for_unknown_reference_is_acknowledged()

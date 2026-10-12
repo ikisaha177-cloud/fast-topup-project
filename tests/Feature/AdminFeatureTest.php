@@ -86,8 +86,8 @@ class AdminFeatureTest extends TestCase
         $this->assertDatabaseHas('products', ['name' => '9999 Diamonds']);
     }
 
-    /** Ubah status transaksi pending -> cancelled mengembalikan stock. */
-    public function test_admin_cancelling_transaction_restores_stock()
+    /** Admin menolak transaksi pending -> failed mengembalikan stock. */
+    public function test_admin_rejecting_transaction_restores_stock()
     {
         Notification::fake();
 
@@ -107,16 +107,16 @@ class AdminFeatureTest extends TestCase
         $this->assertSame($stockBefore - 1, $product->fresh()->stock);
 
         $this->actingAs($this->admin())
-            ->post(route('admin.transactions.status', $transaction->id), ['status' => 'cancelled'])
+            ->post(route('admin.transactions.status', $transaction->id), ['status' => 'failed'])
             ->assertRedirect();
 
-        $this->assertSame('cancelled', $transaction->fresh()->status);
+        $this->assertSame('failed', $transaction->fresh()->status);
         $this->assertSame($stockBefore, $product->fresh()->stock);
         $this->assertDatabaseHas('activity_logs', ['action' => 'transaction.status']);
     }
 
     /** Ubah status pesanan marketplace mengembalikan stock tiap item. */
-    public function test_admin_cancelling_order_restores_item_stock()
+    public function test_admin_rejecting_order_restores_item_stock()
     {
         Notification::fake();
 
@@ -131,10 +131,10 @@ class AdminFeatureTest extends TestCase
         $this->assertSame($stockBefore - 2, $product->fresh()->stock);
 
         $this->actingAs($this->admin())
-            ->post(route('admin.orders.status', $order->id), ['status' => 'cancelled'])
+            ->post(route('admin.orders.status', $order->id), ['status' => 'failed'])
             ->assertRedirect();
 
-        $this->assertSame('cancelled', $order->fresh()->status);
+        $this->assertSame('failed', $order->fresh()->status);
         $this->assertSame($stockBefore, $product->fresh()->stock);
     }
 

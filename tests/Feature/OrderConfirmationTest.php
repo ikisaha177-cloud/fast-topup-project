@@ -109,7 +109,24 @@ class OrderConfirmationTest extends TestCase
         $this->assertSame('success', $transaction->status);
         $this->assertNotNull($transaction->confirmed_at);
         $this->assertSame($admin->id, $transaction->confirmed_by);
+        $this->assertSame('admin', $transaction->confirmation_source);
         $this->assertNotNull($transaction->paid_at);
+        $this->assertFalse($transaction->confirmedByGateway());
+    }
+
+    /** Admin tidak boleh membatalkan; hanya menyetujui atau menolak. */
+    public function test_admin_cannot_cancel_order()
+    {
+        $admin = $this->admin();
+        $buyer = $this->buyer();
+        $product = Product::first();
+        $transaction = $this->makeTransaction($buyer, $product);
+
+        $this->actingAs($admin)
+            ->post(route('admin.transactions.status', $transaction->id), ['status' => 'cancelled'])
+            ->assertSessionHasErrors('status');
+
+        $this->assertSame('pending', $transaction->fresh()->status);
     }
 
     /** Admin menolak transaksi: status gagal, stok kembali, alasan tercatat. */
@@ -155,6 +172,7 @@ class OrderConfirmationTest extends TestCase
         $this->assertSame('success', $order->status);
         $this->assertSame($admin->id, $order->confirmed_by);
         $this->assertNotNull($order->confirmed_at);
+        $this->assertSame('admin', $order->confirmation_source);
     }
 
     /** Admin menolak pesanan marketplace: stok tiap item dikembalikan ke penjual. */
@@ -190,7 +208,7 @@ class OrderConfirmationTest extends TestCase
         $transaction->update(['status' => 'success']);
 
         $this->actingAs($admin)
-            ->post(route('admin.transactions.status', $transaction->id), ['status' => 'cancelled'])
+            ->post(route('admin.transactions.status', $transaction->id), ['status' => 'failed'])
             ->assertRedirect();
 
         $this->assertSame('success', $transaction->fresh()->status);

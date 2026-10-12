@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use App\Support\OrderStatus;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -16,7 +17,7 @@ class TransactionController extends Controller
 
         $transactions = Transaction::where('user_id', auth()->id())
             ->with(['gameTitle', 'product'])
-            ->when(in_array($status, ['pending', 'success', 'cancelled', 'failed'], true), function ($query) use ($status) {
+            ->when(in_array($status, OrderStatus::all(), true), function ($query) use ($status) {
                 $query->where('status', $status);
             })
             ->latest()

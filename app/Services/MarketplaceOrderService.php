@@ -62,7 +62,7 @@ class MarketplaceOrderService
         });
 
         if ($notify) {
-            $this->notify($order->fresh(), $status);
+            $this->notify($order->fresh(), $status, $context['source'] ?? null);
         }
 
         return true;
@@ -95,15 +95,27 @@ class MarketplaceOrderService
         $attributes = ['status' => $status];
 
         if ($status === OrderStatus::SUCCESS) {
-            $attributes['paid_at']        = $order->paid_at ?: now();
-            $attributes['confirmed_at']   = $order->confirmed_at ?: now();
-            $attributes['confirmed_by']   = $context['actor_id'] ?? $order->confirmed_by;
-            $attributes['failure_reason'] = null;
+            $source = $this->normalizeSource($context);
+
+            $attributes['paid_at']             = $order->paid_at ?: now();
+            $attributes['payment_claimed_at']  = $order->payment_claimed_at ?: now();
+            $attributes['confirmed_at']        = $order->confirmed_at ?: now();
+            $attributes['confirmation_source'] = $source;
+            $attributes['failure_reason']      = null;
+
+            $attributes['confirmed_by'] = $source === OrderStatus::SOURCE_ADMIN
+                ? ($context['actor_id'] ?? $order->confirmed_by)
+                : null;
         }
 
         if ($status === OrderStatus::FAILED) {
-            $attributes['confirmed_at'] = $order->confirmed_at ?: now();
-            $attributes['confirmed_by'] = $context['actor_id'] ?? $order->confirmed_by;
+            $source = $this->normalizeSource($context);
+
+            $attributes['confirmed_at']        = $order->confirmed_at ?: now();
+            $attributes['confirmation_source'] = $source;
+            $attributes['confirmed_by']        = $source === OrderStatus::SOURCE_ADMIN
+                ? ($context['actor_id'] ?? $order->confirmed_by)
+                : null;
 
             if (! empty($context['reason'])) {
                 $attributes['failure_reason'] = $context['reason'];
@@ -114,9 +126,21 @@ class MarketplaceOrderService
     }
 
     /**
-     * Kirim email pemberitahuan status ke pembeli.
+     * Sumber konfirmasi: admin (manual) atau gateway (webhook otomatis).
      */
-    public function notify(MarketplaceOrder $order, string $status)
+    private function normalizeSource(array $context)
+    {
+        return ($context['source'] ?? null) === OrderStatus::SOURCE_GATEWAY
+            ? OrderStatus::SOURCE_GATEWAY
+            : OrderStatus::SOURCE_ADMIN;
+    }
+
+    /**
+     * Kirim email pemberitahuan status ke pembeli.
+     *
+     * @param  string|null  $source  admin|gateway — memengaruhi kata-kata email.
+     */
+    public function notify(MarketplaceOrder $order, string $status, $source = null)
     {
         $buyer = $order->buyer;
 
@@ -124,10 +148,16 @@ class MarketplaceOrderService
             return;
         }
 
+        $byGateway = $source === OrderStatus::SOURCE_GATEWAY;
+
         $headline = [
-            OrderStatus::SUCCESS   => 'Pesananmu sudah dikonfirmasi admin dan selesai',
+            OrderStatus::SUCCESS   => $byGateway
+                ? 'Pembayaran diterima, pesananmu selesai'
+                : 'Pesananmu sudah dikonfirmasi admin dan selesai',
             OrderStatus::CANCELLED => 'Pesanan dibatalkan',
-            OrderStatus::FAILED    => 'Pesanan gagal dikonfirmasi admin',
+            OrderStatus::FAILED    => $byGateway
+                ? 'Pembayaran gagal diproses'
+                : 'Pesanan gagal dikonfirmasi admin',
             OrderStatus::PENDING   => 'Pesanan menunggu konfirmasi admin',
         ][$status] ?? 'Status pesanan diperbarui';
 

@@ -9,6 +9,7 @@ use App\Models\MarketplaceProduct;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Support\OrderStatus;
 
 class DashboardController extends Controller
 {
@@ -24,12 +25,12 @@ class DashboardController extends Controller
             'transactions'         => Transaction::count(),
             'marketplace_products' => MarketplaceProduct::count(),
             'marketplace_orders'   => MarketplaceOrder::count(),
-            'pending'              => Transaction::where('status', 'pending')->count()
-                + MarketplaceOrder::where('status', 'pending')->count(),
-            'review'               => Transaction::where('status', 'pending')->whereNotNull('payment_claimed_at')->count()
-                + MarketplaceOrder::where('status', 'pending')->whereNotNull('payment_claimed_at')->count(),
-            'revenue'              => (int) Transaction::where('status', 'success')->sum('amount')
-                + (int) MarketplaceOrder::where('status', 'success')->sum('total_amount'),
+            'pending'              => Transaction::where('status', OrderStatus::PENDING)->count()
+                + MarketplaceOrder::where('status', OrderStatus::PENDING)->count(),
+            'review'               => Transaction::where('status', OrderStatus::PENDING)->whereNotNull('payment_claimed_at')->count()
+                + MarketplaceOrder::where('status', OrderStatus::PENDING)->whereNotNull('payment_claimed_at')->count(),
+            'revenue'              => (int) Transaction::where('status', OrderStatus::SUCCESS)->sum('amount')
+                + (int) MarketplaceOrder::where('status', OrderStatus::SUCCESS)->sum('total_amount'),
         ];
 
         $latestTransactions = Transaction::with(['gameTitle', 'product', 'user'])
@@ -46,11 +47,11 @@ class DashboardController extends Controller
         $revenueSeries = collect(range(6, 0))->map(function ($daysAgo) {
             $date = now()->subDays($daysAgo)->toDateString();
 
-            $topup = (int) Transaction::where('status', 'success')
+            $topup = (int) Transaction::where('status', OrderStatus::SUCCESS)
                 ->whereDate('created_at', $date)
                 ->sum('amount');
 
-            $market = (int) MarketplaceOrder::where('status', 'success')
+            $market = (int) MarketplaceOrder::where('status', OrderStatus::SUCCESS)
                 ->whereDate('created_at', $date)
                 ->sum('total_amount');
 

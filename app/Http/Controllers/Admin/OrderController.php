@@ -28,7 +28,7 @@ class OrderController extends Controller
         $search = trim((string) $request->query('q', ''));
         $status = $request->query('status');
 
-        $orders = MarketplaceOrder::with(['buyer', 'items.product'])
+        $orders = MarketplaceOrder::with(['buyer', 'items.product', 'confirmedBy'])
             ->withCount('items')
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($sub) use ($search) {
@@ -39,7 +39,7 @@ class OrderController extends Controller
                         });
                 });
             })
-            ->when(in_array($status, ['pending', 'success', 'cancelled', 'failed'], true), function ($query) use ($status) {
+            ->when(in_array($status, OrderStatus::all(), true), function ($query) use ($status) {
                 $query->where('status', $status);
             })
             ->latest()
@@ -48,10 +48,10 @@ class OrderController extends Controller
 
         $summary = [
             'total'     => MarketplaceOrder::count(),
-            'pending'   => MarketplaceOrder::where('status', 'pending')->count(),
-            'review'    => MarketplaceOrder::where('status', 'pending')->whereNotNull('payment_claimed_at')->count(),
-            'success'   => MarketplaceOrder::where('status', 'success')->count(),
-            'revenue'   => MarketplaceOrder::where('status', 'success')->sum('total_amount'),
+            'pending'   => MarketplaceOrder::where('status', OrderStatus::PENDING)->count(),
+            'review'    => MarketplaceOrder::where('status', OrderStatus::PENDING)->whereNotNull('payment_claimed_at')->count(),
+            'success'   => MarketplaceOrder::where('status', OrderStatus::SUCCESS)->count(),
+            'revenue'   => MarketplaceOrder::where('status', OrderStatus::SUCCESS)->sum('total_amount'),
         ];
 
         return view('admin.orders.index', compact('orders', 'summary', 'search', 'status'));
@@ -76,7 +76,11 @@ class OrderController extends Controller
         ]);
 
         if (! $changed) {
-            return back()->with('success', 'Status pesanan ' . $order->order_code . ' tidak berubah.');
+            $message = OrderStatus::isFinal($order->status)
+                ? 'Pesanan ' . $order->order_code . ' sudah final (' . OrderStatus::label($order->status) . ') dan tidak dapat diubah lagi.'
+                : 'Status pesanan ' . $order->order_code . ' tidak berubah.';
+
+            return back()->with('success', $message);
         }
 
         ActivityLogger::log(

@@ -313,13 +313,15 @@ class ReportService
     }
 
     /**
-     * Game paling laris berdasarkan jumlah transaksi top up.
+     * Game paling laris — hanya menghitung pesanan yang benar-benar selesai,
+     * supaya jumlahnya konsisten dengan angka pendapatan.
      *
      * @return array<int, array{name: string, count: int, revenue: int}>
      */
     private function topGames(Collection $transactions)
     {
         return $transactions
+            ->where('status', OrderStatus::SUCCESS)
             ->groupBy(function ($transaction) {
                 return $transaction->gameTitle->name ?? 'Tanpa Game';
             })
@@ -327,7 +329,7 @@ class ReportService
                 return [
                     'name'    => $name,
                     'count'   => $group->count(),
-                    'revenue' => (int) $group->where('status', OrderStatus::SUCCESS)->sum('amount'),
+                    'revenue' => (int) $group->sum('amount'),
                 ];
             })
             ->sortByDesc('count')
@@ -337,7 +339,8 @@ class ReportService
     }
 
     /**
-     * Produk marketplace paling laris berdasarkan jumlah item terjual.
+     * Produk marketplace paling laris — hanya pesanan selesai, agar
+     * "Terjual" dan "Pendapatan" berasal dari himpunan data yang sama.
      *
      * @return array<int, array{name: string, quantity: int, revenue: int}>
      */
@@ -345,9 +348,7 @@ class ReportService
     {
         $rows = [];
 
-        foreach ($orders as $order) {
-            $isSuccess = $order->status === OrderStatus::SUCCESS;
-
+        foreach ($orders->where('status', OrderStatus::SUCCESS) as $order) {
             foreach ($order->items as $item) {
                 $name = $item->product->name ?? 'Produk Dihapus';
 
@@ -356,10 +357,7 @@ class ReportService
                 }
 
                 $rows[$name]['quantity'] += (int) $item->quantity;
-
-                if ($isSuccess) {
-                    $rows[$name]['revenue'] += (int) $item->subtotal;
-                }
+                $rows[$name]['revenue']  += (int) $item->subtotal;
             }
         }
 
