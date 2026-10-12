@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Http\Requests\Concerns\HandlesImageUpload;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class GameRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class GameRequest extends FormRequest
 
     public function authorize()
     {
-        return $this->user() && $this->user()->isAdmin();
+        return Gate::allows('manage-catalog');
     }
 
     public function rules()

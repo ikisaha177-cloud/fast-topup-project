@@ -27,4 +27,17 @@ class Product extends Model
     {
         return $this->belongsTo(GameTitle::class);
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * Produk hanya boleh dihapus bila belum pernah ditransaksikan.
+     */
+    public function hasTransactions()
+    {
+        return $this->transactions()->exists();
+    }
 }

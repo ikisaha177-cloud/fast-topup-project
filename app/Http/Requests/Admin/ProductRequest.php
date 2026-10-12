@@ -3,12 +3,13 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 class ProductRequest extends FormRequest
 {
     public function authorize()
     {
-        return $this->user() && $this->user()->isAdmin();
+        return Gate::allows('manage-catalog');
     }
 
     public function rules()

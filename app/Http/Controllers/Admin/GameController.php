@@ -75,6 +75,13 @@ class GameController extends Controller
     public function destroy($id)
     {
         $game = GameTitle::findOrFail($id);
+
+        // Jangan hapus game yang sudah punya transaksi: akan ikut menghapus
+        // riwayat pembayaran lewat cascade. Nonaktifkan saja.
+        if ($game->hasTransactions()) {
+            return back()->with('error', 'Game "' . $game->name . '" sudah memiliki transaksi dan tidak boleh dihapus. Nonaktifkan saja agar riwayat tetap utuh.');
+        }
+
         $game->delete();
 
         ActivityLogger::log('game.delete', 'Menghapus game "' . $game->name . '".', $game);

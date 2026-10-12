@@ -25,4 +25,18 @@ class GameTitle extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * Game hanya boleh dihapus bila belum punya transaksi, supaya riwayat
+     * pembayaran (audit) tidak ikut terhapus oleh cascade.
+     */
+    public function hasTransactions()
+    {
+        return $this->transactions()->exists();
+    }
 }

@@ -71,6 +71,12 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
+
+        // Produk yang sudah ditransaksikan tidak boleh dihapus (audit hilang).
+        if ($product->hasTransactions()) {
+            return back()->with('error', 'Produk "' . $product->name . '" sudah memiliki transaksi dan tidak boleh dihapus. Nonaktifkan saja agar riwayat tetap utuh.');
+        }
+
         $product->delete();
 
         ActivityLogger::log('product.delete', 'Menghapus produk top up "' . $product->name . '".', $product);

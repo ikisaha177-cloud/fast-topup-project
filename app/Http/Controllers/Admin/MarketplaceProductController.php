@@ -49,6 +49,12 @@ class MarketplaceProductController extends Controller
     public function destroy($id)
     {
         $product = MarketplaceProduct::findOrFail($id);
+
+        // Produk yang sudah pernah dipesan tidak boleh dihapus (riwayat hilang).
+        if ($product->hasOrderItems()) {
+            return back()->with('error', 'Produk "' . $product->name . '" sudah pernah dipesan dan tidak boleh dihapus. Nonaktifkan saja agar riwayat pesanan tetap utuh.');
+        }
+
         $product->delete();
 
         ActivityLogger::log('marketplace.delete', 'Menghapus produk marketplace "' . $product->name . '".', $product);

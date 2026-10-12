@@ -63,6 +63,8 @@ class OrderController extends Controller
     {
         $order = MarketplaceOrder::findOrFail($id);
 
+        $this->authorize('updateStatus', $order);
+
         $changed = $this->orders->transitionTo($order, $request->validated()['status']);
 
         if (! $changed) {

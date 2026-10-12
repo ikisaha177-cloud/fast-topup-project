@@ -35,4 +35,13 @@ class MarketplaceProduct extends Model
     {
         return $this->hasMany(MarketplaceOrderItem::class);
     }
+
+    /**
+     * Produk marketplace hanya boleh dihapus bila belum pernah dipesan,
+     * supaya riwayat pesanan tidak ikut terhapus oleh cascade.
+     */
+    public function hasOrderItems()
+    {
+        return $this->orderItems()->exists();
+    }
 }

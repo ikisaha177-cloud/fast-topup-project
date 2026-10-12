@@ -3,13 +3,14 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class UpdateStatusRequest extends FormRequest
 {
     public function authorize()
     {
-        return $this->user() && $this->user()->isAdmin();
+        return Gate::allows('manage-catalog');
     }
 
     public function rules()

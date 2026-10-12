@@ -64,6 +64,8 @@ class TransactionController extends Controller
     {
         $transaction = Transaction::findOrFail($id);
 
+        $this->authorize('updateStatus', $transaction);
+
         $changed = $this->transactions->transitionTo($transaction, $request->validated()['status']);
 
         if (! $changed) {
