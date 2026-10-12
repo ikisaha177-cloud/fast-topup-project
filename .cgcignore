@@ -1,0 +1,16 @@
+# CodeGraphContext ignore (gitignore syntax)
+# Dependencies — bukan kode project sendiri
+vendor/
+node_modules/
+public/vendor/
+
+# Build & runtime artifacts
+storage/
+bootstrap/cache/
+public/css/
+public/js/
+
+# Env & db dumps
+.env
+*.sql
+*.log
