@@ -15,9 +15,9 @@
         @include('partials.account-tabs')
 
         @php
-            $statusOptions = ['pending' => 'Menunggu Bayar', 'success' => 'Berhasil', 'cancelled' => 'Dibatalkan', 'failed' => 'Gagal'];
-            $badge = fn($s) => $s === 'success' ? 'badge-success' : ($s === 'pending' ? 'badge-pending' : ($s === 'cancelled' ? 'badge-cancelled' : 'badge-failed'));
-            $label = fn($s) => $statusOptions[$s] ?? $s;
+            $statusOptions = \App\Support\OrderStatus::labels();
+            $badge = fn($s) => \App\Support\OrderStatus::badge($s);
+            $label = fn($s) => \App\Support\OrderStatus::label($s);
         @endphp
 
         <div class="chips" style="margin-bottom:20px;">

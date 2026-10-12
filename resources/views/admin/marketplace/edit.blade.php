@@ -31,23 +31,34 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="description">Deskripsi</label>
-                    <textarea id="description" name="description" class="form-control" rows="3">{{ old('description', $product->description) }}</textarea>
-                </div>
-
-                <div class="form-group">
                     <label class="form-label" for="category">Kategori</label>
                     <input type="text" id="category" name="category" class="form-control"
                            value="{{ old('category', $product->category) }}">
                 </div>
 
+                <div class="form-group">
+                    <label class="form-label" for="description">Deskripsi</label>
+                    <textarea id="description" name="description" class="form-control" rows="3">{{ old('description', $product->description) }}</textarea>
+                </div>
+
                 <div class="grid grid-2">
                     <div class="form-group">
-                        <label class="form-label" for="price">Harga</label>
+                        <label class="form-label" for="price">Harga Jual</label>
                         <input type="number" id="price" name="price" class="form-control"
                                value="{{ old('price', $product->price) }}" min="0" required>
                         @error('price') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
+                    <div class="form-group">
+                        <label class="form-label" for="compare_at_price">Harga Coret (opsional)</label>
+                        <input type="number" id="compare_at_price" name="compare_at_price" class="form-control"
+                               value="{{ old('compare_at_price', $product->compare_at_price) }}" min="0"
+                               placeholder="Kosongkan bila tanpa diskon">
+                        <div class="form-hint">Isi lebih besar dari harga jual untuk menampilkan badge diskon.</div>
+                        @error('compare_at_price') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
                     <div class="form-group">
                         <label class="form-label" for="stock">Stok</label>
                         <input type="number" id="stock" name="stock" class="form-control"

@@ -70,6 +70,19 @@
             <circle cx="12" cy="12" r="9"/>
             <path d="M12 7.5V12l3 2"/>
             @break
+        @case('menu')
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+            @break
+        @case('close')
+            <path d="M6 6l12 12M18 6L6 18"/>
+            @break
+        @case('tag')
+            <path d="M20.6 12.6 12.6 20.6a2 2 0 0 1-2.8 0l-6.4-6.4a2 2 0 0 1-.6-1.4V5.4A1.4 1.4 0 0 1 4.2 4h7.4a2 2 0 0 1 1.4.6l7.6 7.6"/>
+            <circle cx="8.4" cy="8.4" r="1.3"/>
+            @break
+        @case('spark')
+            <path d="M12 3.5 13.8 9l5.5 1.8-5.5 1.8L12 18l-1.8-5.4L4.7 10.8 10.2 9z"/>
+            @break
         @default
             <circle cx="12" cy="12" r="9"/>
     @endswitch

@@ -2,9 +2,7 @@
 
 @php
     $status = $transaction->status;
-    $badge = $status === 'success'
-        ? ['badge-success', 'Berhasil']
-        : ($status === 'pending' ? ['badge-pending', 'Menunggu Pembayaran'] : ($status === 'cancelled' ? ['badge-cancelled', 'Dibatalkan'] : ['badge-failed', 'Gagal']));
+    $badge = [$transaction->statusBadge(), $transaction->statusLabel()];
 @endphp
 
 @section('title', 'Detail Transaksi - TopUpMarket')
@@ -38,6 +36,12 @@
                 <div class="summary-row"><span>Server ID</span><span>{{ $transaction->server_id ?: '-' }}</span></div>
                 <div class="summary-row"><span>Metode</span><span>{{ $transaction->payment_method }}</span></div>
                 <div class="summary-row"><span>Tanggal</span><span>{{ $transaction->created_at->format('d-m-Y H:i') }}</span></div>
+                @if($transaction->confirmed_at)
+                    <div class="summary-row"><span>Diverifikasi Admin</span><span>{{ $transaction->confirmed_at->format('d-m-Y H:i') }}</span></div>
+                @endif
+                @if($transaction->failure_reason)
+                    <div class="summary-row"><span>Alasan Gagal</span><span>{{ $transaction->failure_reason }}</span></div>
+                @endif
 
                 <div class="summary-total">
                     <span>Total</span>
@@ -48,8 +52,16 @@
             <div class="card summary-card">
                 <h3>Lanjutkan</h3>
                 @if($status === 'pending')
-                    <p class="muted">Transaksi ini masih menunggu pembayaran.</p>
-                    <a href="{{ route('topup.success', $transaction->transaction_code) }}" class="btn btn-success btn-block mt-16">Bayar Sekarang</a>
+                    <p class="muted">
+                        @if($transaction->isPaymentClaimed())
+                            Pembayaranmu sedang menunggu verifikasi admin.
+                        @else
+                            Transaksi ini masih menunggu pembayaran.
+                        @endif
+                    </p>
+                    <a href="{{ route('topup.success', $transaction->transaction_code) }}" class="btn btn-success btn-block mt-16">
+                        {{ $transaction->isPaymentClaimed() ? 'Lihat Status' : 'Bayar Sekarang' }}
+                    </a>
                 @else
                     <p class="muted">Transaksi sudah selesai diproses.</p>
                 @endif

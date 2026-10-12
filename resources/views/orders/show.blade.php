@@ -3,9 +3,7 @@
 @section('title', 'Detail Pesanan ' . $order->order_code . ' - TopUpMarket')
 
 @php
-    $badge = $order->status === 'success'
-        ? ['badge-success', 'Berhasil']
-        : ($order->status === 'pending' ? ['badge-pending', 'Menunggu Bayar'] : ($order->status === 'cancelled' ? ['badge-cancelled', 'Dibatalkan'] : ['badge-failed', 'Gagal']));
+    $badge = [$order->statusBadge(), $order->statusLabel()];
 @endphp
 
 @section('content')
@@ -57,7 +55,9 @@
 
                 <div class="mt-16 actions">
                     @if($order->status === 'pending')
-                        <a href="{{ route('marketplace.success', $order->order_code) }}" class="btn btn-success">Bayar Sekarang</a>
+                        <a href="{{ route('marketplace.success', $order->order_code) }}" class="btn btn-success">
+                            {{ $order->isPaymentClaimed() ? 'Lihat Status Pembayaran' : 'Bayar Sekarang' }}
+                        </a>
                     @endif
                     <a href="{{ route('orders.index') }}" class="btn btn-ghost">Kembali</a>
                 </div>
@@ -72,6 +72,12 @@
                 <div class="summary-row"><span>Tanggal Dibuat</span><span>{{ $order->created_at->format('d-m-Y H:i') }}</span></div>
                 <div class="summary-row"><span>Terakhir Diperbarui</span><span>{{ $order->updated_at->format('d-m-Y H:i') }}</span></div>
                 <div class="summary-row"><span>Status</span><span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span></div>
+                @if($order->confirmed_at)
+                    <div class="summary-row"><span>Diverifikasi Admin</span><span>{{ $order->confirmed_at->format('d-m-Y H:i') }}</span></div>
+                @endif
+                @if($order->failure_reason)
+                    <div class="summary-row"><span>Alasan Gagal</span><span>{{ $order->failure_reason }}</span></div>
+                @endif
             </div>
         </div>
     </div>

@@ -7,7 +7,7 @@
     <div class="container">
         <div class="auth-shell">
             <aside class="auth-aside">
-                <span class="hero-badge"><span class="hero-dot"></span> Gratis &amp; cepat</span>
+                <span class="hero-badge"><span class="hero-dot"></span> Cepat &amp; aman</span>
                 <h2>Bikin akun,<br><span class="text-gradient">mulai top up</span></h2>
                 <p>Cukup 10 detik untuk mulai top up game dan belanja item favoritmu.</p>
 
@@ -21,7 +21,7 @@
             <div class="auth-panel">
                 <div class="card auth-card">
                     <h1 class="auth-title">Buat Akun Baru</h1>
-                    <p class="muted">Daftar gratis untuk mulai top up dan belanja.</p>
+                    <p class="muted">Buat akun untuk mulai top up dan belanja.</p>
 
                     <form action="{{ route('register') }}" method="POST">
                         @csrf
@@ -56,12 +56,6 @@
                     <p class="muted text-center mt-16">
                         Sudah punya akun? <a href="{{ route('login') }}">Masuk di sini</a>
                     </p>
-
-                    <div class="alert alert-success" style="margin-top:16px; margin-bottom:0; font-size:12.5px;">
-                        <strong>Akun demo</strong><br>
-                        Admin: admin123@gmail.com / admin123<br>
-                        Pembeli: user@topupmarket.test / password
-                    </div>
                 </div>
             </div>
         </div>

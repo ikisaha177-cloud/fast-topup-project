@@ -10,7 +10,10 @@
                 <h1 class="section-title">Dashboard Admin</h1>
                 <p class="section-subtitle mb-0">Ringkasan performa toko hari ini.</p>
             </div>
-            <a href="{{ route('admin.transactions.index') }}" class="btn btn-outline">Verifikasi Pembayaran</a>
+            <div class="actions">
+                <a href="{{ route('admin.reports.index') }}" class="btn btn-outline">Laporan Penjualan</a>
+                <a href="{{ route('admin.transactions.index') }}" class="btn btn-primary">Konfirmasi Pesanan</a>
+            </div>
         </div>
 
         @include('partials.admin-nav')
@@ -30,7 +33,11 @@
             </div>
             <div class="card stat-card">
                 <span class="stat-number" style="color:var(--yellow);">{{ $stats['pending'] }}</span>
-                <span class="stat-label">Menunggu Bayar</span>
+                <span class="stat-label">Menunggu Konfirmasi</span>
+            </div>
+            <div class="card stat-card">
+                <span class="stat-number" style="color:var(--brand);">{{ $stats['review'] }}</span>
+                <span class="stat-label">Perlu Diverifikasi</span>
             </div>
             <div class="card stat-card">
                 <span class="stat-number">{{ $stats['marketplace_products'] }}</span>
@@ -84,9 +91,11 @@
                                 <span>
                                     <strong>Rp {{ number_format($trx->amount, 0, ',', '.') }}</strong><br>
                                     @if($trx->status === 'success')
-                                        <span class="badge badge-success">Berhasil</span>
+                                        <span class="badge badge-success">Selesai</span>
                                     @elseif($trx->status === 'pending')
-                                        <span class="badge badge-pending">Pending</span>
+                                        <span class="badge badge-pending">Menunggu Konfirmasi</span>
+                                    @elseif($trx->status === 'cancelled')
+                                        <span class="badge badge-cancelled">Dibatalkan</span>
                                     @else
                                         <span class="badge badge-failed">Gagal</span>
                                     @endif
@@ -127,9 +136,11 @@
                                 <td>{{ $order->payment_method }}</td>
                                 <td>
                                     @if($order->status === 'success')
-                                        <span class="badge badge-success">Berhasil</span>
+                                        <span class="badge badge-success">Selesai</span>
                                     @elseif($order->status === 'pending')
-                                        <span class="badge badge-pending">Pending</span>
+                                        <span class="badge badge-pending">Menunggu Konfirmasi</span>
+                                    @elseif($order->status === 'cancelled')
+                                        <span class="badge badge-cancelled">Dibatalkan</span>
                                     @else
                                         <span class="badge badge-failed">Gagal</span>
                                     @endif

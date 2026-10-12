@@ -16,8 +16,9 @@
 
         <div class="chips" style="margin-bottom:20px;">
             <a href="{{ route('orders.index') }}" class="chip {{ $status ? '' : 'active' }}">Semua</a>
-            <a href="{{ route('orders.index', ['status' => 'pending']) }}" class="chip {{ $status === 'pending' ? 'active' : '' }}">Menunggu Bayar</a>
-            <a href="{{ route('orders.index', ['status' => 'success']) }}" class="chip {{ $status === 'success' ? 'active' : '' }}">Berhasil</a>
+            <a href="{{ route('orders.index', ['status' => 'pending']) }}" class="chip {{ $status === 'pending' ? 'active' : '' }}">Menunggu Konfirmasi</a>
+            <a href="{{ route('orders.index', ['status' => 'success']) }}" class="chip {{ $status === 'success' ? 'active' : '' }}">Selesai</a>
+            <a href="{{ route('orders.index', ['status' => 'failed']) }}" class="chip {{ $status === 'failed' ? 'active' : '' }}">Gagal</a>
             <a href="{{ route('orders.index', ['status' => 'cancelled']) }}" class="chip {{ $status === 'cancelled' ? 'active' : '' }}">Dibatalkan</a>
         </div>
 
@@ -33,9 +34,7 @@
             <div style="display:flex; flex-direction:column; gap:14px;">
                 @foreach($orders as $order)
                     @php
-                        $badge = $order->status === 'success'
-                            ? ['badge-success', 'Berhasil']
-                            : ($order->status === 'pending' ? ['badge-pending', 'Menunggu Bayar'] : ($order->status === 'cancelled' ? ['badge-cancelled', 'Dibatalkan'] : ['badge-failed', 'Gagal']));
+                        $badge = [$order->statusBadge(), $order->statusLabel()];
                     @endphp
 
                     <div class="card card-hover order-card">
@@ -47,7 +46,9 @@
                             <div class="actions">
                                 <span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span>
                                 @if($order->status === 'pending')
-                                    <a href="{{ route('marketplace.success', $order->order_code) }}" class="btn btn-success btn-sm">Bayar Sekarang</a>
+                                    <a href="{{ route('marketplace.success', $order->order_code) }}" class="btn btn-success btn-sm">
+                                        {{ $order->isPaymentClaimed() ? 'Lihat Status' : 'Bayar Sekarang' }}
+                                    </a>
                                 @endif
                                 <a href="{{ route('orders.show', $order->order_code) }}" class="btn btn-outline btn-sm">Detail</a>
                             </div>

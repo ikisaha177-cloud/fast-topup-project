@@ -33,7 +33,10 @@
                 </span>
             </a>
 
-            <button type="button" class="nav-toggle" id="navToggle" aria-label="Buka menu" aria-expanded="false">☰</button>
+            <button type="button" class="nav-toggle" id="navToggle" aria-label="Buka menu" aria-expanded="false">
+                <span class="nav-toggle-icon" data-icon="open">@include('partials.icon', ['name' => 'menu', 'size' => 20])</span>
+                <span class="nav-toggle-icon" data-icon="close" hidden>@include('partials.icon', ['name' => 'close', 'size' => 20])</span>
+            </button>
 
             <div class="nav-links" id="navLinks">
                 @if($user)
@@ -54,6 +57,7 @@
                                 <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">@include('partials.icon', ['name' => 'grid', 'size' => 16]) Dashboard Admin</a>
                                 <a href="{{ route('admin.transactions.index') }}">@include('partials.icon', ['name' => 'receipt', 'size' => 16]) Verifikasi Pembayaran</a>
                                 <a href="{{ route('admin.orders.index') }}">@include('partials.icon', ['name' => 'cart', 'size' => 16]) Pesanan Masuk</a>
+                                <a href="{{ route('admin.reports.index') }}">@include('partials.icon', ['name' => 'grid', 'size' => 16]) Laporan Penjualan</a>
                                 <div class="nav-menu-sep"></div>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
@@ -97,7 +101,7 @@
                     <a href="{{ route('marketplace.index') }}" class="{{ request()->routeIs('marketplace.*') ? 'active' : '' }}">Marketplace</a>
                     <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active' : '' }}">Login</a>
                     <a href="{{ route('register') }}" class="{{ request()->routeIs('register') ? 'active' : '' }}">
-                        <span class="btn btn-primary btn-sm">Daftar Gratis</span>
+                        <span class="btn btn-primary btn-sm">Daftar</span>
                     </a>
                 @endif
             </div>
@@ -164,7 +168,7 @@
                         <a href="{{ route('profile') }}">Profil</a>
                     @else
                         <a href="{{ route('login') }}">Masuk</a>
-                        <a href="{{ route('register') }}">Daftar Gratis</a>
+                        <a href="{{ route('register') }}">Daftar</a>
                         <a href="{{ route('password.request') }}">Lupa Password</a>
                     @endauth
                 </div>
@@ -179,7 +183,7 @@
 
             <div class="footer-bottom">
                 <span>&copy; {{ date('Y') }} TopUpMarket. Seluruh hak cipta dilindungi.</span>
-                <span>Dibuat dengan <span style="color:var(--pink)">♥</span> untuk para gamer Indonesia.</span>
+                <span>Dibuat dengan <span style="color:var(--pink); display:inline-flex; vertical-align:-2px;">@include('partials.icon', ['name' => 'heart', 'size' => 13])</span> untuk para gamer Indonesia.</span>
             </div>
         </div>
     </footer>
@@ -190,10 +194,14 @@
             var links = document.getElementById('navLinks');
 
             if (toggle && links) {
+                var openIcon = toggle.querySelector('[data-icon="open"]');
+                var closeIcon = toggle.querySelector('[data-icon="close"]');
+
                 toggle.addEventListener('click', function () {
                     var open = links.classList.toggle('open');
                     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-                    toggle.textContent = open ? '✕' : '☰';
+                    if (openIcon) openIcon.hidden = open;
+                    if (closeIcon) closeIcon.hidden = !open;
                 });
             }
 

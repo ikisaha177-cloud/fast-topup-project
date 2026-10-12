@@ -50,14 +50,8 @@
                     </form>
 
                     <p class="muted text-center mt-16">
-                        Belum punya akun? <a href="{{ route('register') }}">Daftar gratis</a>
+                        Belum punya akun? <a href="{{ route('register') }}">Daftar sekarang</a>
                     </p>
-
-                    <div class="alert alert-success" style="margin-top:16px; margin-bottom:0; font-size:12.5px;">
-                        <strong>Akun demo</strong><br>
-                        Admin: admin123@gmail.com / admin123<br>
-                        Pembeli: user@topupmarket.test / password
-                    </div>
                 </div>
             </div>
         </div>

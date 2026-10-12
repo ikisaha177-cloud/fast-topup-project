@@ -21,6 +21,7 @@ class MarketplaceProductRequest extends FormRequest
             'name'        => 'required|string|max:255',
             'description' => 'nullable|string|max:2000',
             'price'       => 'required|integer|min:0|max:100000000',
+            'compare_at_price' => 'nullable|integer|min:0|max:100000000|gt:price',
             'stock'       => 'required|integer|min:0|max:1000000',
             'category'    => 'nullable|string|max:255',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:2048',
@@ -34,6 +35,8 @@ class MarketplaceProductRequest extends FormRequest
             'name.required'  => 'Nama produk wajib diisi.',
             'price.required' => 'Harga wajib diisi.',
             'price.max'      => 'Harga terlalu besar.',
+            'compare_at_price.gt' => 'Harga coret harus lebih besar dari harga jual.',
+            'compare_at_price.max' => 'Harga coret terlalu besar.',
             'stock.required' => 'Stock wajib diisi.',
             'stock.max'      => 'Stock terlalu besar.',
             'image.image'    => 'Gambar harus berupa file gambar.',
@@ -48,10 +51,13 @@ class MarketplaceProductRequest extends FormRequest
      */
     public function payload($product = null)
     {
+        $compareAt = $this->input('compare_at_price');
+
         return [
             'name'        => $this->input('name'),
             'description' => $this->input('description'),
             'price'       => (int) $this->input('price'),
+            'compare_at_price' => ($compareAt === null || $compareAt === '') ? null : (int) $compareAt,
             'stock'       => (int) $this->input('stock'),
             'category'    => $this->input('category'),
             'image'       => $this->storeImage('image', 'images/marketplace', $product->image ?? null),

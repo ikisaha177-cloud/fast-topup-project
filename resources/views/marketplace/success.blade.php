@@ -1,14 +1,15 @@
 @extends('layouts.app')
 
 @php
-    $status = $order->status;
-    $isPending = $status === 'pending';
-    $isSuccess = $status === 'success';
+    $status      = $order->status;
+    $isPending   = $order->isPending();
+    $isSuccess   = $order->isSuccess();
     $isCancelled = $status === 'cancelled';
-    $badge = $isSuccess ? ['badge-success', 'Berhasil'] : ($isPending ? ['badge-pending', 'Menunggu Pembayaran'] : ($isCancelled ? ['badge-cancelled', 'Dibatalkan'] : ['badge-failed', 'Gagal']));
+    $claimed     = $isPending && $order->isPaymentClaimed();
+    $badge       = [$order->statusBadge(), $order->statusLabel()];
 @endphp
 
-@section('title', ($isSuccess ? 'Pesanan Berhasil' : 'Pembayaran Pesanan') . ' - TopUpMarket')
+@section('title', ($isSuccess ? 'Pesanan Selesai' : 'Status Pesanan') . ' - TopUpMarket')
 
 @section('content')
 <section class="section">
@@ -23,9 +24,19 @@
 
             @if($isPending)
                 <div class="card pay-panel">
-                    <span class="badge badge-pending">Menunggu Pembayaran</span>
-                    <h1 style="font-size:24px; margin:14px 0 4px;">Selesaikan Pembayaran</h1>
-                    <p class="muted">Scan QRIS di bawah atau bayar sesuai kode, lalu tekan <strong>Sudah Bayar</strong>.</p>
+                    <span class="badge {{ $claimed ? 'badge-info' : 'badge-pending' }}">
+                        {{ $claimed ? 'Menunggu Verifikasi Admin' : 'Menunggu Pembayaran' }}
+                    </span>
+                    <h1 style="font-size:24px; margin:14px 0 4px;">
+                        {{ $claimed ? 'Pembayaran Sedang Diverifikasi' : 'Selesaikan Pembayaran' }}
+                    </h1>
+                    <p class="muted">
+                        @if($claimed)
+                            Kami sudah menerima penandaan pembayaranmu. Admin akan memverifikasi dan menyelesaikan pesanan ini secepatnya.
+                        @else
+                            Scan QRIS di bawah atau bayar sesuai kode, lalu tekan <strong>Saya Sudah Bayar</strong> agar admin dapat memverifikasi.
+                        @endif
+                    </p>
 
                     <div class="qr-box">
                         @include('partials.fake-qr', ['code' => $order->order_code])
@@ -45,23 +56,25 @@
                     @endif
 
                     <div class="mt-24">
-                        <form action="{{ route('marketplace.payment.confirm', $order->order_code) }}" method="POST" style="display:inline;">
-                            @csrf
-                            <button type="submit" class="btn btn-success btn-lg">@include('partials.icon', ['name' => 'check', 'size' => 16]) Sudah Bayar</button>
-                        </form>
+                        @unless($claimed)
+                            <form action="{{ route('marketplace.payment.claim', $order->order_code) }}" method="POST" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-success btn-lg">@include('partials.icon', ['name' => 'check', 'size' => 16]) Saya Sudah Bayar</button>
+                            </form>
+                        @endunless
                         <form action="{{ route('marketplace.payment.cancel', $order->order_code) }}" method="POST" style="display:inline;"
                               onsubmit="return confirm('Batalkan pesanan ini? Stok dikembalikan ke penjual.');">
                             @csrf
-                            <button type="submit" class="btn btn-ghost btn-lg">Batalkan</button>
+                            <button type="submit" class="btn btn-ghost btn-lg">Batalkan Pesanan</button>
                         </form>
                     </div>
                 </div>
             @elseif($isSuccess)
                 <div class="card">
                     <div class="text-center">
-                        <span class="badge badge-success">Pesanan Berhasil</span>
+                        <span class="badge badge-success">Pesanan Selesai</span>
                         <h1 style="font-size:24px; margin:14px 0 4px;">Terima Kasih!</h1>
-                        <p class="muted">Pesanan marketplace kamu sedang diproses penjual. Cek statusnya di halaman Pesanan Saya.</p>
+                        <p class="muted">Pesanan marketplace kamu sudah dikonfirmasi admin dan selesai. Cek detailnya di halaman Pesanan Saya.</p>
                     </div>
                 </div>
             @else
@@ -73,9 +86,12 @@
                             @if($isCancelled)
                                 Pesanan dibatalkan dan stok sudah dikembalikan ke penjual.
                             @else
-                                Pembayaran tidak berhasil diproses. Silakan coba lagi.
+                                Pesanan ini tidak dapat dikonfirmasi oleh admin. Stok sudah dikembalikan ke penjual.
                             @endif
                         </p>
+                        @if(! $isCancelled && $order->failure_reason)
+                            <p class="muted"><strong>Alasan:</strong> {{ $order->failure_reason }}</p>
+                        @endif
                     </div>
                 </div>
             @endif
@@ -87,6 +103,9 @@
                 <div class="summary-row"><span>Metode</span><span>{{ $order->payment_method }}</span></div>
                 <div class="summary-row"><span>Tanggal</span><span>{{ $order->created_at->format('d-m-Y H:i') }}</span></div>
                 <div class="summary-row"><span>Status</span><span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span></div>
+                @if($order->confirmed_at)
+                    <div class="summary-row"><span>Diverifikasi</span><span>{{ $order->confirmed_at->format('d-m-Y H:i') }}</span></div>
+                @endif
 
                 <h3 class="mt-24">Daftar Item</h3>
                 <div class="order-items">

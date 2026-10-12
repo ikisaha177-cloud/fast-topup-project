@@ -8,16 +8,17 @@
         <div class="page-head">
             <div>
                 <h1 class="section-title">Pesanan Marketplace</h1>
-                <p class="section-subtitle mb-0">Pantau dan verifikasi pesanan dari pembeli marketplace.</p>
+                <p class="section-subtitle mb-0">Konfirmasi pesanan pembeli. Pesanan berstatus <strong>Selesai</strong> setelah kamu setujui.</p>
             </div>
+            <a href="{{ route('admin.reports.index') }}" class="btn btn-outline">Lihat Laporan</a>
         </div>
 
         @include('partials.admin-nav')
 
 @php
-    $statusOptions = ['pending' => 'Pending', 'success' => 'Berhasil', 'cancelled' => 'Dibatalkan', 'failed' => 'Gagal'];
-    $badge = fn($s) => $s === 'success' ? 'badge-success' : ($s === 'pending' ? 'badge-pending' : ($s === 'cancelled' ? 'badge-cancelled' : 'badge-failed'));
-    $label = fn($s) => $statusOptions[$s] ?? $s;
+    $statusOptions = \App\Support\OrderStatus::labels();
+    $badge = fn($s) => \App\Support\OrderStatus::badge($s);
+    $label = fn($s) => \App\Support\OrderStatus::label($s);
 @endphp
 
 @if($summary)
@@ -28,11 +29,15 @@
         </div>
         <div class="card stat-card">
             <span class="stat-number" style="color:var(--yellow);">{{ $summary['pending'] }}</span>
-            <span class="stat-label">Pending</span>
+            <span class="stat-label">Menunggu Konfirmasi</span>
+        </div>
+        <div class="card stat-card">
+            <span class="stat-number" style="color:var(--brand);">{{ $summary['review'] }}</span>
+            <span class="stat-label">Perlu Diverifikasi</span>
         </div>
         <div class="card stat-card">
             <span class="stat-number" style="color:var(--green);">{{ $summary['success'] }}</span>
-            <span class="stat-label">Berhasil</span>
+            <span class="stat-label">Selesai</span>
         </div>
         <div class="card stat-card is-accent">
             <span class="stat-number">Rp {{ number_format($summary['revenue'], 0, ',', '.') }}</span>
@@ -63,34 +68,56 @@
                 <th>Total</th>
                 <th>Metode</th>
                 <th>Status</th>
+                <th>Pembayaran</th>
                 <th>Tanggal</th>
-                <th>Ubah Status</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
             @forelse($orders as $order)
-                <tr>
+                <tr class="{{ $order->needsReview() ? 'row-highlight' : '' }}">
                     <td class="mono">{{ $order->order_code }}</td>
                     <td>{{ $order->buyer->name ?? 'Guest' }}</td>
                     <td>{{ $order->items_count }}</td>
                     <td>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
                     <td>{{ $order->payment_method }}</td>
-                    <td><span class="badge {{ $badge($order->status) }}">{{ $label($order->status) }}</span></td>
+                    <td>
+                        <span class="badge {{ $badge($order->status) }}">{{ $label($order->status) }}</span>
+                        @if($order->status === 'failed' && $order->failure_reason)
+                            <div class="muted" style="font-size:12px;">{{ $order->failure_reason }}</div>
+                        @endif
+                    </td>
+                    <td>
+                        @if($order->isPaymentClaimed())
+                            <span class="badge badge-info">Sudah Bayar</span>
+                        @else
+                            <span class="muted">Belum</span>
+                        @endif
+                    </td>
                     <td>{{ $order->created_at->format('d-m-Y H:i') }}</td>
                     <td>
-                        <form method="POST" action="{{ route('admin.orders.status', $order->id) }}" class="inline-form">
-                            @csrf
-                            <select name="status" aria-label="Ubah status">
-                                @foreach($statusOptions as $value => $text)
-                                    <option value="{{ $value }}" {{ $order->status === $value ? 'selected' : '' }}>{{ $text }}</option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="btn btn-sm btn-outline">Simpan</button>
-                        </form>
+                        @if($order->status === 'pending')
+                            <div class="action-stack">
+                                <form method="POST" action="{{ route('admin.orders.status', $order->id) }}" class="inline-form">
+                                    @csrf
+                                    <input type="hidden" name="status" value="success">
+                                    <button type="submit" class="btn btn-sm btn-success">Konfirmasi</button>
+                                </form>
+                                <form method="POST" action="{{ route('admin.orders.status', $order->id) }}" class="inline-form"
+                                      onsubmit="return confirm('Tandai pesanan ini gagal? Stok akan dikembalikan ke penjual.');">
+                                    @csrf
+                                    <input type="hidden" name="status" value="failed">
+                                    <input type="text" name="failure_reason" class="input-sm" placeholder="Alasan (opsional)" maxlength="255" aria-label="Alasan gagal">
+                                    <button type="submit" class="btn btn-sm btn-danger">Gagal</button>
+                                </form>
+                            </div>
+                        @else
+                            <span class="muted">—</span>
+                        @endif
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="8" class="text-center muted">Tidak ada pesanan yang cocok.</td></tr>
+                <tr><td colspan="9" class="text-center muted">Tidak ada pesanan yang cocok.</td></tr>
             @endforelse
         </tbody>
     </table>

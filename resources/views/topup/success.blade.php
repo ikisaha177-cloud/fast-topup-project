@@ -1,14 +1,15 @@
 @extends('layouts.app')
 
 @php
-    $status = $transaction->status;
-    $isPending = $status === 'pending';
-    $isSuccess = $status === 'success';
+    $status      = $transaction->status;
+    $isPending   = $transaction->isPending();
+    $isSuccess   = $transaction->isSuccess();
     $isCancelled = $status === 'cancelled';
-    $badge = $isSuccess ? ['badge-success', 'Berhasil'] : ($isPending ? ['badge-pending', 'Menunggu Pembayaran'] : ($isCancelled ? ['badge-cancelled', 'Dibatalkan'] : ['badge-failed', 'Gagal']));
+    $claimed     = $isPending && $transaction->isPaymentClaimed();
+    $badge       = [$transaction->statusBadge(), $transaction->statusLabel()];
 @endphp
 
-@section('title', ($isSuccess ? 'Pembayaran Berhasil' : 'Pembayaran') . ' - TopUpMarket')
+@section('title', ($isSuccess ? 'Pesanan Selesai' : 'Status Pesanan') . ' - TopUpMarket')
 
 @section('content')
 <section class="section">
@@ -25,9 +26,19 @@
 
             @if($isPending)
                 <div class="card pay-panel">
-                    <span class="badge badge-pending">Menunggu Pembayaran</span>
-                    <h1 style="font-size:24px; margin:14px 0 4px;">Selesaikan Pembayaran</h1>
-                    <p class="muted">Scan QRIS di bawah atau bayar sesuai kode, lalu tekan <strong>Sudah Bayar</strong>.</p>
+                    <span class="badge {{ $claimed ? 'badge-info' : 'badge-pending' }}">
+                        {{ $claimed ? 'Menunggu Verifikasi Admin' : 'Menunggu Pembayaran' }}
+                    </span>
+                    <h1 style="font-size:24px; margin:14px 0 4px;">
+                        {{ $claimed ? 'Pembayaran Sedang Diverifikasi' : 'Selesaikan Pembayaran' }}
+                    </h1>
+                    <p class="muted">
+                        @if($claimed)
+                            Kami sudah menerima penandaan pembayaranmu. Admin akan memverifikasi dan menyelesaikan pesanan ini secepatnya.
+                        @else
+                            Scan QRIS di bawah atau bayar sesuai kode, lalu tekan <strong>Saya Sudah Bayar</strong> agar admin dapat memverifikasi.
+                        @endif
+                    </p>
 
                     <div class="qr-box">
                         @include('partials.fake-qr', ['code' => $transaction->transaction_code])
@@ -47,23 +58,25 @@
                     @endif
 
                     <div class="mt-24">
-                        <form action="{{ route('topup.payment.confirm', $transaction->transaction_code) }}" method="POST" style="display:inline;">
-                            @csrf
-                            <button type="submit" class="btn btn-success btn-lg">@include('partials.icon', ['name' => 'check', 'size' => 16]) Sudah Bayar</button>
-                        </form>
+                        @unless($claimed)
+                            <form action="{{ route('topup.payment.claim', $transaction->transaction_code) }}" method="POST" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-success btn-lg">@include('partials.icon', ['name' => 'check', 'size' => 16]) Saya Sudah Bayar</button>
+                            </form>
+                        @endunless
                         <form action="{{ route('topup.payment.cancel', $transaction->transaction_code) }}" method="POST" style="display:inline;"
                               onsubmit="return confirm('Batalkan pesanan ini? Stok akan dikembalikan.');">
                             @csrf
-                            <button type="submit" class="btn btn-ghost btn-lg">Batalkan</button>
+                            <button type="submit" class="btn btn-ghost btn-lg">Batalkan Pesanan</button>
                         </form>
                     </div>
                 </div>
             @elseif($isSuccess)
                 <div class="card">
                     <div class="text-center">
-                        <span class="badge badge-success">Pembayaran Berhasil</span>
-                        <h1 style="font-size:24px; margin:14px 0 4px;">Top Up Diproses</h1>
-                        <p class="muted">Terima kasih! Pesanan top up kamu sudah masuk antrian proses.</p>
+                        <span class="badge badge-success">Pesanan Selesai</span>
+                        <h1 style="font-size:24px; margin:14px 0 4px;">Top Up Berhasil</h1>
+                        <p class="muted">Terima kasih! Pesanan top up kamu sudah dikonfirmasi admin dan selesai diproses.</p>
                     </div>
                 </div>
             @else
@@ -75,9 +88,12 @@
                             @if($isCancelled)
                                 Pesanan ini sudah dibatalkan dan stok dikembalikan. Silakan buat pesanan baru bila masih berminat.
                             @else
-                                Pembayaran tidak berhasil diproses. Silakan coba lagi atau gunakan metode lain.
+                                Pesanan ini tidak dapat dikonfirmasi oleh admin. Stok sudah dikembalikan; silakan buat pesanan baru.
                             @endif
                         </p>
+                        @if(! $isCancelled && $transaction->failure_reason)
+                            <p class="muted"><strong>Alasan:</strong> {{ $transaction->failure_reason }}</p>
+                        @endif
                     </div>
                 </div>
             @endif
@@ -92,6 +108,9 @@
                 <div class="summary-row"><span>Metode</span><span>{{ $transaction->payment_method }}</span></div>
                 <div class="summary-row"><span>Tanggal</span><span>{{ $transaction->created_at->format('d-m-Y H:i') }}</span></div>
                 <div class="summary-row"><span>Status</span><span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span></div>
+                @if($transaction->confirmed_at)
+                    <div class="summary-row"><span>Diverifikasi</span><span>{{ $transaction->confirmed_at->format('d-m-Y H:i') }}</span></div>
+                @endif
                 <div class="summary-total">
                     <span>Total</span>
                     <span class="amount">Rp {{ number_format($transaction->amount, 0, ',', '.') }}</span>

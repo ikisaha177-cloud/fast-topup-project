@@ -62,7 +62,7 @@
                             <span class="rating"><span class="star">★</span> 4.9</span>
                         </div>
                         <div class="product-name">{{ $product->name }}</div>
-                        <div class="product-price">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
+                        @include('partials.marketplace-price', ['product' => $product])
                         <div class="product-meta">
                             <span class="seller-line">Stok: {{ $product->stock }}</span>
                             <span class="muted">{{ $product->seller->name ?? '-' }}</span>

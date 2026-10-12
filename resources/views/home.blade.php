@@ -70,10 +70,17 @@
                     <strong>Pesanan Kamu</strong>
                     <span class="chip-ok">● Berhasil</span>
                 </div>
-                <div class="float-row"><span>Game</span><span>Mobile Legends</span></div>
-                <div class="float-row"><span>Nominal</span><span>500 Diamonds</span></div>
-                <div class="float-row"><span>Metode</span><span>QRIS</span></div>
-                <div class="float-row"><span>Total</span><span style="color:var(--cyan)">Rp 145.000</span></div>
+                @if($heroProduct)
+                    <div class="float-row"><span>Game</span><span>{{ $heroProduct->gameTitle->name ?? 'Game' }}</span></div>
+                    <div class="float-row"><span>Nominal</span><span>{{ $heroProduct->name }}</span></div>
+                    <div class="float-row"><span>Metode</span><span>QRIS</span></div>
+                    <div class="float-row"><span>Total</span><span class="float-total">Rp {{ number_format($heroProduct->price, 0, ',', '.') }}</span></div>
+                @else
+                    <div class="float-row"><span>Game</span><span>Mobile Legends</span></div>
+                    <div class="float-row"><span>Nominal</span><span>500 Diamonds</span></div>
+                    <div class="float-row"><span>Metode</span><span>QRIS</span></div>
+                    <div class="float-row"><span>Total</span><span class="float-total">Rp 145.000</span></div>
+                @endif
             </div>
 
             <div class="float-mini m2">
@@ -159,9 +166,7 @@
                         <span class="rating"><span class="star">★</span> 4.9</span>
                     </div>
                     <div class="product-name">{{ $product->name }}</div>
-                    <div class="price-tag">
-                        <span class="product-price">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
-                    </div>
+                    @include('partials.marketplace-price', ['product' => $product])
                     <div class="product-meta">
                         <span class="seller-line">Stok: {{ $product->stock }}</span>
                         <span class="muted">{{ $product->seller->name ?? 'Penjual' }}</span>
@@ -344,7 +349,7 @@
                 <a href="{{ route('marketplace.index') }}" class="btn btn-outline btn-lg">Cek Marketplace</a>
             </div>
             @guest
-                <p class="muted mt-16">Belum punya akun? <a href="{{ route('register') }}">Daftar gratis</a> dalam 10 detik.</p>
+                <p class="muted mt-16">Belum punya akun? <a href="{{ route('register') }}">Daftar sekarang</a> dalam 10 detik.</p>
             @endguest
         </div>
     </div>

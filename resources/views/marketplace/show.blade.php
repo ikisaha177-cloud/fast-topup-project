@@ -21,7 +21,10 @@
                         <span class="rating"><span class="star">★</span> 4.9 <span class="muted" style="font-weight:600;">(terjual)</span></span>
                     </div>
                     <h1 style="font-size:26px; margin:8px 0;">{{ $product->name }}</h1>
-                    <div class="product-price" style="font-size:30px;">Rp {{ number_format($product->price, 0, ',', '.') }}</div>
+                    @include('partials.marketplace-price', ['product' => $product, 'size' => 'lg'])
+                    @if($product->hasDiscount())
+                        <p class="muted mt-8" style="margin-bottom:0;">Hemat Rp {{ number_format($product->discountAmount(), 0, ',', '.') }} dari harga normal.</p>
+                    @endif
 
                     <div class="pill-row">
                         <span class="pill">Stok <strong>{{ $product->stock }}</strong></span>
@@ -63,7 +66,7 @@
                         @endif
                     @else
                         <a href="{{ route('login') }}" class="btn btn-primary btn-block btn-lg mt-24">Login untuk Membeli</a>
-                        <p class="muted mt-8 text-center">Belum punya akun? <a href="{{ route('register') }}">Daftar gratis</a>.</p>
+                        <p class="muted mt-8 text-center">Belum punya akun? <a href="{{ route('register') }}">Daftar sekarang</a>.</p>
                     @endauth
                 </div>
             </div>
@@ -87,7 +90,7 @@
                             <span class="rating"><span class="star">★</span> 4.9</span>
                         </div>
                         <div class="product-name">{{ $item->name }}</div>
-                        <div class="product-price">Rp {{ number_format($item->price, 0, ',', '.') }}</div>
+                        @include('partials.marketplace-price', ['product' => $item])
                         <div class="product-meta">
                             <span class="seller-line">Stok: {{ $item->stock }}</span>
                         </div>
