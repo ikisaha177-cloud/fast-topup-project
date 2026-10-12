@@ -7,14 +7,12 @@
     <div class="container">
         <div class="page-head">
             <div>
-                <h1 class="section-title">Profile</h1>
-                <p class="section-subtitle mb-0">Kelola data akun kamu.</p>
-            </div>
-            <div class="actions">
-                <a href="{{ route('transactions.index') }}" class="btn btn-ghost">Riwayat Top Up</a>
-                <a href="{{ route('orders.index') }}" class="btn btn-outline">Pesanan Saya</a>
+                <h1 class="section-title">Profil &amp; Pengaturan</h1>
+                <p class="section-subtitle mb-0">Kelola data akun dan keamanan kamu.</p>
             </div>
         </div>
+
+        @include('partials.account-tabs')
 
         <div class="card" style="display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-bottom:20px;">
             <span class="nav-avatar" style="width:56px; height:56px; font-size:24px;">

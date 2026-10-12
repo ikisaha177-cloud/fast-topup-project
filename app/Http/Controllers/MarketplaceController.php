@@ -53,7 +53,12 @@ class MarketplaceController extends Controller
             ->orderBy('category')
             ->pluck('category');
 
-        return view('marketplace.index', compact('products', 'categories', 'search', 'category'));
+        // Statistik banner = total katalog aktif (tidak terpengaruh filter).
+        $totalProducts = MarketplaceProduct::where('is_active', true)
+            ->where('stock', '>', 0)
+            ->count();
+
+        return view('marketplace.index', compact('products', 'categories', 'search', 'category', 'totalProducts'));
     }
 
     /**

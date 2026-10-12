@@ -38,6 +38,24 @@
             <path d="M6 3.5h12v17l-2.5-1.6L13 20.5l-1-1.6-1 1.6-2.5-1.6L6 20.5z"/>
             <path d="M9.5 8.5h5M9.5 12h5"/>
             @break
+        @case('user')
+            <circle cx="12" cy="8" r="3.6"/>
+            <path d="M4.8 20.2a7.2 7.2 0 0 1 14.4 0"/>
+            @break
+        @case('grid')
+            <rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/>
+            <rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/>
+            <rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/>
+            <rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/>
+            @break
+        @case('logout')
+            <path d="M15 4.5h3.5A1.5 1.5 0 0 1 20 6v12a1.5 1.5 0 0 1-1.5 1.5H15"/>
+            <path d="M10 16.5 14.5 12 10 7.5"/>
+            <path d="M14.5 12H4"/>
+            @break
+        @case('chevron-down')
+            <path d="m6 9.5 6 6 6-6"/>
+            @break
         @case('search')
             <circle cx="11" cy="11" r="6.5"/>
             <path d="m16 16 4.5 4.5"/>

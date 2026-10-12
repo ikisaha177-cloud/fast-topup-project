@@ -10,8 +10,9 @@
                 <h1 class="section-title">Pesanan Saya</h1>
                 <p class="section-subtitle mb-0">Riwayat pesanan marketplace milik akunmu.</p>
             </div>
-            <a href="{{ route('transactions.index') }}" class="btn btn-ghost">Riwayat Top Up</a>
         </div>
+
+        @include('partials.account-tabs')
 
         <div class="chips" style="margin-bottom:20px;">
             <a href="{{ route('orders.index') }}" class="chip {{ $status ? '' : 'active' }}">Semua</a>

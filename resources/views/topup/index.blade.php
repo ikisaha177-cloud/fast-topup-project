@@ -11,11 +11,11 @@
 
         <div class="banner-stats">
             <div class="banner-stat">
-                <strong>{{ $games->count() }}</strong>
+                <strong>{{ $totalGames }}</strong>
                 <span>Game tersedia</span>
             </div>
             <div class="banner-stat">
-                <strong>{{ $games->sum('products_count') }}</strong>
+                <strong>{{ $totalNominals }}</strong>
                 <span>Pilihan nominal</span>
             </div>
             <div class="banner-stat">
@@ -28,12 +28,24 @@
 
 <section class="section">
     <div class="container">
-        @php $isAdmin = auth()->check() && auth()->user()->isAdmin(); @endphp
+        <div class="toolbar">
+            <form method="GET" action="{{ route('topup.index') }}" class="searchbar">
+                <input type="text" name="q" value="{{ $search }}" placeholder="Cari game favoritmu…">
+            </form>
+            <div class="chips">
+                <a href="{{ route('topup.index', $search ? ['q' => $search] : []) }}"
+                   class="chip {{ $category ? '' : 'active' }}">Semua</a>
+                @foreach($categories as $cat)
+                    <a href="{{ route('topup.index', array_filter(['q' => $search, 'kategori' => $cat])) }}"
+                       class="chip {{ $category === $cat ? 'active' : '' }}">{{ $cat }}</a>
+                @endforeach
+            </div>
+        </div>
 
         <div class="grid grid-4">
             @forelse($games as $index => $game)
                 <div class="card card-hover game-card reveal d{{ ($index % 4) + 1 }}">
-                    @if($index === 0)
+                    @if($index === 0 && !$search && !$category)
                         <span class="game-badge is-hot">Terpopuler</span>
                     @elseif($game->products_count >= 4)
                         <span class="game-badge">Populer</span>
@@ -42,14 +54,18 @@
                     @include('partials.game-icon', ['game' => $game])
                     <h3 class="card-title">{{ $game->name }}</h3>
                     <p class="muted">{{ $game->category ?? 'Game' }} &middot; {{ $game->products_count }} nominal</p>
-                    @if($isAdmin)
-                        <a href="{{ route('admin.products.index') }}" class="btn btn-outline btn-block mt-16">Kelola Produk</a>
-                    @else
-                        <a href="{{ route('topup.show', $game->slug) }}" class="btn btn-primary btn-block mt-16">Top Up</a>
-                    @endif
+                    <a href="{{ route('topup.show', $game->slug) }}" class="btn btn-primary btn-block mt-16">Top Up</a>
                 </div>
             @empty
-                <div class="empty">Belum ada game aktif.</div>
+                <div class="empty">
+                    <span class="empty-icon">@include('partials.icon', ['name' => 'search', 'size' => 34])</span>
+                    Tidak ada game yang cocok.
+                    @if($search || $category)
+                        <div class="mt-16">
+                            <a href="{{ route('topup.index') }}" class="btn btn-outline">Hapus Filter</a>
+                        </div>
+                    @endif
+                </div>
             @endforelse
         </div>
     </div>

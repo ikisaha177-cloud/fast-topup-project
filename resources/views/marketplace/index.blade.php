@@ -11,7 +11,7 @@
 
         <div class="banner-stats">
             <div class="banner-stat">
-                <strong>{{ $products->total() }}</strong>
+                <strong>{{ $totalProducts }}</strong>
                 <span>Produk tersedia</span>
             </div>
             <div class="banner-stat">

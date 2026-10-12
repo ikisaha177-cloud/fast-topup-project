@@ -235,7 +235,7 @@
 </section>
 
 {{-- ============ CARA KERJA ============ --}}
-<section class="section" style="padding-top:0;">
+<section class="section" id="cara-kerja" style="padding-top:0;">
     <div class="container">
         <div class="text-center reveal" style="margin-bottom:30px;">
             <span class="eyebrow" style="justify-content:center;">Cara Kerja</span>

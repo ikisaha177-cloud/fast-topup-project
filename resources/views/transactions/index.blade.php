@@ -10,8 +10,9 @@
                 <h1 class="section-title">Riwayat Transaksi</h1>
                 <p class="section-subtitle mb-0">Semua transaksi top up milik akunmu.</p>
             </div>
-            <a href="{{ route('orders.index') }}" class="btn btn-ghost">Pesanan Saya</a>
         </div>
+
+        @include('partials.account-tabs')
 
         @php
             $statusOptions = ['pending' => 'Menunggu Bayar', 'success' => 'Berhasil', 'cancelled' => 'Dibatalkan', 'failed' => 'Gagal'];

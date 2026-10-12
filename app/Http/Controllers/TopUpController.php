@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Transaction;
 use App\Services\TransactionService;
 use App\Support\PaymentMethods;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -23,16 +24,39 @@ class TopUpController extends Controller
     }
 
     /**
-     * Daftar semua game yang aktif.
+     * Daftar semua game yang aktif (search + filter kategori).
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search   = trim((string) $request->query('q', ''));
+        $category = $request->query('kategori');
+
         $games = GameTitle::where('is_active', true)
             ->withCount('products')
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhere('category', 'like', "%{$search}%");
+                });
+            })
+            ->when($category, function ($query) use ($category) {
+                $query->where('category', $category);
+            })
             ->orderBy('name')
             ->get();
 
-        return view('topup.index', compact('games'));
+        $categories = GameTitle::where('is_active', true)
+            ->whereNotNull('category')
+            ->distinct()
+            ->orderBy('category')
+            ->pluck('category');
+
+        // Statistik banner = total katalog (tidak terpengaruh filter),
+        // supaya angka di hero tetap merepresentasikan keseluruhan toko.
+        $totalGames    = GameTitle::where('is_active', true)->count();
+        $totalNominals = Product::where('is_active', true)->count();
+
+        return view('topup.index', compact('games', 'categories', 'search', 'category', 'totalGames', 'totalNominals'));
     }
 
     /**

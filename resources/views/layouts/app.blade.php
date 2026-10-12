@@ -38,35 +38,58 @@
             <div class="nav-links" id="navLinks">
                 @if($user)
                     @if($isAdmin)
-                        <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.*') ? 'active' : '' }}">Dashboard Admin</a>
-                        <a href="{{ route('home') }}">Lihat Toko</a>
-                        <span class="nav-user">
-                            <span class="nav-avatar">{{ $initial }}</span>
-                            {{ $user->name }}
-                            <span class="role-badge">Admin</span>
-                        </span>
-                        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                            @csrf
-                            <button type="submit" class="btn btn-ghost btn-sm">Logout</button>
-                        </form>
+                        <a href="{{ route('home') }}" target="_blank" rel="noopener">Lihat Toko</a>
+                        <div class="nav-dropdown" data-dropdown>
+                            <button type="button" class="nav-user" aria-haspopup="true" aria-expanded="false">
+                                <span class="nav-avatar">{{ $initial }}</span>
+                                {{ $user->name }}
+                                <span class="role-badge">Admin</span>
+                                <span class="nav-chevron" aria-hidden="true">@include('partials.icon', ['name' => 'chevron-down', 'size' => 14])</span>
+                            </button>
+                            <div class="nav-menu">
+                                <div class="nav-menu-head">
+                                    <strong>{{ $user->name }}</strong>
+                                    <span>{{ $user->email }}</span>
+                                </div>
+                                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">@include('partials.icon', ['name' => 'grid', 'size' => 16]) Dashboard Admin</a>
+                                <a href="{{ route('admin.transactions.index') }}">@include('partials.icon', ['name' => 'receipt', 'size' => 16]) Verifikasi Pembayaran</a>
+                                <a href="{{ route('admin.orders.index') }}">@include('partials.icon', ['name' => 'cart', 'size' => 16]) Pesanan Masuk</a>
+                                <div class="nav-menu-sep"></div>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="nav-menu-logout">@include('partials.icon', ['name' => 'logout', 'size' => 16]) Keluar</button>
+                                </form>
+                            </div>
+                        </div>
                     @else
                         <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
                         <a href="{{ route('topup.index') }}" class="{{ request()->routeIs('topup.*') ? 'active' : '' }}">Top Up</a>
-                        <a href="{{ route('marketplace.index') }}" class="{{ request()->routeIs('marketplace.*') ? 'active' : '' }}">Marketplace</a>
-                        <a href="{{ route('cart.index') }}" class="{{ request()->routeIs('cart.*') ? 'active' : '' }}">
-                            Keranjang @if($cartCount > 0)<span class="cart-count">{{ $cartCount }}</span>@endif
+                        <a href="{{ route('marketplace.index') }}" class="{{ request()->routeIs('marketplace.*') && !request()->routeIs('marketplace.checkout*') && !request()->routeIs('marketplace.success') ? 'active' : '' }}">Marketplace</a>
+                        <a href="{{ route('cart.index') }}" class="nav-cart {{ request()->routeIs('cart.*') ? 'active' : '' }}" aria-label="Keranjang belanja">
+                            @include('partials.icon', ['name' => 'cart', 'size' => 19])
+                            @if($cartCount > 0)<span class="cart-count">{{ $cartCount }}</span>@endif
                         </a>
-                        <a href="{{ route('transactions.index') }}" class="{{ request()->routeIs('transactions.*') ? 'active' : '' }}">Transaksi</a>
-                        <a href="{{ route('orders.index') }}" class="{{ request()->routeIs('orders.*') ? 'active' : '' }}">Pesanan</a>
-                        <a href="{{ route('profile') }}" class="{{ request()->routeIs('profile') ? 'active' : '' }}">Profile</a>
-                        <span class="nav-user">
-                            <span class="nav-avatar">{{ $initial }}</span>
-                            {{ $user->name }}
-                        </span>
-                        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                            @csrf
-                            <button type="submit" class="btn btn-ghost btn-sm">Logout</button>
-                        </form>
+                        <div class="nav-dropdown" data-dropdown>
+                            <button type="button" class="nav-user" aria-haspopup="true" aria-expanded="false">
+                                <span class="nav-avatar">{{ $initial }}</span>
+                                {{ $user->name }}
+                                <span class="nav-chevron" aria-hidden="true">@include('partials.icon', ['name' => 'chevron-down', 'size' => 14])</span>
+                            </button>
+                            <div class="nav-menu">
+                                <div class="nav-menu-head">
+                                    <strong>{{ $user->name }}</strong>
+                                    <span>{{ $user->email }}</span>
+                                </div>
+                                <a href="{{ route('transactions.index') }}" class="{{ request()->routeIs('transactions.*') ? 'active' : '' }}">@include('partials.icon', ['name' => 'receipt', 'size' => 16]) Riwayat Transaksi</a>
+                                <a href="{{ route('orders.index') }}" class="{{ request()->routeIs('orders.*') ? 'active' : '' }}">@include('partials.icon', ['name' => 'cart', 'size' => 16]) Pesanan Saya</a>
+                                <a href="{{ route('profile') }}" class="{{ request()->routeIs('profile') ? 'active' : '' }}">@include('partials.icon', ['name' => 'user', 'size' => 16]) Profil &amp; Pengaturan</a>
+                                <div class="nav-menu-sep"></div>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="nav-menu-logout">@include('partials.icon', ['name' => 'logout', 'size' => 16]) Keluar</button>
+                                </form>
+                            </div>
+                        </div>
                     @endif
                 @else
                     <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
@@ -148,9 +171,9 @@
 
                 <div class="footer-col">
                     <h4>Bantuan</h4>
+                    <a href="{{ route('home') }}#cara-kerja">Cara Top Up</a>
                     <a href="{{ route('home') }}#faq">Pertanyaan Umum</a>
-                    <a href="{{ route('marketplace.index') }}">Cara Belanja</a>
-                    <a href="{{ route('topup.index') }}">Cara Top Up</a>
+                    <a href="mailto:support@topupmarket.test">Hubungi Kami</a>
                 </div>
             </div>
 
@@ -173,6 +196,42 @@
                     toggle.textContent = open ? '✕' : '☰';
                 });
             }
+
+            // Dropdown akun pengguna
+            var dropdowns = document.querySelectorAll('[data-dropdown]');
+            dropdowns.forEach(function (dd) {
+                var trigger = dd.querySelector('.nav-user');
+                if (!trigger) return;
+
+                trigger.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    var willOpen = !dd.classList.contains('open');
+                    dropdowns.forEach(function (other) {
+                        other.classList.remove('open');
+                        var t = other.querySelector('.nav-user');
+                        if (t) t.setAttribute('aria-expanded', 'false');
+                    });
+                    dd.classList.toggle('open', willOpen);
+                    trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                });
+            });
+
+            document.addEventListener('click', function () {
+                dropdowns.forEach(function (dd) {
+                    dd.classList.remove('open');
+                    var t = dd.querySelector('.nav-user');
+                    if (t) t.setAttribute('aria-expanded', 'false');
+                });
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key !== 'Escape') return;
+                dropdowns.forEach(function (dd) {
+                    dd.classList.remove('open');
+                    var t = dd.querySelector('.nav-user');
+                    if (t) t.setAttribute('aria-expanded', 'false');
+                });
+            });
 
             // Reveal on scroll
             var revealEls = document.querySelectorAll('.reveal');
