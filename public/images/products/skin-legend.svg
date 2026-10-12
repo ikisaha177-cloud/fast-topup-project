@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Ilustrasi skin legend">
+  <rect width="480" height="300" fill="#3a2a00"/>
+  <path d="M240 62l44 24-10 60-34 20-34-20-10-60z" fill="#f59e0b" opacity="0.3"/>
+  <path d="M196 96l-24-30 34 6 20-30 14 24 14-24 20 30 34-6-24 30z" fill="#f5c451"/>
+  <circle cx="240" cy="140" r="46" fill="#fcd34d"/>
+  <path d="M186 258c0-34 24-60 54-60s54 26 54 60z" fill="#f59e0b"/>
+  <rect x="296" y="80" width="132" height="34" rx="17" fill="#f5c451"/>
+  <text x="362" y="104" fill="#3a2a00" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle">LEGEND</text>
+</svg>

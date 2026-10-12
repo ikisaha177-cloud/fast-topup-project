@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Ilustrasi battle pass">
+  <rect width="480" height="300" fill="#08323a"/>
+  <path d="M120 110h240a10 10 0 0 1 10 10v110a10 10 0 0 1-10 10H120a10 10 0 0 1-10-10V120a10 10 0 0 1 10-10z" fill="#35d6ff"/>
+  <path d="M110 110l0 0 240 0" />
+  <circle cx="110" cy="165" r="12" fill="#08323a"/>
+  <circle cx="370" cy="165" r="12" fill="#08323a"/>
+  <path d="M240 60l16 34 38 5-27 27 6 38-33-18-33 18 6-38-27-27 38-5z" fill="#f5c451"/>
+  <text x="240" y="205" fill="#08323a" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700" text-anchor="middle">BATTLE PASS</text>
+</svg>

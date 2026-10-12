@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Ilustrasi akun game level tinggi">
+  <rect width="480" height="300" fill="#2a1f00"/>
+  <path d="M180 92l-26-32 38 6 22-32 16 26 16-26 22 32 38-6-26 32z" fill="#f5c451"/>
+  <circle cx="240" cy="150" r="52" fill="#fcd34d"/>
+  <path d="M214 150a26 22 0 0 0 52 0z" fill="#3a2a00" opacity="0.25"/>
+  <circle cx="220" cy="138" r="7" fill="#3a2a00"/>
+  <circle cx="260" cy="138" r="7" fill="#3a2a00"/>
+  <path d="M172 264c0-38 30-64 68-64s68 26 68 64z" fill="#f59e0b"/>
+  <rect x="300" y="214" width="130" height="36" rx="18" fill="#f5c451"/>
+  <text x="365" y="239" fill="#3a2a00" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle">SULTAN</text>
+</svg>

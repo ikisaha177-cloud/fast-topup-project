@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Gambar produk belum tersedia">
+  <rect width="480" height="300" fill="#101b3f"/>
+  <g fill="none" stroke="#2f6bff" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="150" y="110" width="180" height="130" rx="12"/>
+    <path d="M150 145h180"/>
+    <path d="M240 110v130"/>
+  </g>
+  <circle cx="200" cy="90" r="34" fill="none" stroke="#35d6ff" stroke-width="6"/>
+  <path d="M120 240h240" stroke="#2f6bff" stroke-width="6" stroke-linecap="round"/>
+</svg>

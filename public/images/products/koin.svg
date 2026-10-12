@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Ilustrasi koin in-game">
+  <rect width="480" height="300" fill="#2a1f00"/>
+  <g fill="#f59e0b" stroke="#f5c451" stroke-width="6">
+    <ellipse cx="240" cy="212" rx="86" ry="30"/>
+    <ellipse cx="240" cy="184" rx="86" ry="30"/>
+    <ellipse cx="240" cy="156" rx="86" ry="30"/>
+    <ellipse cx="240" cy="128" rx="86" ry="30"/>
+  </g>
+  <ellipse cx="240" cy="122" rx="86" ry="30" fill="#fcd34d" stroke="#f5c451" stroke-width="6"/>
+  <text x="240" y="132" fill="#3a2a00" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" text-anchor="middle">$</text>
+</svg>

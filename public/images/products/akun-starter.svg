@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Ilustrasi akun game starter">
+  <rect width="480" height="300" fill="#0f1f3d"/>
+  <circle cx="240" cy="140" r="54" fill="#2f6bff"/>
+  <circle cx="222" cy="128" r="8" fill="#dbe6ff"/>
+  <circle cx="258" cy="128" r="8" fill="#dbe6ff"/>
+  <path d="M216 158a28 22 0 0 0 48 0" fill="none" stroke="#dbe6ff" stroke-width="7" stroke-linecap="round"/>
+  <path d="M164 264c0-40 34-66 76-66s76 26 76 66z" fill="#1b4fd6"/>
+  <rect x="300" y="212" width="130" height="36" rx="18" fill="#35d6ff"/>
+  <text x="365" y="237" fill="#0b1437" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle">STARTER</text>
+</svg>

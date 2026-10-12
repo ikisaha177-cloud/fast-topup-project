@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-label="Ilustrasi voucher game Rp 50.000">
+  <rect width="480" height="300" fill="#0b1437"/>
+  <rect x="70" y="70" width="340" height="200" rx="18" fill="#2f6bff"/>
+  <rect x="70" y="70" width="340" height="52" rx="18" fill="#1b4fd6"/>
+  <rect x="70" y="104" width="340" height="18" fill="#1b4fd6"/>
+  <circle cx="360" cy="150" r="30" fill="#35d6ff"/>
+  <path d="M348 150l8 9 18-20" fill="none" stroke="#0b1437" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="100" y="180" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">VOUCHER</text>
+  <text x="100" y="230" fill="#dbe6ff" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700">Rp 50.000</text>
+</svg>
