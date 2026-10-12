@@ -4,10 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Transaction;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TransactionStatusChanged extends Notification
+class TransactionStatusChanged extends Notification implements ShouldQueue
 {
     use Queueable;
 
