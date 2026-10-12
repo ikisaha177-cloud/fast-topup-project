@@ -555,6 +555,8 @@ class AdminCrudTest extends TestCase
             route('admin.marketplace.edit', $mkt->id),
             route('admin.transactions.index'),
             route('admin.orders.index'),
+            route('admin.reports.index'),
+            route('admin.reports.export'),
             route('admin.activity.index'),
         ];
 

@@ -43,12 +43,13 @@ class NotificationTest extends TestCase
         Notification::assertSentTo($user, WelcomeNotification::class);
     }
 
-    /** Konfirmasi pembayaran top up mengirim notifikasi status. */
+    /** Konfirmasi admin atas pesanan top up mengirim notifikasi status. */
     public function test_topup_confirm_sends_notification()
     {
         Notification::fake();
 
         $user = User::factory()->create();
+        $admin = User::where('role', 'admin')->first();
         $game = GameTitle::first();
         $product = Product::where('game_title_id', $game->id)->first();
 
@@ -61,18 +62,19 @@ class NotificationTest extends TestCase
 
         $transaction = Transaction::first();
 
-        $this->actingAs($user)
-            ->post(route('topup.payment.confirm', $transaction->transaction_code));
+        $this->actingAs($admin)
+            ->post(route('admin.transactions.status', $transaction->id), ['status' => 'success']);
 
         Notification::assertSentTo($user, TransactionStatusChanged::class);
     }
 
-    /** Konfirmasi pembayaran marketplace mengirim notifikasi status. */
+    /** Konfirmasi admin atas pesanan marketplace mengirim notifikasi status. */
     public function test_marketplace_confirm_sends_notification()
     {
         Notification::fake();
 
         $user = User::factory()->create();
+        $admin = User::where('role', 'admin')->first();
         $product = MarketplaceProduct::where('stock', '>', 0)->first();
 
         $this->actingAs($user)->post(route('marketplace.add-to-cart', $product->slug), ['quantity' => 1]);
@@ -80,8 +82,8 @@ class NotificationTest extends TestCase
 
         $order = \App\Models\MarketplaceOrder::first();
 
-        $this->actingAs($user)
-            ->post(route('marketplace.payment.confirm', $order->order_code));
+        $this->actingAs($admin)
+            ->post(route('admin.orders.status', $order->id), ['status' => 'success']);
 
         Notification::assertSentTo($user, OrderStatusChanged::class);
     }

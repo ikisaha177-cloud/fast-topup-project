@@ -8,30 +8,53 @@ Aplikasi web **top up game** dan **marketplace item game** berbasis Laravel 8. P
 - Top up game: pilih game → isi User ID / Server ID → pilih nominal → bayar.
 - Katalog game dengan **pencarian + filter kategori** (konsisten dengan marketplace).
 - Marketplace: katalog dengan pencarian, filter kategori, dan pagination.
+- **Harga coret & badge diskon** pada produk marketplace (kolom `compare_at_price`), jadi diskon tampil sebagai potongan eksplisit, bukan sekadar angka.
 - Keranjang (session) dengan validasi stok di server.
-- Pembayaran simulasi: `pending` → `success` (konfirmasi) atau `cancelled` (batal, stok dikembalikan).
+- **Alur konfirmasi pesanan**: pembeli memesan → menandai **"Saya Sudah Bayar"** → status **Menunggu Konfirmasi**; admin memverifikasi lalu menandai **Selesai** atau **Gagal** (stok otomatis dikembalikan). Pembeli juga bisa **membatalkan** pesanan selama masih menunggu konfirmasi.
 - **Gateway pembayaran pluggable**: `simulation` (default, tanpa jaringan) atau **Midtrans Snap** — cukup ubah `PAYMENT_DRIVER` di `.env`.
 - **Webhook pembayaran** dengan verifikasi signature + **idempotency** (event duplikat dari gateway tidak diproses dua kali).
-- Halaman pembayaran dengan kode QR (simulasi), instruksi, dan tombol konfirmasi/batal. Bila gateway mengembalikan URL pembayaran, tombol "Buka Halaman Pembayaran" muncul otomatis.
+- Halaman status pesanan dengan kode QR (simulasi), instruksi, dan tombol aksi yang menyesuaikan keadaan (belum bayar / menunggu verifikasi / selesai / gagal + alasan). Bila gateway mengembalikan URL pembayaran, tombol "Buka Halaman Pembayaran" muncul otomatis.
 - Area **Akun Saya** dengan sub-navigasi tab: Riwayat Top Up, Pesanan Saya, dan Profil.
 - Riwayat transaksi top up dan pesanan marketplace, lengkap dengan filter status.
 - Profil: ubah nama/password, statistik belanja.
 - **Notifikasi email** untuk status pembayaran (top up & marketplace) dan email selamat datang — dikirim lewat **antrean (queue)** agar tidak memblokir request.
 - **Lupa password**: reset password lewat email.
 
+### Alur Status Pesanan
+
+Status dijaga satu pintu di `App\Support\OrderStatus` + `TransactionService` / `MarketplaceOrderService`, sehingga stok, jejak verifikasi, dan notifikasi selalu konsisten.
+
+```
+pending ──(admin konfirmasi)──▶ success    (pesanan berhasil & selesai)
+   │
+   ├────(admin tolak)─────────▶ failed     (gagal, stok dikembalikan)
+   │
+   └────(pembeli batal)───────▶ cancelled  (stok dikembalikan)
+```
+
+- `success`, `failed`, dan `cancelled` bersifat **terminal** — tidak bisa diubah lagi.
+- Setiap keputusan admin mencatat `confirmed_at` + `confirmed_by` (audit trail) dan `failure_reason` bila ditolak.
+
 ### Navigasi & Penempatan Fitur
 - Navbar pembeli ringkas: **Home · Top Up · Marketplace**, ikon **keranjang** dengan badge jumlah, dan **menu akun** (dropdown) berisi Riwayat Transaksi, Pesanan Saya, Profil, serta Keluar.
-- Navbar admin: tautan **Lihat Toko** (buka tab baru) + menu akun berisi Dashboard, Verifikasi Pembayaran, Pesanan Masuk, dan Keluar. Navigasi antar-halaman admin tetap tersedia lewat sub-nav di dalam panel.
+- Navbar admin: tautan **Lihat Toko** (buka tab baru) + menu akun berisi Dashboard, Verifikasi Pembayaran, Pesanan Masuk, Laporan Penjualan, dan Keluar. Navigasi antar-halaman admin tetap tersedia lewat sub-nav di dalam panel.
 - Sub-navigasi akun (`partials/account-tabs`) menyatukan Riwayat/Pesanan/Profil sebagai satu section.
 - Dropdown dapat diakses keyboard (klik untuk buka, `Esc` untuk tutup) dan otomatis menumpuk pada tampilan mobile.
 
 ### Admin
-- Dashboard: KPI, grafik pendapatan 7 hari, transaksi & pesanan terbaru.
+- Dashboard: KPI, grafik pendapatan 7 hari, transaksi & pesanan terbaru, serta penanda **Perlu Diverifikasi**.
+- **Konfirmasi pesanan**: tombol **Konfirmasi** / **Gagal** (+ alasan opsional) langsung pada baris transaksi/pesanan yang masih menunggu; baris yang sudah ditandai "Sudah Bayar" disorot.
+- **Laporan harian / bulanan / tahunan**: ringkasan KPI, grafik pendapatan, tabel rincian per periode, sebaran status, game & produk terlaris, breakdown metode pembayaran, filter status, dan **ekspor CSV**.
 - CRUD game (dengan upload icon) dan produk top up.
-- Kelola produk marketplace (upload gambar/edit/nonaktifkan/hapus).
+- Kelola produk marketplace (upload gambar/edit/nonaktifkan/hapus), termasuk harga jual & harga coret.
 - Pantau transaksi & pesanan: pencarian, filter status, pagination, ubah status manual.
 - **Log aktivitas** (audit trail) untuk setiap aksi penting admin.
 - Penghapusan dijaga: game/produk yang sudah punya transaksi tidak bisa dihapus (riwayat tetap utuh).
+
+### Tampilan
+- **Design system terang & bersih** (`public/css/style.css`) bergaya toko top up modern: permukaan putih, kartu bersih, aksen emas/oranye, dan sampul game sebagai fokus utama.
+- Ikon SVG inline (tanpa font emoji) agar tampil konsisten di semua OS.
+- Animasi *reveal on scroll* sebagai progressive enhancement (halaman tetap tampil penuh bila JS mati).
 
 ### Keamanan
 - **Policy-based authorization** (`TransactionPolicy`, `MarketplaceOrderPolicy`) + Gate `manage-catalog` untuk area admin.
@@ -102,6 +125,8 @@ Untuk produksi ganti `MAIL_*` di `.env` ke SMTP provider (Mailtrap/Mailgun/Postm
 
 ## Akun Demo
 
+Akun ini hanya untuk pengembangan/testing — **tidak ditampilkan di UI** agar halaman login tetap bersih.
+
 | Peran   | Email                    | Password |
 |---------|--------------------------|----------|
 | Admin   | admin123@gmail.com       | admin123 |
@@ -115,7 +140,7 @@ Untuk produksi ganti `MAIL_*` di `.env` ke SMTP provider (Mailtrap/Mailgun/Postm
 php vendor/bin/phpunit
 ```
 
-Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **105 test / 395 assertion** hijau, mencakup alur checkout, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), serta pencarian & filter katalog.
+Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **125 test / 476 assertion** hijau, mencakup alur checkout, konfirmasi pesanan oleh admin (berhasil/gagal + pengembalian stok), laporan harian/bulanan/tahunan & ekspor CSV, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), serta pencarian & filter katalog.
 
 ## CI
 
@@ -130,9 +155,9 @@ app/Http/Requests/            # Validasi terpusat (FormRequest)
 app/Models/                   # Eloquent models
 app/Notifications/            # Email notifikasi (queue)
 app/Policies/                 # Otorisasi berbasis policy
-app/Services/                 # Logika transisi status + stok
+app/Services/                 # Logika transisi status + stok + laporan
 app/Services/Payment/         # Abstraksi gateway + processor webhook
-app/Support/                  # Helper (metode bayar, audit log)
+app/Support/                  # Helper (status pesanan, metode bayar, audit log)
 config/payment.php            # Konfigurasi gateway pembayaran
 database/migrations/          # Skema database
 database/seeders/             # Data awal

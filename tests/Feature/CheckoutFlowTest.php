@@ -50,9 +50,10 @@ class CheckoutFlowTest extends TestCase
         $this->assertSame($stockBefore - 1, $product->fresh()->stock);
     }
 
-    public function test_topup_confirm_marks_success()
+    public function test_topup_claim_keeps_pending_until_admin_confirms()
     {
         $user = User::factory()->create();
+        $admin = User::where('role', 'admin')->first();
         $game = GameTitle::first();
         $product = Product::where('game_title_id', $game->id)->first();
 
@@ -67,11 +68,24 @@ class CheckoutFlowTest extends TestCase
 
         $transaction = Transaction::first();
 
+        // Pembeli menandai sudah bayar -> status tetap pending.
         $this->actingAs($user)
-            ->post(route('topup.payment.confirm', $transaction->transaction_code))
+            ->post(route('topup.payment.claim', $transaction->transaction_code))
             ->assertRedirect(route('topup.success', $transaction->transaction_code));
 
-        $this->assertSame('success', $transaction->fresh()->status);
+        $transaction->refresh();
+        $this->assertSame('pending', $transaction->status);
+        $this->assertNotNull($transaction->payment_claimed_at);
+
+        // Admin yang menentukan hasil akhirnya.
+        $this->actingAs($admin)
+            ->post(route('admin.transactions.status', $transaction->id), ['status' => 'success'])
+            ->assertRedirect();
+
+        $transaction->refresh();
+        $this->assertSame('success', $transaction->status);
+        $this->assertNotNull($transaction->confirmed_at);
+        $this->assertSame($admin->id, $transaction->confirmed_by);
     }
 
     public function test_topup_cancel_restores_stock()
