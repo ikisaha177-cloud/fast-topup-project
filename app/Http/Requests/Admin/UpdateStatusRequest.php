@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Support\OrderStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
@@ -16,15 +17,17 @@ class UpdateStatusRequest extends FormRequest
     public function rules()
     {
         return [
-            'status' => ['required', Rule::in(['pending', 'success', 'cancelled', 'failed'])],
+            'status'         => ['required', Rule::in(OrderStatus::all())],
+            'failure_reason' => ['nullable', 'string', 'max:255'],
         ];
     }
 
     public function messages()
     {
         return [
-            'status.required' => 'Status wajib dipilih.',
-            'status.in'       => 'Status tidak valid.',
+            'status.required'         => 'Status wajib dipilih.',
+            'status.in'               => 'Status tidak valid.',
+            'failure_reason.max'      => 'Alasan gagal maksimal 255 karakter.',
         ];
     }
 }

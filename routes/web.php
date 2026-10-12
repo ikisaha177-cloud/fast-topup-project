@@ -51,7 +51,7 @@ Route::middleware('not-admin')->group(function () {
     Route::post('/top-up/checkout', [TopUpController::class, 'storeCheckout'])->name('topup.checkout.store');
     Route::post('/top-up/checkout/pay', [TopUpController::class, 'pay'])->name('topup.pay');
     Route::get('/top-up/success/{code}', [TopUpController::class, 'success'])->name('topup.success');
-    Route::post('/top-up/payment/{code}/confirm', [TopUpController::class, 'confirmPayment'])->name('topup.payment.confirm');
+    Route::post('/top-up/payment/{code}/claim', [TopUpController::class, 'claimPayment'])->name('topup.payment.claim');
     Route::post('/top-up/payment/{code}/cancel', [TopUpController::class, 'cancelPayment'])->name('topup.payment.cancel');
     Route::get('/top-up/{slug}', [TopUpController::class, 'show'])->name('topup.show');
 });
@@ -64,8 +64,8 @@ Route::post('/marketplace/checkout', [MarketplaceController::class, 'processChec
     ->middleware(['auth', 'not-admin'])->name('marketplace.checkout.process');
 Route::get('/marketplace/success/{code}', [MarketplaceController::class, 'success'])
     ->middleware(['auth', 'not-admin'])->name('marketplace.success');
-Route::post('/marketplace/payment/{code}/confirm', [MarketplaceController::class, 'confirmPayment'])
-    ->middleware(['auth', 'not-admin'])->name('marketplace.payment.confirm');
+Route::post('/marketplace/payment/{code}/claim', [MarketplaceController::class, 'claimPayment'])
+    ->middleware(['auth', 'not-admin'])->name('marketplace.payment.claim');
 Route::post('/marketplace/payment/{code}/cancel', [MarketplaceController::class, 'cancelPayment'])
     ->middleware(['auth', 'not-admin'])->name('marketplace.payment.cancel');
 Route::get('/marketplace/{slug}', [MarketplaceController::class, 'show'])->name('marketplace.show');
@@ -123,6 +123,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/transactions/{id}/status', [Admin\TransactionController::class, 'updateStatus'])->name('transactions.status');
     Route::get('/orders', [Admin\OrderController::class, 'index'])->name('orders.index');
     Route::post('/orders/{id}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.status');
+
+    /* Laporan Harian / Bulanan / Tahunan */
+    Route::get('/reports', [Admin\ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/export', [Admin\ReportController::class, 'export'])->name('reports.export');
 
     /* Log Aktivitas */
     Route::get('/activity', [Admin\ActivityLogController::class, 'index'])->name('activity.index');

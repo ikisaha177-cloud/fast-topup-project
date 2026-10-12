@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\UpdateStatusRequest;
 use App\Models\Transaction;
 use App\Services\TransactionService;
 use App\Support\ActivityLogger;
+use App\Support\OrderStatus;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -48,6 +49,7 @@ class TransactionController extends Controller
         $summary = [
             'total'     => Transaction::count(),
             'pending'   => Transaction::where('status', 'pending')->count(),
+            'review'    => Transaction::where('status', 'pending')->whereNotNull('payment_claimed_at')->count(),
             'success'   => Transaction::where('status', 'success')->count(),
             'cancelled' => Transaction::whereIn('status', ['cancelled', 'failed'])->count(),
             'revenue'   => Transaction::where('status', 'success')->sum('amount'),
@@ -58,7 +60,7 @@ class TransactionController extends Controller
 
     /**
      * Ubah status transaksi (verifikasi manual oleh admin).
-     * Pakai service agar stock + notifikasi ikut konsisten.
+     * Pakai service agar stock, jejak verifikasi, & notifikasi ikut konsisten.
      */
     public function updateStatus(UpdateStatusRequest $request, $id)
     {
@@ -66,14 +68,24 @@ class TransactionController extends Controller
 
         $this->authorize('updateStatus', $transaction);
 
-        $changed = $this->transactions->transitionTo($transaction, $request->validated()['status']);
+        $data  = $request->validated();
+        $label = OrderStatus::label($data['status']);
+
+        $changed = $this->transactions->transitionTo($transaction, $data['status'], true, [
+            'actor_id' => auth()->id(),
+            'reason'   => $data['failure_reason'] ?? null,
+        ]);
 
         if (! $changed) {
             return back()->with('success', 'Status transaksi ' . $transaction->transaction_code . ' tidak berubah.');
         }
 
-        ActivityLogger::log('transaction.status', 'Mengubah status transaksi ' . $transaction->transaction_code . ' menjadi ' . $request->validated()['status'] . '.', $transaction);
+        ActivityLogger::log(
+            'transaction.status',
+            'Transaksi ' . $transaction->transaction_code . ' ditandai "' . $label . '" oleh admin.',
+            $transaction
+        );
 
-        return back()->with('success', 'Status transaksi ' . $transaction->transaction_code . ' diubah menjadi ' . $request->validated()['status'] . '.');
+        return back()->with('success', 'Transaksi ' . $transaction->transaction_code . ' berhasil ditandai "' . $label . '".');
     }
 }

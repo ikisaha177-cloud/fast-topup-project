@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Transaction;
 use App\Services\Payment\PaymentGatewayManager;
 use App\Services\TransactionService;
+use App\Support\ActivityLogger;
 use App\Support\PaymentMethods;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -238,18 +239,25 @@ class TopUpController extends Controller
     }
 
     /**
-     * Konfirmasi pembayaran (simulasi gateway): pending -> success.
+     * Tandai pembayaran sudah dilakukan (simulasi): pembeli menekan
+     * "Saya Sudah Bayar". Status tetap pending sampai admin memverifikasi.
      */
-    public function confirmPayment($code)
+    public function claimPayment($code)
     {
         $transaction = $this->findOwnedTransaction($code);
 
-        if ($transaction->status === 'pending') {
-            $this->transactions->transitionTo($transaction, 'success');
+        $claimed = $this->transactions->claimPayment($transaction);
+
+        if ($claimed) {
+            ActivityLogger::log(
+                'transaction.claim',
+                'Pembeli menandai transaksi ' . $transaction->transaction_code . ' sudah dibayar.',
+                $transaction
+            );
         }
 
         return redirect()->route('topup.success', $code)
-            ->with('success', 'Pembayaran diterima. Pesananmu diproses.');
+            ->with('success', 'Terima kasih! Pembayaranmu sudah kami terima dan sedang menunggu verifikasi admin.');
     }
 
     /**

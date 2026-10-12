@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\UpdateStatusRequest;
 use App\Models\MarketplaceOrder;
 use App\Services\MarketplaceOrderService;
 use App\Support\ActivityLogger;
+use App\Support\OrderStatus;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -48,6 +49,7 @@ class OrderController extends Controller
         $summary = [
             'total'     => MarketplaceOrder::count(),
             'pending'   => MarketplaceOrder::where('status', 'pending')->count(),
+            'review'    => MarketplaceOrder::where('status', 'pending')->whereNotNull('payment_claimed_at')->count(),
             'success'   => MarketplaceOrder::where('status', 'success')->count(),
             'revenue'   => MarketplaceOrder::where('status', 'success')->sum('total_amount'),
         ];
@@ -57,7 +59,7 @@ class OrderController extends Controller
 
     /**
      * Ubah status pesanan marketplace (verifikasi manual oleh admin).
-     * Pakai service agar stock + notifikasi ikut konsisten.
+     * Pakai service agar stock, jejak verifikasi, & notifikasi ikut konsisten.
      */
     public function updateStatus(UpdateStatusRequest $request, $id)
     {
@@ -65,14 +67,24 @@ class OrderController extends Controller
 
         $this->authorize('updateStatus', $order);
 
-        $changed = $this->orders->transitionTo($order, $request->validated()['status']);
+        $data  = $request->validated();
+        $label = OrderStatus::label($data['status']);
+
+        $changed = $this->orders->transitionTo($order, $data['status'], true, [
+            'actor_id' => auth()->id(),
+            'reason'   => $data['failure_reason'] ?? null,
+        ]);
 
         if (! $changed) {
             return back()->with('success', 'Status pesanan ' . $order->order_code . ' tidak berubah.');
         }
 
-        ActivityLogger::log('order.status', 'Mengubah status pesanan ' . $order->order_code . ' menjadi ' . $request->validated()['status'] . '.', $order);
+        ActivityLogger::log(
+            'order.status',
+            'Pesanan ' . $order->order_code . ' ditandai "' . $label . '" oleh admin.',
+            $order
+        );
 
-        return back()->with('success', 'Status pesanan ' . $order->order_code . ' diubah menjadi ' . $request->validated()['status'] . '.');
+        return back()->with('success', 'Pesanan ' . $order->order_code . ' berhasil ditandai "' . $label . '".');
     }
 }

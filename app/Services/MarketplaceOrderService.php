@@ -5,27 +5,32 @@ namespace App\Services;
 use App\Models\MarketplaceOrder;
 use App\Models\MarketplaceProduct;
 use App\Notifications\OrderStatusChanged;
+use App\Support\OrderStatus;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Perpindahan status pesanan marketplace + pengembalian stock + notifikasi.
+ * Perpindahan status pesanan marketplace + pengembalian stock + jejak
+ * verifikasi + notifikasi.
+ *
+ * Alur:
+ *   pending --admin konfirmasi--> success   (pesanan selesai)
+ *   pending --admin tolak-------> failed    (stok tiap item dikembalikan)
+ *   pending --pembeli batal-----> cancelled (stok tiap item dikembalikan)
  */
 class MarketplaceOrderService
 {
     /**
      * Ubah status pesanan marketplace secara aman.
      *
-     * - pending -> success  : pembayaran diterima.
-     * - pending -> cancelled/failed: stock tiap item dikembalikan ke penjual.
-     *
      * @param  \App\Models\MarketplaceOrder  $order
      * @param  string                        $status
      * @param  bool                          $notify
+     * @param  array<string, mixed>          $context  actor_id (admin), reason (alasan gagal)
      * @return bool  true bila status berubah
      */
-    public function transitionTo(MarketplaceOrder $order, string $status, bool $notify = true)
+    public function transitionTo(MarketplaceOrder $order, string $status, bool $notify = true, array $context = [])
     {
-        if (! in_array($status, ['pending', 'success', 'cancelled', 'failed'], true)) {
+        if (! in_array($status, OrderStatus::all(), true)) {
             return false;
         }
 
@@ -33,10 +38,14 @@ class MarketplaceOrderService
             return false;
         }
 
-        $shouldRestoreStock = in_array($status, ['cancelled', 'failed'], true)
-            && $order->status === 'pending';
+        if (! OrderStatus::canTransition($order->status, $status)) {
+            return false;
+        }
 
-        DB::transaction(function () use ($order, $status, $shouldRestoreStock) {
+        $shouldRestoreStock = in_array($status, [OrderStatus::FAILED, OrderStatus::CANCELLED], true)
+            && $order->status === OrderStatus::PENDING;
+
+        DB::transaction(function () use ($order, $status, $shouldRestoreStock, $context) {
             if ($shouldRestoreStock) {
                 foreach ($order->items as $item) {
                     $product = MarketplaceProduct::whereKey($item->marketplace_product_id)
@@ -49,10 +58,7 @@ class MarketplaceOrderService
                 }
             }
 
-            $order->update([
-                'status'  => $status,
-                'paid_at' => $status === 'success' ? ($order->paid_at ?: now()) : $order->paid_at,
-            ]);
+            $order->update($this->attributesFor($order, $status, $context));
         });
 
         if ($notify) {
@@ -60,6 +66,51 @@ class MarketplaceOrderService
         }
 
         return true;
+    }
+
+    /**
+     * Tandai pembeli sudah membayar (masih menunggu verifikasi admin).
+     *
+     * @return bool  true bila penandaan baru saja dicatat
+     */
+    public function claimPayment(MarketplaceOrder $order)
+    {
+        if (! $order->isPending() || $order->isPaymentClaimed()) {
+            return false;
+        }
+
+        $order->update(['payment_claimed_at' => now()]);
+
+        return true;
+    }
+
+    /**
+     * Susun atribut yang ikut tersimpan saat status berubah.
+     *
+     * @param  array<string, mixed>  $context
+     * @return array<string, mixed>
+     */
+    private function attributesFor(MarketplaceOrder $order, string $status, array $context)
+    {
+        $attributes = ['status' => $status];
+
+        if ($status === OrderStatus::SUCCESS) {
+            $attributes['paid_at']        = $order->paid_at ?: now();
+            $attributes['confirmed_at']   = $order->confirmed_at ?: now();
+            $attributes['confirmed_by']   = $context['actor_id'] ?? $order->confirmed_by;
+            $attributes['failure_reason'] = null;
+        }
+
+        if ($status === OrderStatus::FAILED) {
+            $attributes['confirmed_at'] = $order->confirmed_at ?: now();
+            $attributes['confirmed_by'] = $context['actor_id'] ?? $order->confirmed_by;
+
+            if (! empty($context['reason'])) {
+                $attributes['failure_reason'] = $context['reason'];
+            }
+        }
+
+        return $attributes;
     }
 
     /**
@@ -74,10 +125,10 @@ class MarketplaceOrderService
         }
 
         $headline = [
-            'success'   => 'Pembayaran diterima, pesananmu diproses penjual',
-            'cancelled' => 'Pesanan dibatalkan',
-            'failed'    => 'Pembayaran gagal',
-            'pending'   => 'Pesanan menunggu pembayaran',
+            OrderStatus::SUCCESS   => 'Pesananmu sudah dikonfirmasi admin dan selesai',
+            OrderStatus::CANCELLED => 'Pesanan dibatalkan',
+            OrderStatus::FAILED    => 'Pesanan gagal dikonfirmasi admin',
+            OrderStatus::PENDING   => 'Pesanan menunggu konfirmasi admin',
         ][$status] ?? 'Status pesanan diperbarui';
 
         $buyer->notify(new OrderStatusChanged($order, $headline));

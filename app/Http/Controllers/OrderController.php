@@ -16,7 +16,7 @@ class OrderController extends Controller
 
         $orders = MarketplaceOrder::where('user_id', auth()->id())
             ->withCount('items')
-            ->when(in_array($status, ['pending', 'success', 'cancelled'], true), function ($query) use ($status) {
+            ->when(in_array($status, ['pending', 'success', 'failed', 'cancelled'], true), function ($query) use ($status) {
                 $query->where('status', $status);
             })
             ->latest()

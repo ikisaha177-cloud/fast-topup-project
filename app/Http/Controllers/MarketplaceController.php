@@ -9,6 +9,7 @@ use App\Models\MarketplaceOrder;
 use App\Models\MarketplaceProduct;
 use App\Services\MarketplaceOrderService;
 use App\Services\Payment\PaymentGatewayManager;
+use App\Support\ActivityLogger;
 use App\Support\PaymentMethods;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -304,18 +305,25 @@ class MarketplaceController extends Controller
     }
 
     /**
-     * Konfirmasi pembayaran (simulasi gateway): pending -> success.
+     * Tandai pembayaran sudah dilakukan: pembeli menekan "Saya Sudah Bayar".
+     * Status tetap pending sampai admin memverifikasi.
      */
-    public function confirmPayment($code)
+    public function claimPayment($code)
     {
         $order = $this->findOwnedOrder($code);
 
-        if ($order->status === 'pending') {
-            $this->orders->transitionTo($order, 'success');
+        $claimed = $this->orders->claimPayment($order);
+
+        if ($claimed) {
+            ActivityLogger::log(
+                'order.claim',
+                'Pembeli menandai pesanan ' . $order->order_code . ' sudah dibayar.',
+                $order
+            );
         }
 
         return redirect()->route('marketplace.success', $code)
-            ->with('success', 'Pembayaran diterima. Pesananmu sedang diproses penjual.');
+            ->with('success', 'Terima kasih! Pembayaranmu sudah kami terima dan sedang menunggu verifikasi admin.');
     }
 
     /**
