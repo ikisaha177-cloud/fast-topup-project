@@ -207,6 +207,47 @@ class PaymentWebhookTest extends TestCase
             ->assertJson(['reason' => 'reference-not-found']);
     }
 
+    public function test_webhook_with_new_event_id_but_same_status_reports_unchanged()
+    {
+        [$transaction] = $this->pendingTransaction();
+
+        // Event pertama: pending -> success.
+        $this->postWebhook([
+            'event_id'           => 'evt-1',
+            'order_id'           => $transaction->transaction_code,
+            'transaction_status' => 'settlement',
+        ])->assertOk()->assertJson(['reason' => 'status-updated']);
+
+        // Event BARU (id berbeda) dengan status sama: tidak mengubah apa pun.
+        $this->postWebhook([
+            'event_id'           => 'evt-2',
+            'order_id'           => $transaction->transaction_code,
+            'transaction_status' => 'settlement',
+        ])->assertOk()->assertJson(['reason' => 'status-unchanged']);
+
+        $this->assertSame('success', $transaction->fresh()->status);
+        $this->assertSame(2, PaymentWebhookEvent::count());
+    }
+
+    public function test_duplicate_event_is_rejected_even_without_precheck()
+    {
+        // Membuktikan idempotency bertumpu pada unique constraint (aman
+        // terhadap dua request yang datang hampir bersamaan), bukan sekadar
+        // SELECT EXISTS sebelumnya.
+        [$transaction] = $this->pendingTransaction();
+
+        $payload = [
+            'event_id'           => 'evt-race',
+            'order_id'           => $transaction->transaction_code,
+            'transaction_status' => 'settlement',
+        ];
+
+        $this->postWebhook($payload)->assertOk()->assertJson(['reason' => 'status-updated']);
+        $this->postWebhook($payload)->assertOk()->assertJson(['reason' => 'duplicate']);
+
+        $this->assertSame(1, PaymentWebhookEvent::where('event_id', 'evt-race')->count());
+    }
+
     public function test_webhook_does_not_require_csrf_token()
     {
         // Route webhook berada di luar grup "web" (tanpa CSRF/session).

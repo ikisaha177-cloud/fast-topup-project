@@ -115,7 +115,7 @@ Untuk produksi ganti `MAIL_*` di `.env` ke SMTP provider (Mailtrap/Mailgun/Postm
 php vendor/bin/phpunit
 ```
 
-Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **103 test / 384 assertion** hijau, mencakup alur checkout, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), serta pencarian & filter katalog.
+Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **105 test / 395 assertion** hijau, mencakup alur checkout, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), serta pencarian & filter katalog.
 
 ## CI
 
