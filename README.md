@@ -1,4 +1,4 @@
-# TopUpMarket
+# GantinoID Store
 
 Aplikasi web **top up game** dan **marketplace item game** berbasis Laravel 8. Pembeli bisa top up nominal game (Mobile Legends, Free Fire, PUBG Mobile, Valorant) dan membeli produk marketplace (voucher, skin, akun, koin). Admin mengelola katalog, memantau transaksi, memverifikasi pembayaran, dan melihat log aktivitas.
 
@@ -121,7 +121,7 @@ Default `.env.example` memakai `QUEUE_CONNECTION=database`, jadi jalankan worker
 php artisan queue:work --tries=3
 ```
 
-Untuk produksi, jaga worker tetap hidup dengan Supervisor (contoh: `deploy/supervisor-topupmarket.conf`).
+Untuk produksi, jaga worker tetap hidup dengan Supervisor (contoh: `deploy/supervisor-gantinoid.conf`).
 Jika tidak ingin menjalankan worker, set `QUEUE_CONNECTION=sync` di `.env` (email dikirim langsung, request sedikit lebih lambat).
 
 ### Payment gateway (opsional)

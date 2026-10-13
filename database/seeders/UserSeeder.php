@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
         // Admin utama (login: admin123@gmail.com / admin123)
         $admin = User::firstOrCreate(
             ['email' => 'admin123@gmail.com'],
-            ['name' => 'Admin TopUpMarket', 'password' => Hash::make('admin123')]
+            ['name' => 'Admin GantinoID', 'password' => Hash::make('admin123')]
         );
         $admin->role = 'admin';
         $admin->save();

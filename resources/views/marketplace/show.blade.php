@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $product->name . ' - Marketplace - TopUpMarket')
+@section('title', $product->name . ' - Marketplace - GantinoID Store')
 
 @php
     // Gambar produk untuk meta share: pakai berkas yang benar-benar ada.
@@ -16,8 +16,8 @@
 @endphp
 
 @section('og_type', 'product')
-@section('og_title', $product->name . ' — TopUpMarket')
-@section('og_description', \Illuminate\Support\Str::limit($product->description ?: 'Item game berkualitas dengan pembayaran aman di TopUpMarket.', 150))
+@section('og_title', $product->name . ' — GantinoID Store')
+@section('og_description', \Illuminate\Support\Str::limit($product->description ?: 'Item game berkualitas dengan pembayaran aman di GantinoID Store.', 150))
 @section('og_image', $shareImage)
 
 @section('meta')
@@ -26,7 +26,7 @@
     '@context' => 'https://schema.org',
     '@type' => 'Product',
     'name' => $product->name,
-    'description' => $product->description ?: 'Item game di TopUpMarket.',
+    'description' => $product->description ?: 'Item game di GantinoID Store.',
     'image' => $shareImage,
     'category' => $product->category ?: 'Item Game',
     'offers' => [

@@ -22,7 +22,7 @@ class RoleSeparationTest extends TestCase
     {
         $admin = User::updateOrCreate(
             ['email' => 'admin123@gmail.com'],
-            ['name' => 'Admin TopUpMarket', 'password' => Hash::make('admin123')]
+            ['name' => 'Admin GantinoID', 'password' => Hash::make('admin123')]
         );
         $admin->role = 'admin';
         $admin->save();

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Pesanan ' . $order->order_code . ' - TopUpMarket')
+@section('title', 'Detail Pesanan ' . $order->order_code . ' - GantinoID Store')
 
 @php
     $badge = [$order->statusBadge(), $order->statusLabel()];

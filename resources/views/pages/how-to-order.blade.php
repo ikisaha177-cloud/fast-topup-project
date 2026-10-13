@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Cara Order - TopUpMarket')
-@section('og_title', 'Cara Order di TopUpMarket')
+@section('title', 'Cara Order - GantinoID Store')
+@section('og_title', 'Cara Order di GantinoID Store')
 @section('og_description', 'Panduan langkah demi langkah top up game dan belanja marketplace: pilih produk, bayar, unggah bukti, lalu tunggu verifikasi admin.')
 
 @section('content')
@@ -84,7 +84,7 @@
             <div class="card summary-card">
                 <h3>Butuh bantuan?</h3>
                 <p class="muted">Tim kami siap membantu pada hari kerja.</p>
-                <a href="mailto:support@topupmarket.test" class="btn btn-outline btn-block">Email Support</a>
+                <a href="mailto:support@gantinoid.test" class="btn btn-outline btn-block">Email Support</a>
                 <a href="{{ route('home') }}#faq" class="btn btn-ghost btn-block mt-8">Pertanyaan Umum</a>
                 <p class="muted mt-16 mb-0" style="font-size:12.5px;">Terakhir diperbarui: {{ \Carbon\Carbon::parse($updatedAt)->translatedFormat('d F Y') }}</p>
             </div>

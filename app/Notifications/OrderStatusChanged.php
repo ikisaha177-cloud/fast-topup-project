@@ -37,7 +37,7 @@ class OrderStatusChanged extends Notification implements ShouldQueue
         })->implode("\n");
 
         return (new MailMessage())
-            ->subject('TopUpMarket - ' . $this->headline . ' (' . $order->order_code . ')')
+            ->subject('GantinoID Store - ' . $this->headline . ' (' . $order->order_code . ')')
             ->greeting('Halo ' . ($notifiable->name ?? 'Pengguna') . '!')
             ->line($this->headline . '.')
             ->line('Kode Pesanan: ' . $order->order_code)
@@ -46,6 +46,6 @@ class OrderStatusChanged extends Notification implements ShouldQueue
             ->line('Item pesanan:')
             ->line($items ?: '-')
             ->action('Lihat Pesanan', route('orders.show', $order->order_code))
-            ->line('Terima kasih telah berbelanja di TopUpMarket.');
+            ->line('Terima kasih telah berbelanja di GantinoID Store.');
     }
 }

@@ -34,7 +34,7 @@ class TransactionStatusChanged extends Notification implements ShouldQueue
         $transaction = $this->transaction;
 
         return (new MailMessage())
-            ->subject('TopUpMarket - ' . $this->headline . ' (' . $transaction->transaction_code . ')')
+            ->subject('GantinoID Store - ' . $this->headline . ' (' . $transaction->transaction_code . ')')
             ->greeting('Halo ' . ($notifiable->name ?? 'Pengguna') . '!')
             ->line($this->headline . '.')
             ->line('Kode Transaksi: ' . $transaction->transaction_code)
@@ -43,6 +43,6 @@ class TransactionStatusChanged extends Notification implements ShouldQueue
             ->line('Jumlah: Rp ' . number_format((int) $transaction->amount, 0, ',', '.'))
             ->line('Status: ' . strtoupper($transaction->status))
             ->action('Lihat Transaksi', route('transactions.show', $transaction->transaction_code))
-            ->line('Terima kasih telah menggunakan TopUpMarket.');
+            ->line('Terima kasih telah menggunakan GantinoID Store.');
     }
 }

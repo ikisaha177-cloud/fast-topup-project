@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Halaman Kedaluwarsa - TopUpMarket')
+@section('title', 'Halaman Kedaluwarsa - GantinoID Store')
 
 @section('content')
 <section class="section">

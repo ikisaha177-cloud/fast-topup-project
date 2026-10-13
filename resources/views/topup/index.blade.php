@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Top Up Game - TopUpMarket')
+@section('title', 'Top Up Game - GantinoID Store')
 
 @section('content')
 <section class="page-banner">

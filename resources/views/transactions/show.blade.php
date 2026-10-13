@@ -5,7 +5,7 @@
     $badge = [$transaction->statusBadge(), $transaction->statusLabel()];
 @endphp
 
-@section('title', 'Detail Transaksi - TopUpMarket')
+@section('title', 'Detail Transaksi - GantinoID Store')
 
 @section('content')
 <section class="section">

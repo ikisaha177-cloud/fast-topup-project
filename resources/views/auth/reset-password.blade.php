@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Reset Password - TopUpMarket')
+@section('title', 'Reset Password - GantinoID Store')
 
 @section('content')
 <section class="section">

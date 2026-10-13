@@ -10,7 +10,7 @@
     $badge       = [$order->statusBadge(), $order->statusLabel()];
 @endphp
 
-@section('title', ($isSuccess ? 'Pesanan Selesai' : 'Status Pesanan') . ' - TopUpMarket')
+@section('title', ($isSuccess ? 'Pesanan Selesai' : 'Status Pesanan') . ' - GantinoID Store')
 
 @section('content')
 <section class="section">

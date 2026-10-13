@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="TopUpMarket — top up game dan marketplace voucher, skin, dan akun game dengan pembayaran QRIS, e-wallet, dan transfer bank.">
+    <meta name="description" content="GantinoID Store — digital top-up game dan marketplace voucher, skin, serta akun game dengan pembayaran QRIS, e-wallet, dan transfer bank.">
     <meta name="theme-color" content="#0b0a10">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
-    <link rel="apple-touch-icon" href="{{ asset('favicon.svg') }}">
-    <title>@yield('title', 'TopUpMarket — Top Up Game & Marketplace')</title>
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-mark.svg') }}">
+    <title>@yield('title', 'GantinoID Store — Digital Top-Up & Marketplace')</title>
 
     {{-- Open Graph / Twitter Card: tampilan rapi saat dibagikan. --}}
-    <meta property="og:site_name" content="TopUpMarket">
+    <meta property="og:site_name" content="GantinoID Store">
     <meta property="og:type" content="@yield('og_type', 'website')">
-    <meta property="og:title" content="@yield('og_title', 'TopUpMarket — Top Up Game & Marketplace')">
-    <meta property="og:description" content="@yield('og_description', 'Top up game dan marketplace voucher, skin, dan akun game. Bayar dengan QRIS, e-wallet, atau transfer bank.')">
+    <meta property="og:title" content="@yield('og_title', 'GantinoID Store — Digital Top-Up & Marketplace')">
+    <meta property="og:description" content="@yield('og_description', 'Digital top-up game dan marketplace voucher, skin, serta akun game. Bayar dengan QRIS, e-wallet, atau transfer bank.')">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:image" content="@yield('og_image', asset('images/placeholder-product.svg'))">
     <meta name="twitter:card" content="summary_large_image">
@@ -44,10 +44,10 @@
     <nav class="navbar">
         <div class="navbar-inner">
             <a href="{{ route('home') }}" class="brand">
-                <span class="brand-logo">T</span>
+                <img class="brand-logo" src="{{ asset('images/logo-mark.svg') }}" alt="" width="38" height="38">
                 <span>
-                    TopUpMarket
-                    <span class="brand-sub">Top Up &amp; Marketplace</span>
+                    GantinoID Store
+                    <span class="brand-sub">Digital Top-Up &amp; Marketplace</span>
                 </span>
             </a>
 
@@ -154,11 +154,11 @@
             <div class="footer-cols">
                 <div class="footer-col">
                     <div class="footer-brand">
-                        <span class="brand-logo">T</span>
-                        <span class="footer-title">TopUpMarket</span>
+                        <img class="brand-logo" src="{{ asset('images/logo-mark.svg') }}" alt="" width="34" height="34">
+                        <span class="footer-title">GantinoID Store</span>
                     </div>
                     <p class="muted" style="margin:0 0 14px;">
-                        Top up game, voucher, skin, dan akun game — cepat, aman, dan transparan.
+                        Digital top-up game, voucher, skin, dan akun game — cepat, aman, dan transparan.
                     </p>
                     <div class="pill-row" style="margin-top:0;">
                         <span class="pill">QRIS</span>
@@ -195,7 +195,7 @@
                     <h4>Bantuan</h4>
                     <a href="{{ route('page.how-to-order') }}">Cara Order</a>
                     <a href="{{ route('home') }}#faq">Pertanyaan Umum</a>
-                    <a href="mailto:support@topupmarket.test">Hubungi Kami</a>
+                    <a href="mailto:support@gantinoid.test">Hubungi Kami</a>
                 </div>
 
                 <div class="footer-col">
@@ -207,7 +207,7 @@
             </div>
 
             <div class="footer-bottom">
-                <span>&copy; {{ date('Y') }} TopUpMarket. Seluruh hak cipta dilindungi.</span>
+                <span>&copy; {{ date('Y') }} GantinoID Store. Seluruh hak cipta dilindungi.</span>
                 <span>Dibuat dengan <span style="color:var(--pink); display:inline-flex; vertical-align:-2px;">@include('partials.icon', ['name' => 'heart', 'size' => 13])</span> untuk para gamer Indonesia.</span>
             </div>
         </div>

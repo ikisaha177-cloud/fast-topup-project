@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'TopUpMarket — Top Up Game & Marketplace Item Game')
+@section('title', 'GantinoID Store — Digital Top-Up Game & Marketplace')
 
 @section('meta')
 <script type="application/ld+json">
 {!! json_encode([
     '@context' => 'https://schema.org',
     '@type' => 'WebSite',
-    'name' => 'TopUpMarket',
+    'name' => 'GantinoID Store',
     'url' => url('/'),
-    'description' => 'Top up game dan marketplace voucher, skin, serta akun game dengan pembayaran QRIS, e-wallet, dan transfer bank.',
+    'description' => 'Digital top-up game dan marketplace voucher, skin, serta akun game dengan pembayaran QRIS, e-wallet, dan transfer bank.',
     'potentialAction' => [
         '@type' => 'SearchAction',
         'target' => route('marketplace.index') . '?q={search_term_string}',
@@ -207,7 +207,7 @@
 <section class="section" style="padding-top:0;">
     <div class="container">
         <div class="text-center reveal" style="margin-bottom:30px;">
-            <span class="eyebrow" style="justify-content:center;">Kenapa TopUpMarket</span>
+            <span class="eyebrow" style="justify-content:center;">Kenapa GantinoID Store</span>
             <h2 class="section-title">Dibuat Biar Top Up Gak Bikin Pusing</h2>
             <p class="section-subtitle mb-0">Cepat, aman, dan transparan — dari pembayaran sampai pesanan selesai.</p>
         </div>

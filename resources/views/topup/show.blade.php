@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Top Up ' . $game->name . ' - TopUpMarket')
+@section('title', 'Top Up ' . $game->name . ' - GantinoID Store')
 
 @section('content')
 <section class="section">

@@ -8,7 +8,7 @@
     $isPaid = ! empty($doc['paid']);
 @endphp
 
-@section('title', 'Invoice ' . $doc['number'] . ' - TopUpMarket')
+@section('title', 'Invoice ' . $doc['number'] . ' - GantinoID Store')
 
 @push('styles')
 <style>
@@ -60,13 +60,8 @@
     .invoice-brand-mark {
         width: 44px;
         height: 44px;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #ffd60a, #f0b90b);
-        color: #14110a;
-        display: grid;
-        place-items: center;
-        font-weight: 900;
-        font-size: 20px;
+        flex: none;
+        display: block;
     }
 
     .invoice-brand-name {
@@ -291,10 +286,10 @@
             <article class="invoice-doc">
                 <div class="invoice-head">
                     <div class="invoice-brand">
-                        <span class="invoice-brand-mark" aria-hidden="true">T</span>
+                        <img class="invoice-brand-mark" src="{{ asset('images/logo-mark.svg') }}" alt="" width="44" height="44">
                         <span>
-                            <span class="invoice-brand-name">TopUpMarket</span><br>
-                            <span class="invoice-brand-sub">Invoice pembayaran resmi</span>
+                            <span class="invoice-brand-name">GantinoID Store</span><br>
+                            <span class="invoice-brand-sub">Digital Top-Up &amp; Marketplace</span>
                         </span>
                     </div>
 
@@ -392,7 +387,7 @@
                 </div>
 
                 <div class="invoice-foot">
-                    Invoice ini dibuat otomatis oleh sistem TopUpMarket dan sah tanpa tanda tangan.
+                    Invoice ini dibuat otomatis oleh sistem GantinoID Store dan sah tanpa tanda tangan.
                     Simpan sebagai bukti pembayaran. Pertanyaan? Hubungi tim dukungan kami.
                 </div>
             </article>

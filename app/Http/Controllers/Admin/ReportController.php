@@ -84,7 +84,7 @@ class ReportController extends Controller
             // BOM agar Excel membaca UTF-8 dengan benar.
             fwrite($handle, "\xEF\xBB\xBF");
 
-            fputcsv($handle, ['Laporan Penjualan TopUpMarket']);
+            fputcsv($handle, ['Laporan Penjualan GantinoID Store']);
             fputcsv($handle, ['Periode', $label]);
             fputcsv($handle, ['Filter Status', $status === 'semua' ? 'Semua' : OrderStatus::label($status)]);
             fputcsv($handle, []);
