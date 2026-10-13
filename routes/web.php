@@ -28,6 +28,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 /* ---------- Halaman statis: kebijakan & bantuan ---------- */
 Route::get('/cara-order', [PageController::class, 'howToOrder'])->name('page.how-to-order');
+Route::get('/kalkulator-winrate-mlbb', [PageController::class, 'winrate'])->name('page.winrate');
 Route::get('/syarat-ketentuan', [PageController::class, 'terms'])->name('page.terms');
 Route::get('/kebijakan-privasi', [PageController::class, 'privacy'])->name('page.privacy');
 

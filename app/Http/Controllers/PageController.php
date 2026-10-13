@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\GameTitle;
 use App\Models\MarketplaceProduct;
+use Illuminate\Http\Request;
 
 /**
  * Halaman statis (kebijakan & bantuan) dan sitemap.xml.
@@ -30,6 +31,42 @@ class PageController extends Controller
     }
 
     /**
+     * Kalkulator winrate MLBB (gratis, halaman organik).
+     *
+     * Perhitungan murni dari query string (?menang=&kalah=), jadi hasilnya
+     * bisa dibagikan/di-bookmark sebagai tautan dan mudah diuji tanpa
+     * penyimpanan apa pun.
+     */
+    public function winrate(Request $request)
+    {
+        $result = null;
+        $error = null;
+
+        if ($request->has('menang') || $request->has('kalah')) {
+            $options = ['options' => ['min_range' => 0, 'max_range' => 1000000]];
+            $menang = filter_var($request->query('menang'), FILTER_VALIDATE_INT, $options);
+            $kalah = filter_var($request->query('kalah'), FILTER_VALIDATE_INT, $options);
+
+            if ($menang === false || $kalah === false) {
+                $error = 'Isian harus berupa bilangan bulat 0 atau lebih.';
+            } elseif (($menang + $kalah) === 0) {
+                $error = 'Minimal satu pertandingan — isi jumlah menang atau kalah.';
+            } else {
+                $total = $menang + $kalah;
+
+                $result = [
+                    'menang'   => $menang,
+                    'kalah'    => $kalah,
+                    'total'    => $total,
+                    'winrate'  => round($menang / $total * 100, 1),
+                ];
+            }
+        }
+
+        return view('pages.winrate', compact('result', 'error'));
+    }
+
+    /**
      * Sitemap XML untuk halaman publik yang layak diindeks.
      *
      * Halaman privat (keranjang, transaksi, admin) sengaja tidak disertakan —
@@ -44,6 +81,7 @@ class PageController extends Controller
             [route('topup.index'), '0.9', 'daily'],
             [route('marketplace.index'), '0.9', 'daily'],
             [route('page.how-to-order'), '0.6', 'monthly'],
+            [route('page.winrate'), '0.7', 'monthly'],
             [route('page.terms'), '0.4', 'yearly'],
             [route('page.privacy'), '0.4', 'yearly'],
             [route('login'), '0.3', 'monthly'],

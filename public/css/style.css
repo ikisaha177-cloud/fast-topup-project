@@ -5338,3 +5338,60 @@ select.form-control option,
         margin-left: 17px;
     }
 }
+
+/* ============================================================
+   POLISH LAYER v12: kalkulator winrate MLBB
+   ============================================================ */
+.winrate-form {
+    margin-top: 16px;
+}
+
+.winrate-form .form-group {
+    margin-bottom: 14px;
+}
+
+.winrate-result {
+    margin-top: 20px;
+    padding: 24px;
+    text-align: center;
+    border: 1px solid rgba(255, 214, 10, 0.35);
+    border-radius: var(--radius);
+    background: var(--yellow-soft);
+}
+
+.winrate-value {
+    display: block;
+    margin: 8px 0;
+    font-family: var(--font-display);
+    font-size: clamp(38px, 6vw, 54px);
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--brand);
+    text-shadow: 0 0 24px rgba(255, 214, 10, 0.35);
+}
+
+.winrate-summary {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.winrate-hint {
+    margin-top: 20px;
+    padding: 16px;
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.winrate-formula {
+    padding: 13px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    font-family: var(--font-display);
+    font-size: 15px;
+    text-align: center;
+    color: var(--brand);
+}

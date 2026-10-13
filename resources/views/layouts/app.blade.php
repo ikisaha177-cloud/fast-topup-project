@@ -183,6 +183,7 @@
                     <h4>Layanan</h4>
                     <a href="{{ route('topup.index') }}">Top Up Game</a>
                     <a href="{{ route('marketplace.index') }}">Marketplace</a>
+                    <a href="{{ route('page.winrate') }}">Kalkulator Winrate MLBB</a>
                     @auth
                         <a href="{{ route('cart.index') }}">Keranjang</a>
                     @endauth
