@@ -105,6 +105,9 @@
                     <td>
                         @if($order->isPaymentClaimed())
                             <span class="badge badge-info">Sudah Bayar</span>
+                            @if($order->hasPaymentProof())
+                                <span class="badge badge-success" title="Pembeli melampirkan bukti pembayaran">Bukti</span>
+                            @endif
                         @else
                             <span class="muted">Belum</span>
                         @endif

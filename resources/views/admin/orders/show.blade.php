@@ -77,7 +77,8 @@
                     <h3>Data Pembeli</h3>
                     <div class="summary-row"><span>Nama</span><span>{{ $order->buyer->name ?? '-' }}</span></div>
                     <div class="summary-row"><span>Email</span><span>{{ $order->buyer->email ?? '-' }}</span></div>
-                    <div class="summary-row"><span>Metode</span><span>{{ $order->payment_method }}</span></div>                    <div class="summary-row"><span>Provider</span><span>{{ $order->payment_provider ?: 'Simulasi' }}</span></div>
+                    <div class="summary-row"><span>Metode</span><span>{{ $order->payment_method }}</span></div>
+                    <div class="summary-row"><span>Provider</span><span>{{ $order->payment_provider ?: 'Simulasi' }}</span></div>
                     <div class="summary-row"><span>Referensi</span><span class="mono">{{ $order->payment_reference ?: '-' }}</span></div>
                     <div class="summary-row"><span>Dibuat</span><span>{{ $order->created_at->format('d-m-Y H:i') }}</span></div>
                     <div class="summary-row"><span>Diperbarui</span><span>{{ $order->updated_at->format('d-m-Y H:i') }}</span></div>
@@ -92,6 +93,16 @@
                         <div class="summary-row"><span>Alasan Gagal</span><span>{{ $order->failure_reason }}</span></div>
                     @endif
                 </div>
+
+                @if($order->hasPaymentProof())
+                    <div class="card mt-16">
+                        <h3>Bukti Pembayaran</h3>
+                        <p class="muted mb-0">Diunggah pembeli saat menandai sudah bayar.</p>
+                        <a class="proof-preview mt-16" href="{{ $order->paymentProofUrl() }}" target="_blank" rel="noopener">
+                            <img src="{{ $order->paymentProofUrl() }}" alt="Bukti pembayaran {{ $order->order_code }}">
+                        </a>
+                    </div>
+                @endif
 
                 <div class="card mt-16">
                     <h3>Riwayat Aktivitas</h3>

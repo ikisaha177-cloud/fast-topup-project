@@ -50,6 +50,9 @@ class MarketplaceOrderService
 
         $shouldReserveStock = $reopening;
 
+        // Simpan path bukti lama untuk dibersihkan bila pesanan dibuka ulang.
+        $orphanProof = $reopening ? $order->payment_proof : null;
+
         // Dipakai closure agar bisa membatalkan tanpa exception: stok tidak
         // boleh pernah jadi negatif saat dikunci ulang.
         $ok = true;
@@ -95,6 +98,11 @@ class MarketplaceOrderService
             return false;
         }
 
+        // Hapus berkas bukti yang sudah tidak dirujuk lagi.
+        if ($orphanProof) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($orphanProof);
+        }
+
         if ($notify) {
             $this->notify($order->fresh(), $status, $context['source'] ?? null);
         }
@@ -105,15 +113,33 @@ class MarketplaceOrderService
     /**
      * Tandai pembeli sudah membayar (masih menunggu verifikasi admin).
      *
+     * @param  string|null  $proofPath  path bukti pembayaran (opsional)
      * @return bool  true bila penandaan baru saja dicatat
      */
-    public function claimPayment(MarketplaceOrder $order)
+    public function claimPayment(MarketplaceOrder $order, $proofPath = null)
     {
-        if (! $order->isPending() || $order->isPaymentClaimed()) {
+        if (! $order->isPending()) {
             return false;
         }
 
-        $order->update(['payment_claimed_at' => now()]);
+        // Sudah ditandai sebelumnya: hanya izinkan melengkapi bukti yang belum ada.
+        if ($order->isPaymentClaimed()) {
+            if ($proofPath && ! $order->hasPaymentProof()) {
+                $order->update(['payment_proof' => $proofPath]);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        $attributes = ['payment_claimed_at' => now()];
+
+        if ($proofPath) {
+            $attributes['payment_proof'] = $proofPath;
+        }
+
+        $order->update($attributes);
 
         return true;
     }
@@ -132,6 +158,7 @@ class MarketplaceOrderService
             // Buka ulang keputusan yang salah: bersihkan seluruh jejak verifikasi.
             $attributes['paid_at']             = null;
             $attributes['payment_claimed_at']  = null;
+            $attributes['payment_proof']       = null;
             $attributes['confirmed_at']        = null;
             $attributes['confirmed_by']        = null;
             $attributes['confirmation_source'] = null;

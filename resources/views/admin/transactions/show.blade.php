@@ -69,6 +69,16 @@
                     @endif
                 </div>
 
+                @if($transaction->hasPaymentProof())
+                    <div class="card mt-16">
+                        <h3>Bukti Pembayaran</h3>
+                        <p class="muted mb-0">Diunggah pembeli saat menandai sudah bayar.</p>
+                        <a class="proof-preview mt-16" href="{{ $transaction->paymentProofUrl() }}" target="_blank" rel="noopener">
+                            <img src="{{ $transaction->paymentProofUrl() }}" alt="Bukti pembayaran {{ $transaction->transaction_code }}">
+                        </a>
+                    </div>
+                @endif
+
                 <div class="card mt-16">
                     <h3>Riwayat Aktivitas</h3>
                     @if($activity->isEmpty())

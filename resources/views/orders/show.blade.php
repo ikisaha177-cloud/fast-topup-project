@@ -83,6 +83,9 @@
                 @if($order->failure_reason)
                     <div class="summary-row"><span>Alasan Gagal</span><span>{{ $order->failure_reason }}</span></div>
                 @endif
+                @if($order->hasPaymentProof())
+                    <div class="summary-row"><span>Bukti Bayar</span><span><a href="{{ $order->paymentProofUrl() }}" target="_blank" rel="noopener">Lihat bukti</a></span></div>
+                @endif
             </div>
         </div>
     </div>

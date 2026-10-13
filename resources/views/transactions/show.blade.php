@@ -50,6 +50,9 @@
                 @if($transaction->failure_reason)
                     <div class="summary-row"><span>Alasan Gagal</span><span>{{ $transaction->failure_reason }}</span></div>
                 @endif
+                @if($transaction->hasPaymentProof())
+                    <div class="summary-row"><span>Bukti Bayar</span><span><a href="{{ $transaction->paymentProofUrl() }}" target="_blank" rel="noopener">Lihat bukti</a></span></div>
+                @endif
 
                 <div class="summary-total">
                     <span>Total</span>

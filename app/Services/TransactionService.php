@@ -56,6 +56,10 @@ class TransactionService
 
         $shouldReserveStock = $reopening;
 
+        // Simpan path bukti lama untuk dibersihkan bila pesanan dibuka ulang
+        // (atributnya di-null-kan, jadi berkasnya tidak boleh tertinggal).
+        $orphanProof = $reopening ? $transaction->payment_proof : null;
+
         // Dipakai closure agar bisa membatalkan tanpa melempar exception:
         // stok tidak boleh pernah jadi negatif saat dikunci ulang.
         $ok = true;
@@ -84,6 +88,11 @@ class TransactionService
             return false;
         }
 
+        // Hapus berkas bukti yang sudah tidak dirujuk lagi.
+        if ($orphanProof) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($orphanProof);
+        }
+
         if ($notify) {
             $this->notify($transaction->fresh(), $status, $context['source'] ?? null);
         }
@@ -94,15 +103,33 @@ class TransactionService
     /**
      * Tandai pembeli sudah membayar (masih menunggu verifikasi admin).
      *
+     * @param  string|null  $proofPath  path bukti pembayaran (opsional)
      * @return bool  true bila penandaan baru saja dicatat
      */
-    public function claimPayment(Transaction $transaction)
+    public function claimPayment(Transaction $transaction, $proofPath = null)
     {
-        if (! $transaction->isPending() || $transaction->isPaymentClaimed()) {
+        if (! $transaction->isPending()) {
             return false;
         }
 
-        $transaction->update(['payment_claimed_at' => now()]);
+        // Sudah ditandai sebelumnya: hanya izinkan melengkapi bukti yang belum ada.
+        if ($transaction->isPaymentClaimed()) {
+            if ($proofPath && ! $transaction->hasPaymentProof()) {
+                $transaction->update(['payment_proof' => $proofPath]);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        $attributes = ['payment_claimed_at' => now()];
+
+        if ($proofPath) {
+            $attributes['payment_proof'] = $proofPath;
+        }
+
+        $transaction->update($attributes);
 
         return true;
     }
@@ -122,6 +149,7 @@ class TransactionService
             // supaya pesanan kembali benar-benar seperti baru.
             $attributes['paid_at']             = null;
             $attributes['payment_claimed_at']  = null;
+            $attributes['payment_proof']       = null;
             $attributes['confirmed_at']        = null;
             $attributes['confirmed_by']        = null;
             $attributes['confirmation_source'] = null;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Marketplace\AddToCartRequest;
+use App\Http\Requests\Marketplace\ClaimPaymentRequest;
 use App\Http\Requests\Marketplace\ProcessCheckoutRequest;
 use App\Http\Requests\Marketplace\UpdateCartRequest;
 use App\Models\MarketplaceOrder;
@@ -314,17 +315,27 @@ class MarketplaceController extends Controller
     /**
      * Tandai pembayaran sudah dilakukan: pembeli menekan "Saya Sudah Bayar".
      * Status tetap pending sampai admin memverifikasi.
+     *
+     * Pembeli boleh mengunggah bukti pembayaran (opsional).
      */
-    public function claimPayment($code)
+    public function claimPayment(ClaimPaymentRequest $request, $code)
     {
         $order = $this->findOwnedOrder($code);
 
-        $claimed = $this->orders->claimPayment($order);
+        $proofPath = null;
+
+        if ($request->hasFile('payment_proof')) {
+            $proofPath = $request->file('payment_proof')
+                ->store('payment-proofs', 'public');
+        }
+
+        $claimed = $this->orders->claimPayment($order, $proofPath);
 
         if ($claimed) {
             ActivityLogger::log(
                 'order.claim',
-                'Pembeli menandai pesanan ' . $order->order_code . ' sudah dibayar.',
+                'Pembeli menandai pesanan ' . $order->order_code . ' sudah dibayar'
+                    . ($proofPath ? ' (dengan bukti pembayaran).' : '.'),
                 $order
             );
         }

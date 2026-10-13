@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TopUp\ClaimPaymentRequest;
 use App\Http\Requests\TopUp\PayRequest;
 use App\Http\Requests\TopUp\StoreCheckoutRequest;
 use App\Models\GameTitle;
@@ -243,17 +244,27 @@ class TopUpController extends Controller
     /**
      * Tandai pembayaran sudah dilakukan (simulasi): pembeli menekan
      * "Saya Sudah Bayar". Status tetap pending sampai admin memverifikasi.
+     *
+     * Pembeli boleh mengunggah bukti pembayaran (opsional).
      */
-    public function claimPayment($code)
+    public function claimPayment(ClaimPaymentRequest $request, $code)
     {
         $transaction = $this->findOwnedTransaction($code);
 
-        $claimed = $this->transactions->claimPayment($transaction);
+        $proofPath = null;
+
+        if ($request->hasFile('payment_proof')) {
+            $proofPath = $request->file('payment_proof')
+                ->store('payment-proofs', 'public');
+        }
+
+        $claimed = $this->transactions->claimPayment($transaction, $proofPath);
 
         if ($claimed) {
             ActivityLogger::log(
                 'transaction.claim',
-                'Pembeli menandai transaksi ' . $transaction->transaction_code . ' sudah dibayar.',
+                'Pembeli menandai transaksi ' . $transaction->transaction_code . ' sudah dibayar'
+                    . ($proofPath ? ' (dengan bukti pembayaran).' : '.'),
                 $transaction
             );
         }

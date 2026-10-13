@@ -21,6 +21,7 @@ class MarketplaceOrder extends Model
         'status',
         'paid_at',
         'payment_claimed_at',
+        'payment_proof',
         'confirmed_at',
         'confirmed_by',
         'confirmation_source',
@@ -71,6 +72,24 @@ class MarketplaceOrder extends Model
     public function isPaymentClaimed()
     {
         return $this->payment_claimed_at !== null;
+    }
+
+    /**
+     * Ada bukti pembayaran yang diunggah?
+     */
+    public function hasPaymentProof()
+    {
+        return ! empty($this->payment_proof);
+    }
+
+    /**
+     * URL publik bukti pembayaran (via disk public).
+     */
+    public function paymentProofUrl()
+    {
+        return $this->hasPaymentProof()
+            ? asset('storage/' . $this->payment_proof)
+            : null;
     }
 
     /**

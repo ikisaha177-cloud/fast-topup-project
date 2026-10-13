@@ -56,17 +56,43 @@
                         </div>
                     @endif
 
+                    @if($claimed && $order->hasPaymentProof())
+                        <div class="mt-16">
+                            <span class="muted" style="display:block; margin-bottom:8px;">Bukti pembayaran yang kamu unggah:</span>
+                            <a class="proof-preview" href="{{ $order->paymentProofUrl() }}" target="_blank" rel="noopener">
+                                <img src="{{ $order->paymentProofUrl() }}" alt="Bukti pembayaran {{ $order->order_code }}">
+                            </a>
+                        </div>
+                    @endif
+
                     <div class="mt-24">
-                        @unless($claimed)
-                            <form action="{{ route('marketplace.payment.claim', $order->order_code) }}" method="POST" style="display:inline;">
+                        @if(! $claimed)
+                            <form action="{{ route('marketplace.payment.claim', $order->order_code) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
-                                <button type="submit" class="btn btn-success btn-lg">@include('partials.icon', ['name' => 'check', 'size' => 16]) Saya Sudah Bayar</button>
+                                <div class="form-group" style="text-align:left; margin-bottom:14px;">
+                                    <label for="payment_proof" class="form-label">Bukti Pembayaran (opsional)</label>
+                                    <input type="file" id="payment_proof" name="payment_proof"
+                                           class="form-control" accept="image/png,image/jpeg,image/webp">
+                                    <small class="muted">Unggah screenshot/foto bukti transfer agar admin lebih cepat memverifikasi. Maks 2 MB.</small>
+                                </div>
+                                <button type="submit" class="btn btn-success btn-lg btn-block">@include('partials.icon', ['name' => 'check', 'size' => 16]) Saya Sudah Bayar</button>
                             </form>
-                        @endunless
-                        <form action="{{ route('marketplace.payment.cancel', $order->order_code) }}" method="POST" style="display:inline;"
+                        @elseif(! $order->hasPaymentProof())
+                            <form action="{{ route('marketplace.payment.claim', $order->order_code) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="form-group" style="text-align:left; margin-bottom:14px;">
+                                    <label for="payment_proof" class="form-label">Lengkapi Bukti Pembayaran (opsional)</label>
+                                    <input type="file" id="payment_proof" name="payment_proof"
+                                           class="form-control" accept="image/png,image/jpeg,image/webp">
+                                    <small class="muted">Belum ada bukti terlampir. Unggah sekarang agar admin lebih mudah memverifikasi. Maks 2 MB.</small>
+                                </div>
+                                <button type="submit" class="btn btn-outline btn-lg btn-block">Unggah Bukti</button>
+                            </form>
+                        @endif
+                        <form action="{{ route('marketplace.payment.cancel', $order->order_code) }}" method="POST"
                               onsubmit="return confirm('Batalkan pesanan ini? Stok dikembalikan ke penjual.');">
                             @csrf
-                            <button type="submit" class="btn btn-ghost btn-lg">Batalkan Pesanan</button>
+                            <button type="submit" class="btn btn-ghost btn-lg btn-block mt-8">Batalkan Pesanan</button>
                         </form>
                     </div>
                 </div>
