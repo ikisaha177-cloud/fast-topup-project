@@ -205,7 +205,11 @@
                     <h4>Bantuan</h4>
                     <a href="{{ route('page.how-to-order') }}">Cara Order</a>
                     <a href="{{ route('home') }}#faq">Pertanyaan Umum</a>
-                    <a href="mailto:support@gantinoid.test">Hubungi Kami</a>
+                    @if(\App\Support\Contact::whatsappUrl())
+                        <a href="{{ \App\Support\Contact::whatsappUrl('Halo, saya butuh bantuan.') }}"
+                           target="_blank" rel="noopener">Chat WhatsApp CS</a>
+                    @endif
+                    <a href="mailto:{{ \App\Support\Contact::email() }}">Hubungi Kami</a>
                 </div>
 
                 <div class="footer-col">

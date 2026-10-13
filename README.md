@@ -16,6 +16,7 @@ Aplikasi web **top up game** dan **marketplace item game** berbasis Laravel 8. P
 - **Kode promo** di checkout top up & marketplace: masukkan kode → diskon langsung dihitung dan ditampilkan sebagai baris terpisah (harga item tetap harga katalog). Mendukung diskon **persen** (dengan plafon opsional) dan **nominal**, syarat **minimal belanja**, **batas pemakaian**, **masa berlaku**, serta **cakupan** (`all` / hanya top up / hanya marketplace). Kode tidak peka huruf besar-kecil. Aturan validasi hidup di satu tempat (`App\Services\PromoService`), dipakai ulang oleh checkout, halaman sukses, invoice, struk, dan riwayat.
 - **Batas waktu pembayaran yang benar-benar berlaku**: setiap pesanan baru punya jendela bayar (`PAYMENT_WINDOW_MINUTES`, default **3 jam**). Halaman sukses & portal menampilkan **hitungan mundur** yang jujur; begitu waktunya habis, pesanan dibatalkan otomatis, **stok dikembalikan**, dan alasan "kedaluwarsa" tercatat apa adanya. Pembatalan terjadi **saat halamannya diakses** (lazy expiry — tanpa cron) lewat `TransactionService`/`MarketplaceOrderService`, jadi tidak ada penjadwal yang perlu dijalankan. Pesanan yang pembelinya sudah menandai "Saya Sudah Bayar" **tidak** ikut kedaluwarsa: itu keputusan admin di antrean verifikasi, bukan keputusan jam.
 - **Ulasan & rating dari pembelian terverifikasi** (marketplace): angka muncul **hanya dari ulasan nyata** — pembeli dengan pesanan **Selesai** bisa menulis 1–5 bintang plus komentar dari halaman produk; server memvalidasi ulang bahwa pesanan miliknya, statusnya Selesai, dan produknya memang ada di pesanan itu (bukti pembelian tersimpan di `marketplace_order_id`). Kunci unik `(user, produk)` membuat kiriman kedua berfungsi sebagai **perbarui**, jadi rata-rata rating selalu dihitung dari pembeli yang berbeda — tidak bisa digelembungkan lewat pembelian berulang. **Produk tanpa ulasan jujur menulis "Belum ada ulasan"** (bukan "0.0"), penulis ditampilkan menyamar ("Budi S."), dan ulasan otomatis ikut terhapus bila admin **membatalkan konfirmasi** pesanannya — dasar klaim "Pembelian terverifikasi" ikut hilang bersama pesanannya.
+- **Bantuan mudah dijangkau: WhatsApp CS + FAQ per game**: tombol chat WhatsApp dibangun dari konfigurasi (`STORE_WHATSAPP` di `config/store.php`) — bila nomor dikosongkan, tombol hilang otomatis sehingga tidak ada tautan rusak. Setiap game punya **FAQ akordeon per-Game** tersimpan sebagai JSON terstruktur (`game_titles.faqs`), dirender dengan `<details>` native tanpa JavaScript; entri korup (bentuk salah, kosong, tag HTML) dibuang sebelum tayang.
 - Keranjang (session) dengan validasi stok di server.
 - **Alur konfirmasi pesanan**: pembeli memesan → menandai **"Saya Sudah Bayar"** → status **Menunggu Konfirmasi**; admin memverifikasi lalu menandai **Selesai** atau **Gagal** (stok otomatis dikembalikan). Pembeli juga bisa **membatalkan** pesanan selama masih menunggu konfirmasi. Untuk pembayaran digital, admin bisa lewat jalur otomatis — lihat *Alur Status Pesanan* di bawah.
 - **Unggah bukti pembayaran (opsional)**: saat menandai sudah bayar, pembeli boleh melampirkan gambar bukti transfer (jpg/png/webp, maks 2 MB). Bukti tampil di halaman status pembeli dan panel verifikasi admin, serta bisa disusulkan selama pesanan masih menunggu konfirmasi.
@@ -183,6 +184,17 @@ diakses (halaman sukses, portal pembayaran, invoice, riwayat pembeli, dan daftar
 Baris lama yang dibuat sebelum kolom `expires_at` ada dibiarkan **tanpa batas waktu**, jadi tidak
 pernah ikut kedaluwarsa.
 
+### WhatsApp CS
+
+```bash
+# .env
+STORE_WHATSAPP=6281234567890   # format digit internasional, tanpa "+"
+STORE_EMAIL=support@gantinoid.test
+```
+
+Nomor dipakai tombol chat di halaman top up dan footer (`App\Support\Contact`). Kosongkan
+`STORE_WHATSAPP` untuk menyembunyikan semua tombol WhatsApp.
+
 ### SMTP
 
 Untuk produksi ganti `MAIL_*` di `.env` ke SMTP provider (Mailtrap/Mailgun/Postmark/Gmail). Lihat contoh di `.env.example`.
@@ -213,9 +225,11 @@ Dibuat oleh `PromoCodeSeeder` (ikut `php artisan migrate --seed`). Kelola di `/a
 php vendor/bin/phpunit
 ```
 
-Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **293 test / 1200 assertion** hijau.
+Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **300 test / 1219 assertion** hijau.
 
 **Ulasan terverifikasi** (24 test): ulasan hanya bisa dibuat oleh pembeli pesanan **Selesai** yang produknya memang ada di pesanan itu (guest, pembeli lain, admin, produk di luar pesanan, serta status pending/gagal/dibatalkan ditolak), rating wajib 1–5, komentar opsional dan maksimal 1000 karakter, kiriman kedua **memperbarui** (bukan menggandakan), agregat dihitung dari pembeli berbeda, produk tanpa ulasan menampilkan **"Belum ada ulasan"** tanpa `ratingValue` di JSON-LD / tanpa bintang terisi / tanpa "0,0", halaman produk menampilkan komentar + nama penyamaran ("Budi S.") + badge pembelian terverifikasi, komentar `<script>` di-escape, `aggregateRating` baru muncul setelah ada ulasan, formulir hanya tampil bagi pembeli yang berhak (dan terisi ulang setelah mengulas), pintu masuk di halaman detail pesanan muncul/hilang sesuai status, pembatalan konfirmasi **menghapus ulasan pesanan itu** saja (ulasan pesanan lain utuh), nama penulis disamarkan, dan aktivitas `review.create`/`review.update` tercatat.
+
+**Bantuan & FAQ** (7 test): FAQ game tampil terstruktur di halaman top up, game tanpa FAQ tidak menampilkan blok FAQ, tombol WhatsApp memakai nomor dari config (halaman & footer), tombol disembunyikan bila nomor kosong (tidak ada tautan `wa.me/` yang rusak), nomor dinormalisasi (`+62 812-3456-7890` → `6281234567890`), serta FAQ korup (bentuk salah/kosong/tag HTML) dibuang sebelum tayang.
 
 **Batas waktu pembayaran** (23 test): pesanan baru selalu dapat jendela bayar (`expires_at`) di kedua alur checkout, pembatalan otomatis saat halaman diakses berikut pengembalian stok (top up & marketplace), invoice/portal/riwayat menampilkan status sebenarnya setelah kedaluwarsa, daftar admin menyapu pesanan basi sementara riwayat pembeli hanya menyapu miliknya sendiri, klaim setelah batas waktu ditolak, jejak `confirmation_source = expiry` + alasan + notifikasi email, pesanan yang sudah ditandai "sudah bayar" **tidak** ikut kedaluwarsa, baris tanpa `expires_at` tidak pernah kedaluwarsa, idempotensi, pembatalan manual sebelum batas waktu tidak dicap kedaluwarsa, buka ulang memberi jendela baru, hitungan mundur tampil/sembunyi di tempat yang tepat, serta penjepitan nilai `PAYMENT_WINDOW_MINUTES`.
 

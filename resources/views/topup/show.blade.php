@@ -16,7 +16,12 @@
                 <h1 class="mb-0" style="font-size:26px;">{{ $game->name }}</h1>
                 <span class="muted">{{ $game->category ?? 'Game' }} &middot; {{ $products->count() }} nominal tersedia</span>
             </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                @if(\App\Support\Contact::whatsappUrl())
+                    <a class="btn btn-outline btn-sm"
+                       href="{{ \App\Support\Contact::whatsappUrl('Saya mau tanya top up ' . $game->name . '.') }}"
+                       target="_blank" rel="noopener">Chat CS WhatsApp</a>
+                @endif
                 <span class="badge badge-info badge-plain">@include('partials.icon', ['name' => 'bolt', 'size' => 13]) Verifikasi Cepat</span>
                 <span class="badge badge-success badge-plain">@include('partials.icon', ['name' => 'shield', 'size' => 13]) Aman</span>
             </div>
@@ -83,6 +88,30 @@
                     <button type="submit" class="btn btn-primary btn-lg mt-24">Lanjut ke Pembayaran →</button>
                 </div>
             </form>
+        @endif
+
+        @if($game->faqItems())
+            <div style="margin-top:34px;" id="faq">
+                <span class="eyebrow">FAQ {{ $game->name }}</span>
+                <h2 class="mb-0" style="font-size:22px;">Pertanyaan umum seputar {{ $game->name }}</h2>
+
+                <div class="faq" style="margin-top:16px;">
+                    @foreach($game->faqItems() as $index => $faq)
+                        <details class="faq-item" {{ $index === 0 ? 'open' : '' }}>
+                            <summary>{{ $faq['question'] }}</summary>
+                            <div class="faq-body">{{ $faq['answer'] }}</div>
+                        </details>
+                    @endforeach
+                </div>
+
+                @if(\App\Support\Contact::whatsappUrl())
+                    <p class="muted" style="margin-top:14px;">
+                        Masih ada yang ingin ditanyakan?
+                        <a href="{{ \App\Support\Contact::whatsappUrl('Saya punya pertanyaan tentang top up ' . $game->name . '.') }}"
+                           target="_blank" rel="noopener">Chat CS WhatsApp kami</a>.
+                    </p>
+                @endif
+            </div>
         @endif
     </div>
 </section>

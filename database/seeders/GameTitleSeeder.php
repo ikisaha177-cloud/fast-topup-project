@@ -21,6 +21,11 @@ class GameTitleSeeder extends Seeder
                 'slug' => 'mobile-legends',
                 'category' => 'MOBA',
                 'icon' => 'images/games/mobile-legends.svg',
+                'faqs' => [
+                    ['question' => 'Berapa lama diamond masuk setelah bayar?', 'answer' => 'Umumnya 1-5 menit setelah pembayaran terverifikasi. Bila lewat 30 menit belum masuk, hubungi CS dengan nomor pesananmu.'],
+                    ['question' => 'Data apa yang dibutuhkan untuk top up?', 'answer' => 'Cukup User ID (dan Server ID bila game memintanya). Kami tidak pernah meminta password akunmu.'],
+                    ['question' => 'User ID saya ada di mana?', 'answer' => 'Buka profil akun di dalam game; User ID tertera di bawah nama akun, biasanya 8-10 digit angka.'],
+                ],
                 'products' => [
                     ['name' => '86 Diamonds', 'description' => '86 Diamonds + 8 Bonus', 'price' => 22000],
                     ['name' => '172 Diamonds', 'description' => '172 Diamonds + 16 Bonus', 'price' => 44000],
@@ -34,6 +39,10 @@ class GameTitleSeeder extends Seeder
                 'slug' => 'free-fire',
                 'category' => 'Battle Royale',
                 'icon' => 'images/games/free-fire.png',
+                'faqs' => [
+                    ['question' => 'Berapa lama diamond Free Fire masuk?', 'answer' => 'Setelah pembayaran terverifikasi, diamond umumnya masuk dalam 1-5 menit ke akun dengan ID yang kamu isi.'],
+                    ['question' => 'Di mana melihat ID akun Free Fire?', 'answer' => 'Ketuk avatar profil di lobby; ID akun tertera di bawah nama, contohnya 1234567890.'],
+                ],
                 'products' => [
                     ['name' => '100 Diamonds', 'description' => '100 Diamonds', 'price' => 15000],
                     ['name' => '310 Diamonds', 'description' => '310 Diamonds', 'price' => 45000],
@@ -47,6 +56,10 @@ class GameTitleSeeder extends Seeder
                 'slug' => 'pubg-mobile',
                 'category' => 'Battle Royale',
                 'icon' => 'images/games/pubg-mobile.png',
+                'faqs' => [
+                    ['question' => 'UC masuk ke akun region mana?', 'answer' => 'UC masuk ke akun sesuai region akunmu saat ini. Kami tidak memindahkan UC antar region, jadi pastikan region benar sebelum memesan.'],
+                    ['question' => 'Berapa lama proses top up UC?', 'answer' => 'Umumnya 1-5 menit setelah pembayaran terverifikasi. Simpan nomor pesanan bila butuh pengecekan lanjutan.'],
+                ],
                 'products' => [
                     ['name' => '60 UC', 'description' => '60 Unknown Cash', 'price' => 15000],
                     ['name' => '325 UC', 'description' => '325 Unknown Cash', 'price' => 75000],
@@ -60,6 +73,10 @@ class GameTitleSeeder extends Seeder
                 'slug' => 'valorant',
                 'category' => 'FPS',
                 'icon' => 'images/games/valorant.svg',
+                'faqs' => [
+                    ['question' => 'Points masuk ke region akun yang mana?', 'answer' => 'Points masuk ke akun Riot sesuai region akunmu. Kami tidak memindahkan antar region, sesuaikan region sebelum checkout.'],
+                    ['question' => 'Berapa lama Valorant Points masuk?', 'answer' => 'Umumnya 1-5 menit setelah pembayaran terverifikasi. Bila lebih lama, hubungi CS dengan nomor pesananmu.'],
+                ],
                 'products' => [
                     ['name' => '475 Points', 'description' => '475 Valorant Points', 'price' => 50000],
                     ['name' => '1000 Points', 'description' => '1000 Valorant Points', 'price' => 100000],
@@ -77,6 +94,7 @@ class GameTitleSeeder extends Seeder
                     'name' => $game['name'],
                     'category' => $game['category'],
                     'icon' => $game['icon'],
+                    'faqs' => $game['faqs'] ?? null,
                     'is_active' => true,
                 ]
             );

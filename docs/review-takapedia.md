@@ -286,7 +286,20 @@ dan kejujuran data*. Strategi paling masuk akal: **adopsi mekanisme komersial me
 | 1 | Kode promo / voucher | ✅ **selesai** | `promo_codes` + `PromoService` + admin CRUD + 30 test (`tests/Feature/PromoCodeTest.php`) |
 | 2 | Kedaluwarsa pembayaran + auto-batal | ✅ **selesai** | kolom `expires_at`, `PaymentWindow`, `expireIfDue()`/`expireOverdue()`, jejak `confirmation_source=expiry`, hitungan mundur di halaman sukses & portal, 23 test (`tests/Feature/PaymentExpiryTest.php`) |
 | 3 | Ulasan terverifikasi | ✅ **selesai** | tabel `reviews` (unik per pembeli+produk), `ReviewController@store`, bagian ulasan di halaman produk + kartu katalog, 24 test (`tests/Feature/ReviewTest.php`) |
-| 4 | WhatsApp CS + FAQ per produk | ⬜ belum | — |
+| 4 | WhatsApp CS + FAQ per produk | ✅ **selesai** | `config/store.php` + `App\Support\Contact`, kolom JSON `game_titles.faqs`, FAQ akordeon per game di halaman top up, tombol WA di header/FAQ/footer, 7 test (`tests/Feature/StoreHelpTest.php`) |
+
+Catatan implementasi #4 (dengan alasan):
+- **Nomor WA dibaca dari `config/store.php`** (`STORE_WHATSAPP` di `.env`), bukan hardcode di view.
+  `Contact::whatsappUrl()` mengembalikan `null` bila nomor kosong — tautan rusak tidak pernah
+  ditampilkan (tombol hilang otomatis, diuji tes).
+- **FAQ per game disimpan sebagai JSON terstruktur** (`question`/`answer`) di kolom
+  `game_titles.faqs`, bukan teks HTML mentah. `GameTitle::faqItems()` membuang entri korup
+  (bentuk salah, kosong, tag HTML) sebelum dirender; output tetap aman lewat escape Blade `{{ }}`.
+- **Akordeon memakai `<details>` native + kelas `.faq-item` yang sudah ada** — tanpa JavaScript,
+  tanpa CSS baru.
+- **FAQ hanya di halaman top up per game** (bukan per produk marketplace): pertanyaan pembeli
+  top up bersifat per-game (region, User ID, durasi), sementara halaman produk marketplace tidak
+  punya padanan FAQ-nya — batas scope yang disengaja, bukan kelalaian.
 
 Catatan implementasi #2 (menyimpang dari rencana awal, dengan alasan):
 - Pembatalan otomatis ditandai lewat **`confirmation_source = expiry`** (konstanta baru

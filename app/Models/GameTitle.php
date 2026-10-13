@@ -14,12 +14,47 @@ class GameTitle extends Model
         'slug',
         'category',
         'icon',
+        'faqs',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'faqs' => 'array',
     ];
+
+    /**
+     * Daftar FAQ siap tayang: hanya entri {question, answer} berupa teks
+     * yang tidak kosong. Data korup (bentuk salah / tag HTML) dibuang,
+     * bukan dirender mentah ke halaman.
+     *
+     * @return array<int, array{question: string, answer: string}>
+     */
+    public function faqItems(): array
+    {
+        $items = [];
+
+        foreach ((array) $this->faqs as $faq) {
+            if (! is_array($faq)) {
+                continue;
+            }
+
+            $question = isset($faq['question']) && is_string($faq['question'])
+                ? trim(strip_tags($faq['question']))
+                : '';
+            $answer = isset($faq['answer']) && is_string($faq['answer'])
+                ? trim(strip_tags($faq['answer']))
+                : '';
+
+            if ($question === '' || $answer === '') {
+                continue;
+            }
+
+            $items[] = ['question' => $question, 'answer' => $answer];
+        }
+
+        return $items;
+    }
 
     public function products()
     {
