@@ -285,7 +285,7 @@ dan kejujuran data*. Strategi paling masuk akal: **adopsi mekanisme komersial me
 |---|------|--------|-------|
 | 1 | Kode promo / voucher | ✅ **selesai** | `promo_codes` + `PromoService` + admin CRUD + 30 test (`tests/Feature/PromoCodeTest.php`) |
 | 2 | Kedaluwarsa pembayaran + auto-batal | ✅ **selesai** | kolom `expires_at`, `PaymentWindow`, `expireIfDue()`/`expireOverdue()`, jejak `confirmation_source=expiry`, hitungan mundur di halaman sukses & portal, 23 test (`tests/Feature/PaymentExpiryTest.php`) |
-| 3 | Ulasan terverifikasi | ⬜ belum | — |
+| 3 | Ulasan terverifikasi | ✅ **selesai** | tabel `reviews` (unik per pembeli+produk), `ReviewController@store`, bagian ulasan di halaman produk + kartu katalog, 24 test (`tests/Feature/ReviewTest.php`) |
 | 4 | WhatsApp CS + FAQ per produk | ⬜ belum | — |
 
 Catatan implementasi #2 (menyimpang dari rencana awal, dengan alasan):
@@ -300,6 +300,30 @@ Catatan implementasi #2 (menyimpang dari rencana awal, dengan alasan):
   langsung kedaluwarsa lagi pada halaman berikutnya.
 - Pembatalan juga dijalankan pada **daftar admin & riwayat pembeli**, supaya antrean verifikasi dan
   riwayat tidak menampilkan pesanan yang sebenarnya sudah mati.
+
+Catatan implementasi #3 (dengan alasan):
+- **Skema: ulasan hanya untuk produk marketplace**, tanpa tabel polimorfik. Alasannya jujur: halaman
+  `topup/show` adalah halaman per-**Game** (grid radio nominal), jadi `Product` (nominal top up) tidak
+  punya halaman detail sama sekali — ulasan top up tidak punya tempat tampil. Ini **batas scope yang
+  disengaja**, bukan kelalaian: kalau suatu saat tiap nominal punya halaman sendiri, migrasinya lewat
+  kolom `reviewable_type`/`reviewable_id` + memindahkan URL detail.
+- **Kunci unik `(user_id, marketplace_product_id)`**, lebih ketat dari rencana awal "1 ulasan per
+  pesanan". Konsekuensinya: pembelian berulang tidak menaikkan rata-rata rating lewat suara ganda —
+  rata-rata selalu dihitung dari jumlah pembeli yang berbeda, bukan jumlah pesanan. Kiriman ulang
+  berfungsi sebagai **perbarui** (`updateOrCreate`).
+- **Bukti pembelian tersimpan di kolom `marketplace_order_id`**, bukan cuma disimpulkan dari status.
+  Karena itu saat admin **membatalkan konfirmasi** (`success → failed`), `MarketplaceOrderService`
+  menghapus ulasan `WHERE marketplace_order_id = order.id` saja — dasar klaim "Pembelian terverifikasi"
+  hilang bersama pesanannya, sementara ulasan dari pesanan lain milik pembeli yang sama tetap utuh.
+- **Tidak ada badge rating di kartu katalog sebelum ada ulasan** (dan tidak pernah ada angka palsu).
+  Semua angka datang dari `withCount('reviews')->withAvg('reviews','rating')`; tanpa baris di tabel
+  hasilnya `null`, lalu halaman menampilkan **"Belum ada ulasan"**, bukan "0.0".
+- **Nama penulis disamarkan** ("Budi Santoso" → "Budi S.") karena halaman produk bisa dibuka siapa
+  saja tanpa login. Formulir ulasan hanya muncul di halaman produk ketika pengunjung benar-benar punya
+  pesanan **Selesai** atas produk itu (`$myOrder` di `MarketplaceController::show`) — jadi tidak ada
+  tombol yang menyesatkan.
+- **Batas scope yang ditunda ke P1:** moderasi/admin approve, notifikasi ke penjual, dan ulasan untuk
+  produk top up. Ketiganya sengaja tidak dikerjakan sekarang, bukan terlewat.
 
 ### P1 — nilai jelas, biaya sedang
 

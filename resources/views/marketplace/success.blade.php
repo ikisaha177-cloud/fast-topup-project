@@ -199,6 +199,9 @@
 
             <div class="mt-24">
                 <a href="{{ route('marketplace.index') }}" class="btn btn-primary">Belanja Lagi</a>
+                @if($isSuccess)
+                    <a href="{{ route('orders.show', $order->order_code) }}#ulasan" class="btn btn-outline">Beri Ulasan</a>
+                @endif
                 <a href="{{ route('invoice.show', $order->order_code) }}" class="btn btn-outline">Lihat Invoice</a>
                 <a href="{{ route('orders.index') }}" class="btn btn-outline">Pesanan Saya</a>
             </div>

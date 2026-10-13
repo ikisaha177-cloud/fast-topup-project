@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\MarketplaceOrder;
 use App\Models\MarketplaceProduct;
+use App\Models\Review;
 use App\Notifications\OrderStatusChanged;
 use App\Support\ActivityLogger;
 use App\Support\OrderStatus;
@@ -60,11 +61,18 @@ class MarketplaceOrderService
         // Simpan path bukti lama untuk dibersihkan bila pesanan dibuka ulang.
         $orphanProof = $reopening ? $order->payment_proof : null;
 
+        // Pembatalan konfirmasi (success -> failed) mencabut dasar "pembelian
+        // terverifikasi" sebuah ulasan, jadi ulasan yang lahir dari pesanan ini
+        // ikut dihapus. Dihapus per `marketplace_order_id` supaya ulasan dari
+        // pesanan lain milik pembeli yang sama tidak ikut terhapus.
+        $wasSuccess = $order->status === OrderStatus::SUCCESS;
+        $revoking = $wasSuccess && $status === OrderStatus::FAILED;
+
         // Dipakai closure agar bisa membatalkan tanpa exception: stok tidak
         // boleh pernah jadi negatif saat dikunci ulang.
         $ok = true;
 
-        DB::transaction(function () use ($order, $status, $shouldRestoreStock, $shouldReserveStock, $context, &$ok) {
+        DB::transaction(function () use ($order, $status, $shouldRestoreStock, $shouldReserveStock, $context, $revoking, &$ok) {
             // Pass 1: kunci semua produk & pastikan stok cukup sebelum menulis
             // apa pun. Keluar lebih dulu = tidak ada perubahan yang ter-commit.
             $products = [];
@@ -99,6 +107,10 @@ class MarketplaceOrderService
             }
 
             $order->update($this->attributesFor($order, $status, $context));
+
+            if ($revoking) {
+                Review::where('marketplace_order_id', $order->id)->delete();
+            }
         });
 
         if (! $ok) {

@@ -10,6 +10,8 @@
     $showSeller    = $showSeller ?? true;
     $buttonVariant = $buttonVariant ?? 'primary';
     $sold          = (int) $product->sold_count;
+    $reviewCount   = $product->reviewCount();
+    $reviewAverage = $product->reviewAverage();
 @endphp
 
 <div class="card card-hover product-card reveal d{{ ($index % 4) + 1 }}" data-tilt>
@@ -25,6 +27,16 @@
             @endif
         </span>
     </div>
+
+    {{-- Rating hanya tampil bila benar-benar ada ulasan nyata.
+         Tanpa ulasan, kartu tidak mengklaim angka apa pun. --}}
+    @if($reviewCount > 0)
+        <div class="product-rating">
+            @include('partials.rating-stars', ['rating' => $reviewAverage, 'count' => $reviewCount])
+            <span class="product-rating-value">{{ number_format($reviewAverage, 1, ',', '.') }}</span>
+            <span class="muted">({{ number_format($reviewCount) }} ulasan)</span>
+        </div>
+    @endif
 
     <div class="product-name">{{ $product->name }}</div>
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MarketplaceOrder;
+use App\Models\Review;
 use App\Services\MarketplaceOrderService;
 use App\Support\OrderStatus;
 use Illuminate\Http\Request;
@@ -58,6 +59,12 @@ class OrderController extends Controller
 
         $this->orders->expireIfDue($order);
 
-        return view('orders.show', compact('order'));
+        // Ulasan milik pembeli untuk item di pesanan ini (satu query, tanpa N+1).
+        $myReviews = Review::where('user_id', auth()->id())
+            ->whereIn('marketplace_product_id', $order->items->pluck('marketplace_product_id'))
+            ->get()
+            ->keyBy('marketplace_product_id');
+
+        return view('orders.show', compact('order', 'myReviews'));
     }
 }

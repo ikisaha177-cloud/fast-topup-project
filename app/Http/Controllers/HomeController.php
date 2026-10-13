@@ -27,6 +27,7 @@ class HomeController extends Controller
             ->where('stock', '>', 0)
             ->with('seller')
             ->withSoldCount()
+            ->withRating()
             ->latest()
             ->take(8)
             ->get();

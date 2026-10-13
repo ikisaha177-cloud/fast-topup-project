@@ -4938,3 +4938,323 @@ select.form-control option,
     .pay-deadline-value { font-size: 20px; }
     .pay-deadline-until { margin-left: 0; width: 100%; }
 }
+
+/* =====================================================================
+   POLISH LAYER v10 - ulasan & rating terverifikasi
+   (hanya dari pesanan Selesai; tanpa ulasan -> "Belum ada ulasan",
+    tidak pernah "0.0" karangan)
+   ===================================================================== */
+
+.rating-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    line-height: 1;
+    flex: 0 0 auto;
+}
+
+.rating-star {
+    font-size: 14px;
+    line-height: 1;
+    color: var(--line-strong);
+    transition: color 0.15s ease;
+}
+
+.rating-star.is-on {
+    color: var(--brand);
+    text-shadow: 0 0 12px rgba(255, 214, 10, 0.45);
+}
+
+/* ---------- Ringkasan rating (kartu katalog & detail) ---------- */
+
+.product-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: var(--muted);
+}
+
+.product-rating-value {
+    font-weight: 800;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.product-rating-lg {
+    margin-top: 2px;
+    margin-bottom: 8px;
+    font-size: 13.5px;
+}
+
+.product-rating-lg .rating-star {
+    font-size: 17px;
+}
+
+.product-rating-lg .product-rating-value {
+    font-size: 15px;
+}
+
+.product-rating-link {
+    color: var(--brand);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.product-rating-link:hover {
+    border-bottom-color: var(--brand);
+}
+
+/* ---------- Panel ulasan di halaman produk ---------- */
+
+.review-panel {
+    margin-top: 32px;
+}
+
+.review-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.review-title {
+    margin: 0;
+    font-size: 20px;
+}
+
+.review-subtitle {
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.review-summary {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.review-score {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.review-count {
+    font-size: 13px;
+}
+
+.review-empty {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 999px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.review-list {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--line);
+}
+
+.review-item {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.review-item:last-child {
+    border-bottom: none;
+    padding-bottom: 4px;
+}
+
+.review-item-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.review-author {
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.review-verified {
+    font-size: 11.5px;
+}
+
+.review-date {
+    margin-left: auto;
+    font-size: 12.5px;
+}
+
+.review-comment {
+    margin: 8px 0 0;
+    color: var(--text);
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.review-more {
+    margin-top: 12px;
+    font-size: 12.5px;
+}
+
+/* ---------- Formulir ulasan ---------- */
+
+.review-form {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line-strong);
+}
+
+.review-form-title {
+    margin: 0 0 4px;
+    font-size: 16px;
+}
+
+.review-form-hint {
+    font-size: 12.5px;
+    margin-bottom: 14px;
+}
+
+.review-cta-hint {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+}
+
+.rating-field {
+    border: 0;
+    padding: 0;
+    margin: 0 0 14px;
+}
+
+.rating-field .form-label {
+    padding: 0;
+    margin-bottom: 6px;
+}
+
+/* Input bintang: radio tersembunyi + label bintang.
+   Urutan visual dibalik (row-reverse) supaya "bintang ke-k dan
+   sebelumnya" menyala lewat selektor sibling — murni CSS, tanpa JS. */
+.rating-input {
+    position: relative;
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 2px;
+}
+
+.rating-input input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    margin: 0;
+    pointer-events: none;
+}
+
+.rating-input label {
+    cursor: pointer;
+    font-size: 26px;
+    line-height: 1;
+    color: var(--line-strong);
+    user-select: none;
+    transition: color 0.12s ease, transform 0.12s ease;
+}
+
+.rating-input label:hover,
+.rating-input label:hover ~ label,
+.rating-input input:checked ~ label {
+    color: var(--brand);
+}
+
+.rating-input label:hover {
+    transform: scale(1.08);
+}
+
+.rating-input input:focus-visible + label {
+    outline: 2px solid var(--brand);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rating-star,
+    .rating-input label {
+        transition: none;
+    }
+
+    .rating-input label:hover {
+        transform: none;
+    }
+}
+
+/* ---------- Daftar CTA ulasan di halaman detail pesanan ---------- */
+
+.review-cta-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.review-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+}
+
+.review-cta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.review-cta-name {
+    font-weight: 600;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+}
+
+.review-cta-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+}
+
+@media (max-width: 560px) {
+    .review-head {
+        flex-direction: column;
+    }
+
+    .review-date {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .review-cta .btn {
+        width: 100%;
+    }
+}

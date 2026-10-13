@@ -12,6 +12,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentPortalController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TopUpController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
@@ -85,6 +86,12 @@ Route::post('/marketplace/payment/{code}/cancel', [MarketplaceController::class,
 Route::get('/marketplace/{slug}', [MarketplaceController::class, 'show'])->name('marketplace.show');
 Route::post('/marketplace/{slug}/add', [MarketplaceController::class, 'addToCart'])
     ->middleware(['auth', 'not-admin'])->name('marketplace.add-to-cart');
+
+/* ---------- Ulasan produk (hanya pembeli dengan pesanan Selesai) ----------
+   Otorisasi + bukti pembelian diperiksa di controller; akun admin diblokir
+   karena admin tidak pernah membeli. */
+Route::post('/orders/{code}/review', [ReviewController::class, 'store'])
+    ->middleware(['auth', 'not-admin'])->name('reviews.store');
 
 /* ---------- Invoice pembayaran (top up & marketplace) ----------
    Otorisasi lewat policy masing-masing model, jadi guest yang tahu kode

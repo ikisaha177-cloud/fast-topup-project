@@ -8,10 +8,12 @@ use App\Http\Requests\Marketplace\ProcessCheckoutRequest;
 use App\Http\Requests\Marketplace\UpdateCartRequest;
 use App\Models\MarketplaceOrder;
 use App\Models\MarketplaceProduct;
+use App\Models\Review;
 use App\Services\MarketplaceOrderService;
 use App\Services\Payment\PaymentGatewayManager;
 use App\Services\PromoService;
 use App\Support\ActivityLogger;
+use App\Support\OrderStatus;
 use App\Support\PaymentMethods;
 use App\Support\PaymentWindow;
 use Illuminate\Http\Request;
@@ -49,6 +51,7 @@ class MarketplaceController extends Controller
             ->where('stock', '>', 0)
             ->with('seller')
             ->withSoldCount()
+            ->withRating()
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($sub) use ($search) {
                     $sub->where('name', 'like', "%{$search}%")
@@ -89,6 +92,7 @@ class MarketplaceController extends Controller
             ->where('is_active', true)
             ->with('seller')
             ->withSoldCount()
+            ->withRating()
             ->firstOrFail();
 
         $related = MarketplaceProduct::where('is_active', true)
@@ -99,10 +103,36 @@ class MarketplaceController extends Controller
             })
             ->latest()
             ->withSoldCount()
+            ->withRating()
             ->take(4)
             ->get();
 
-        return view('marketplace.show', compact('product', 'related'));
+        $reviews = $product->reviews()
+            ->with('user')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Pesanan Selesai milik pengunjung untuk produk ini — satu-satunya
+        // dasar yang sah untuk menampilkan formulir ulasan.
+        $myOrder = null;
+        $myReview = null;
+
+        if (auth()->check() && ! auth()->user()->isAdmin()) {
+            $myOrder = MarketplaceOrder::where('user_id', auth()->id())
+                ->where('status', OrderStatus::SUCCESS)
+                ->whereHas('items', function ($query) use ($product) {
+                    $query->where('marketplace_product_id', $product->id);
+                })
+                ->latest()
+                ->first();
+
+            $myReview = Review::where('user_id', auth()->id())
+                ->where('marketplace_product_id', $product->id)
+                ->first();
+        }
+
+        return view('marketplace.show', compact('product', 'related', 'reviews', 'myOrder', 'myReview'));
     }
 
     /**

@@ -69,6 +69,62 @@ class MarketplaceProduct extends Model
     }
 
     /**
+     * Ulasan pembeli terverifikasi untuk produk ini.
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Jumlah ulasan nyata. Nol berarti benar-benar belum ada ulasan —
+     * halaman produk akan berkata "Belum ada ulasan", bukan "0.0".
+     */
+    public function reviewCount()
+    {
+        if (array_key_exists('reviews_count', $this->attributes)) {
+            return (int) $this->attributes['reviews_count'];
+        }
+
+        return $this->reviews()->count();
+    }
+
+    /**
+     * Rata-rata rating (1 desimal), atau null bila belum ada ulasan.
+     */
+    public function reviewAverage()
+    {
+        if (array_key_exists('reviews_avg_rating', $this->attributes)) {
+            $average = $this->attributes['reviews_avg_rating'];
+        } else {
+            $average = $this->reviews()->avg('rating');
+        }
+
+        return $average === null ? null : round((float) $average, 1);
+    }
+
+    /**
+     * Ringkasan rating siap tampil.
+     *
+     * @return array{count: int, average: float|null}
+     */
+    public function ratingSummary()
+    {
+        return [
+            'count'   => $this->reviewCount(),
+            'average' => $this->reviewAverage(),
+        ];
+    }
+
+    /**
+     * Muat agregat rating sekaligus supaya daftar produk tidak N+1.
+     */
+    public function scopeWithRating($query)
+    {
+        return $query->withCount('reviews')->withAvg('reviews', 'rating');
+    }
+
+    /**
      * Jumlah item yang benar-benar terjual (hanya dari pesanan berstatus selesai).
      *
      * Dipakai untuk menampilkan "Terjual N" — dihitung dari data nyata,

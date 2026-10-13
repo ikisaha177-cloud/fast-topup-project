@@ -22,24 +22,40 @@
 @section('og_image_alt', $product->name . ' — GantinoID Store')
 
 @section('meta')
+@php
+    // aggregateRating hanya dikirim bila benar-benar ada ulasan nyata —
+    // data terstruktur tidak boleh memuat rating karangan.
+    $ratingSummary = $product->ratingSummary();
+    $structuredData = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Product',
+        'name' => $product->name,
+        'description' => $product->description ?: 'Item game di GantinoID Store.',
+        'image' => $shareImage,
+        'category' => $product->category ?: 'Item Game',
+        'offers' => [
+            '@type' => 'Offer',
+            'price' => (string) $product->price,
+            'priceCurrency' => 'IDR',
+            'availability' => $product->stock > 0
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/OutOfStock',
+            'url' => url()->current(),
+        ],
+    ];
+
+    if ($ratingSummary['count'] > 0) {
+        $structuredData['aggregateRating'] = [
+            '@type' => 'AggregateRating',
+            'ratingValue' => number_format($ratingSummary['average'], 1, '.', ''),
+            'reviewCount' => $ratingSummary['count'],
+            'bestRating' => 5,
+            'worstRating' => 1,
+        ];
+    }
+@endphp
 <script type="application/ld+json">
-{!! json_encode([
-    '@context' => 'https://schema.org',
-    '@type' => 'Product',
-    'name' => $product->name,
-    'description' => $product->description ?: 'Item game di GantinoID Store.',
-    'image' => $shareImage,
-    'category' => $product->category ?: 'Item Game',
-    'offers' => [
-        '@type' => 'Offer',
-        'price' => (string) $product->price,
-        'priceCurrency' => 'IDR',
-        'availability' => $product->stock > 0
-            ? 'https://schema.org/InStock'
-            : 'https://schema.org/OutOfStock',
-        'url' => url()->current(),
-    ],
-], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}
+{!! json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}
 </script>
 @endsection
 
@@ -68,6 +84,20 @@
                         </span>
                     </div>
                     <h1 style="font-size:26px; margin:8px 0;">{{ $product->name }}</h1>
+
+                    {{-- Ringkasan rating: angka hanya muncul bila ada ulasan nyata. --}}
+                    <div class="product-rating product-rating-lg">
+                        @if($ratingSummary['count'] > 0)
+                            @include('partials.rating-stars', ['rating' => $ratingSummary['average'], 'count' => $ratingSummary['count']])
+                            <span class="product-rating-value">{{ number_format($ratingSummary['average'], 1, ',', '.') }}</span>
+                            <a href="#ulasan" class="product-rating-link">
+                                {{ number_format($ratingSummary['count']) }} ulasan
+                            </a>
+                        @else
+                            <span class="muted">Belum ada ulasan</span>
+                        @endif
+                    </div>
+
                     @include('partials.marketplace-price', ['product' => $product, 'size' => 'lg'])
                     @if($product->hasDiscount())
                         <p class="muted mt-8" style="margin-bottom:0;">Hemat Rp {{ number_format($product->discountAmount(), 0, ',', '.') }} dari harga normal.</p>
@@ -118,6 +148,13 @@
                 </div>
             </div>
         </div>
+
+        @include('partials.product-reviews', [
+            'product'  => $product,
+            'reviews'  => $reviews,
+            'myOrder'  => $myOrder,
+            'myReview' => $myReview,
+        ])
 
         @if($related && $related->isNotEmpty())
             <div class="section-head mt-32" style="margin-top:40px;">

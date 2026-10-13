@@ -63,6 +63,49 @@
                     </div>
                 </div>
 
+                <div class="card mt-16" id="ulasan">
+                    <h3>Ulasan Produk</h3>
+
+                    @if(! $order->isSuccess())
+                        <p class="muted mb-0">
+                            Ulasan bisa ditulis setelah pesanan ini berstatus Selesai.
+                        </p>
+                    @else
+                        <p class="muted">
+                            Bagikan pengalamanmu agar pembeli lain tidak menebak-nebak.
+                            Satu ulasan per produk, bisa kamu perbarui kapan saja.
+                        </p>
+
+                        <div class="review-cta-list">
+                            @foreach($order->items as $item)
+                                @php
+                                    $reviewed = $myReviews[$item->marketplace_product_id] ?? null;
+                                @endphp
+                                <div class="review-cta">
+                                    <div class="review-cta-info">
+                                        <span class="review-cta-name">{{ $item->product->name ?? 'Produk Dihapus' }}</span>
+                                        @if($reviewed)
+                                            <span class="review-cta-status">
+                                                @include('partials.rating-stars', ['rating' => $reviewed->rating])
+                                                <span class="muted">Ulasanmu sudah terkirim</span>
+                                            </span>
+                                        @else
+                                            <span class="muted">Belum diulas</span>
+                                        @endif
+                                    </div>
+
+                                    @if($item->product)
+                                        <a href="{{ route('marketplace.show', $item->product->slug) }}#ulasan"
+                                           class="btn btn-sm {{ $reviewed ? 'btn-ghost' : 'btn-primary' }}">
+                                            {{ $reviewed ? 'Perbarui Ulasan' : 'Beri Ulasan' }}
+                                        </a>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
                 <div class="mt-16 actions">
                     @if($order->status === 'pending')
                         <a href="{{ route('marketplace.success', $order->order_code) }}" class="btn btn-success">
