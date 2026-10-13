@@ -8,7 +8,8 @@
     <meta name="theme-color" content="#0b0a10">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
-    <link rel="apple-touch-icon" href="{{ asset('images/logo-mark.svg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
     <title>@yield('title', 'GantinoID Store — Digital Top-Up & Marketplace')</title>
 
     {{-- Open Graph / Twitter Card: tampilan rapi saat dibagikan. --}}
@@ -17,8 +18,17 @@
     <meta property="og:title" content="@yield('og_title', 'GantinoID Store — Digital Top-Up & Marketplace')">
     <meta property="og:description" content="@yield('og_description', 'Digital top-up game dan marketplace voucher, skin, serta akun game. Bayar dengan QRIS, e-wallet, atau transfer bank.')">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:image" content="@yield('og_image', asset('images/placeholder-product.svg'))">
+    @hasSection('og_image')
+        <meta property="og:image" content="@yield('og_image')">
+    @else
+        <meta property="og:image" content="{{ asset('images/og-cover.png') }}">
+        <meta property="og:image:type" content="image/png">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+    @endif
+    <meta property="og:image:alt" content="@yield('og_image_alt', 'GantinoID Store — Digital Top-Up & Marketplace')">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/og-cover.png'))">
 
     @yield('meta')
 

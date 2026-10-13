@@ -226,6 +226,46 @@ class CatalogPresentationTest extends TestCase
         $this->assertStringContainsString('class="skip-link"', $html);
         $this->assertStringContainsString('<main id="main"', $html);
         $this->assertStringContainsString('favicon.svg', $html);
+        $this->assertStringContainsString('apple-touch-icon.png', $html);
+        $this->assertStringContainsString('site.webmanifest', $html);
+        $this->assertStringContainsString('images/og-cover.png', $html);
+    }
+
+    /** Aset brand (logo, ikon, cover OG) benar-benar ada dan valid. */
+    public function test_brand_assets_exist_and_are_valid()
+    {
+        foreach ([
+            'images/logo-mark.svg',
+            'images/logo-horizontal.svg',
+            'images/og-cover.png',
+            'images/apple-touch-icon.png',
+            'favicon.svg',
+            'favicon.ico',
+            'site.webmanifest',
+        ] as $asset) {
+            $this->assertFileExists(public_path($asset), "Aset brand {$asset} tidak ada.");
+        }
+
+        // PNG OG harus berukuran 1200x630 (standar kartu sosial).
+        $cover = @getimagesize(public_path('images/og-cover.png'));
+        $this->assertNotEmpty($cover, 'og-cover.png bukan gambar yang valid.');
+        $this->assertSame(1200, $cover[0]);
+        $this->assertSame(630, $cover[1]);
+
+        // apple-touch-icon harus PNG persegi 180x180.
+        $apple = @getimagesize(public_path('images/apple-touch-icon.png'));
+        $this->assertNotEmpty($apple, 'apple-touch-icon.png bukan gambar yang valid.');
+        $this->assertSame(180, $apple[0]);
+        $this->assertSame(180, $apple[1]);
+
+        // favicon.ico harus ICO multi-ukuran.
+        $ico = file_get_contents(public_path('favicon.ico'));
+        $this->assertSame("\x00\x00\x01\x00", substr($ico, 0, 4), 'favicon.ico bukan format ICO.');
+
+        // Manifest web harus JSON valid dengan nama brand.
+        $manifest = json_decode(file_get_contents(public_path('site.webmanifest')), true);
+        $this->assertIsArray($manifest);
+        $this->assertSame('GantinoID Store', $manifest['name'] ?? null);
     }
 
     /** Kartu produk memakai partial bersama dan label jujur "Belum terjual". */

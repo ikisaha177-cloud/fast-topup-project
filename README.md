@@ -1,5 +1,9 @@
 # GantinoID Store
 
+<p align="center">
+  <img src="public/images/logo-horizontal.svg" alt="GantinoID Store — Digital Top-Up &amp; Marketplace" width="430">
+</p>
+
 Aplikasi web **top up game** dan **marketplace item game** berbasis Laravel 8. Pembeli bisa top up nominal game (Mobile Legends, Free Fire, PUBG Mobile, Valorant) dan membeli produk marketplace (voucher, skin, akun, koin). Admin mengelola katalog, memantau transaksi, memverifikasi pembayaran, dan melihat log aktivitas.
 
 ## Fitur

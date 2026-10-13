@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 104" role="img" aria-label="GantinoID Store — Digital Top-Up &amp; Marketplace" font-family="'Sora','Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif">
+  <defs>
+    <linearGradient id="gidShield" x1="0" y1="0" x2="0.85" y2="1">
+      <stop offset="0" stop-color="#FFE87A"/>
+      <stop offset="0.5" stop-color="#FFD60A"/>
+      <stop offset="1" stop-color="#DFA000"/>
+    </linearGradient>
+    <linearGradient id="gidBolt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFDF57"/>
+      <stop offset="1" stop-color="#E9A200"/>
+    </linearGradient>
+  </defs>
+  <rect x="0.5" y="0.5" width="429" height="103" rx="22" fill="#0b0a10" stroke="rgba(255,214,10,0.28)"/>
+  <g transform="translate(22 20)">
+    <path fill="url(#gidShield)" d="M24 2.4 43.2 9.3v14.9c0 10.9-8.2 19.7-19.2 22.7C13 43.9 4.8 35.1 4.8 24.2V9.3Z"/>
+    <path fill="#FFFDF6" d="M24 6.6 39.4 12.4v11.8c0 8.7-6.6 15.8-15.4 18.4-8.8-2.6-15.4-9.7-15.4-18.4V12.4Z"/>
+    <path fill="url(#gidBolt)" d="M27.6 11 14.6 29.2h8.5L20.7 38.6 34.6 19.4h-8.8Z"/>
+  </g>
+  <text x="104" y="52" fill="#FFFFFF" font-size="35" font-weight="800" letter-spacing="-0.6">GantinoID Store</text>
+  <text x="105" y="78" fill="#FFD60A" font-size="12.5" font-weight="600" letter-spacing="3.1">DIGITAL TOP-UP &amp; MARKETPLACE</text>
+</svg>

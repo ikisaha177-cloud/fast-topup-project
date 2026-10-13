@@ -19,6 +19,7 @@
 @section('og_title', $product->name . ' — GantinoID Store')
 @section('og_description', \Illuminate\Support\Str::limit($product->description ?: 'Item game berkualitas dengan pembayaran aman di GantinoID Store.', 150))
 @section('og_image', $shareImage)
+@section('og_image_alt', $product->name . ' — GantinoID Store')
 
 @section('meta')
 <script type="application/ld+json">
