@@ -68,24 +68,32 @@
                 </div>
             </div>
 
-            <div class="card">
-                <h3>Info Transaksi</h3>
-                <div class="summary-row"><span>Kode Order</span><span class="mono">{{ $order->order_code }}</span></div>
-                <div class="summary-row"><span>Pembeli</span><span>{{ $order->buyer->name ?? '-' }}</span></div>
-                <div class="summary-row"><span>Metode Pembayaran</span><span>{{ $order->payment_method }}</span></div>
-                <div class="summary-row"><span>Jumlah Item</span><span>{{ $order->items->count() }}</span></div>
-                <div class="summary-row"><span>Tanggal Dibuat</span><span>{{ $order->created_at->format('d-m-Y H:i') }}</span></div>
-                <div class="summary-row"><span>Terakhir Diperbarui</span><span>{{ $order->updated_at->format('d-m-Y H:i') }}</span></div>
-                <div class="summary-row"><span>Status</span><span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span></div>
-                @if($order->confirmed_at)
-                    <div class="summary-row"><span>Diverifikasi</span><span>{{ $order->confirmationLabel() }} &middot; {{ $order->confirmed_at->format('d-m-Y H:i') }}</span></div>
-                @endif
-                @if($order->failure_reason)
-                    <div class="summary-row"><span>Alasan Gagal</span><span>{{ $order->failure_reason }}</span></div>
-                @endif
-                @if($order->hasPaymentProof())
-                    <div class="summary-row"><span>Bukti Bayar</span><span><a href="{{ $order->paymentProofUrl() }}" target="_blank" rel="noopener">Lihat bukti</a></span></div>
-                @endif
+            <div>
+                <div class="card">
+                    <h3>Info Transaksi</h3>
+                    <div class="summary-row"><span>Kode Order</span><span class="mono">{{ $order->order_code }}</span></div>
+                    <div class="summary-row"><span>Pembeli</span><span>{{ $order->buyer->name ?? '-' }}</span></div>
+                    <div class="summary-row"><span>Metode Pembayaran</span><span>{{ $order->payment_method }}</span></div>
+                    <div class="summary-row"><span>Jumlah Item</span><span>{{ $order->items->count() }}</span></div>
+                    <div class="summary-row"><span>Tanggal Dibuat</span><span>{{ $order->created_at->format('d-m-Y H:i') }}</span></div>
+                    <div class="summary-row"><span>Terakhir Diperbarui</span><span>{{ $order->updated_at->format('d-m-Y H:i') }}</span></div>
+                    <div class="summary-row"><span>Status</span><span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span></div>
+                    @if($order->confirmed_at)
+                        <div class="summary-row"><span>Diverifikasi</span><span>{{ $order->confirmationLabel() }} &middot; {{ $order->confirmed_at->format('d-m-Y H:i') }}</span></div>
+                    @endif
+                    @if($order->failure_reason)
+                        <div class="summary-row"><span>Alasan Gagal</span><span>{{ $order->failure_reason }}</span></div>
+                    @endif
+                    @if($order->hasPaymentProof())
+                        <div class="summary-row"><span>Bukti Bayar</span><span><a href="{{ $order->paymentProofUrl() }}" target="_blank" rel="noopener">Lihat bukti</a></span></div>
+                    @endif
+                </div>
+
+                <div class="card mt-16">
+                    <h3>Jejak Verifikasi</h3>
+                    <p class="muted">Alur pesananmu dari dibuat sampai diputuskan admin.</p>
+                    @include('partials.verification-timeline', ['model' => $order])
+                </div>
             </div>
         </div>
     </div>
