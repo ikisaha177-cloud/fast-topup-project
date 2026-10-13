@@ -147,4 +147,18 @@ class OrderStatus
     {
         return in_array($status, self::reopenable(), true);
     }
+
+    /**
+     * Label untuk langkah terakhir pada indikator progres.
+     *
+     * Selama pesanan belum diputuskan (pending) langkah terakhir masih berupa
+     * target, jadi tetap bernama "Selesai". Baru setelah gagal/dibatalkan
+     * labelnya berubah supaya indikator tidak menyesatkan pembeli.
+     */
+    public static function finalStepLabel($status)
+    {
+        return in_array($status, [self::FAILED, self::CANCELLED], true)
+            ? self::label($status)
+            : self::labels()[self::SUCCESS];
+    }
 }

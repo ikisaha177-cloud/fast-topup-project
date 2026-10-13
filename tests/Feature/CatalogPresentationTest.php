@@ -232,6 +232,39 @@ class CatalogPresentationTest extends TestCase
         $this->assertStringContainsString('aria-label="Cari transaksi"', $html);
     }
 
+    /** Indikator progres tidak menyesatkan: langkah terakhir pesanan pending tetap "Selesai". */
+    public function test_pending_order_step_label_is_not_misleading()
+    {
+        $this->assertSame('Selesai', \App\Support\OrderStatus::finalStepLabel('pending'));
+        $this->assertSame('Selesai', \App\Support\OrderStatus::finalStepLabel('success'));
+        $this->assertSame('Gagal', \App\Support\OrderStatus::finalStepLabel('failed'));
+        $this->assertSame('Dibatalkan', \App\Support\OrderStatus::finalStepLabel('cancelled'));
+
+        $buyer = $this->buyer();
+        $product = \App\Models\Product::first();
+
+        $transaction = \App\Models\Transaction::create([
+            'transaction_code' => 'TXN-STEP-' . uniqid(),
+            'user_id'          => $buyer->id,
+            'game_title_id'    => $product->game_title_id,
+            'product_id'       => $product->id,
+            'user_game_id'     => '12345678',
+            'payment_method'   => 'QRIS',
+            'amount'           => $product->price,
+            'status'           => 'pending',
+        ]);
+
+        // Halaman sukses transaksi pending: langkah ketiga = "Selesai", bukan
+        // "Gagal"/"Dibatalkan".
+        $html = $this->actingAs($buyer)
+            ->get(route('topup.success', $transaction->transaction_code))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringContainsString('>Selesai</div>', $html);
+        $this->assertStringNotContainsString('>Dibatalkan</div>', $html);
+    }
+
     /** Item navigasi/tab/chip yang aktif menandai dirinya untuk pembaca layar. */
     public function test_active_navigation_items_expose_aria_current()
     {

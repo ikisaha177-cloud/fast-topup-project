@@ -90,15 +90,7 @@
                                 </span>
                                 <span>
                                     <strong>Rp {{ number_format($trx->amount, 0, ',', '.') }}</strong><br>
-                                    @if($trx->status === 'success')
-                                        <span class="badge badge-success">Selesai</span>
-                                    @elseif($trx->status === 'pending')
-                                        <span class="badge badge-pending">Menunggu Konfirmasi</span>
-                                    @elseif($trx->status === 'cancelled')
-                                        <span class="badge badge-cancelled">Dibatalkan</span>
-                                    @else
-                                        <span class="badge badge-failed">Gagal</span>
-                                    @endif
+                                    <span class="badge {{ $trx->statusBadge() }}">{{ $trx->statusLabel() }}</span>
                                 </span>
                             </div>
                         @endforeach
@@ -135,15 +127,7 @@
                                 <td>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
                                 <td>{{ $order->payment_method }}</td>
                                 <td>
-                                    @if($order->status === 'success')
-                                        <span class="badge badge-success">Selesai</span>
-                                    @elseif($order->status === 'pending')
-                                        <span class="badge badge-pending">Menunggu Konfirmasi</span>
-                                    @elseif($order->status === 'cancelled')
-                                        <span class="badge badge-cancelled">Dibatalkan</span>
-                                    @else
-                                        <span class="badge badge-failed">Gagal</span>
-                                    @endif
+                                    <span class="badge {{ $order->statusBadge() }}">{{ $order->statusLabel() }}</span>
                                 </td>
                                 <td>{{ $order->created_at->format('d-m-Y H:i') }}</td>
                             </tr>

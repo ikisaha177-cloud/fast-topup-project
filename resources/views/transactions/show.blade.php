@@ -15,7 +15,7 @@
         </p>
 
         @php
-            $finalLabel = $status === 'success' ? 'Selesai' : ($status === 'failed' ? 'Gagal' : 'Dibatalkan');
+            $finalLabel = \App\Support\OrderStatus::finalStepLabel($status);
         @endphp
 
         <div class="steps">

@@ -5,7 +5,7 @@
     $isPending   = $order->isPending();
     $isSuccess   = $order->isSuccess();
     $isCancelled = $status === 'cancelled';
-    $finalLabel  = $isSuccess ? 'Selesai' : ($isCancelled ? 'Dibatalkan' : 'Gagal');
+    $finalLabel  = \App\Support\OrderStatus::finalStepLabel($status);
     $claimed     = $isPending && $order->isPaymentClaimed();
     $badge       = [$order->statusBadge(), $order->statusLabel()];
 @endphp
