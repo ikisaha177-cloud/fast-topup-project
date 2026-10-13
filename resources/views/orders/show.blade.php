@@ -83,6 +83,9 @@
                     <div class="summary-row"><span>Tanggal Dibuat</span><span>{{ $order->created_at->format('d-m-Y H:i') }}</span></div>
                     <div class="summary-row"><span>Terakhir Diperbarui</span><span>{{ $order->updated_at->format('d-m-Y H:i') }}</span></div>
                     <div class="summary-row"><span>Status</span><span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span></div>
+                    @if($order->hasPaymentDeadline() && ! $order->isSuccess())
+                        <div class="summary-row"><span>Batas Bayar</span><span>{{ $order->expires_at->format('d-m-Y H:i') }} WIB</span></div>
+                    @endif
                     @if($order->confirmed_at)
                         <div class="summary-row"><span>Diverifikasi</span><span>{{ $order->confirmationLabel() }} &middot; {{ $order->confirmed_at->format('d-m-Y H:i') }}</span></div>
                     @endif

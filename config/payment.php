@@ -44,6 +44,24 @@ return [
 
     'verification' => env('PAYMENT_VERIFICATION', 'hybrid'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Jendela Pembayaran (batas waktu)
+    |--------------------------------------------------------------------------
+    |
+    | Berapa lama pembeli punya waktu untuk menyelesaikan pembayaran setelah
+    | pesanan dibuat. Lewat dari ini, pesanan `pending` dibatalkan otomatis
+    | dan stoknya dikembalikan — tanpa cron, cukup saat halamannya diakses.
+    |
+    | Ubah lewat .env: PAYMENT_WINDOW_MINUTES=180
+    |
+    | Catatan kejujuran: batas waktu ini benar-benar berlaku, jadi hitungan
+    | mundurnya juga ditampilkan apa adanya di halaman pesanan & portal.
+    |
+    */
+
+    'window' => env('PAYMENT_WINDOW_MINUTES', 180),
+
     'drivers' => [
 
         'simulation' => [

@@ -21,6 +21,7 @@ class MarketplaceOrder extends Model
         'promo_code',
         'discount_amount',
         'status',
+        'expires_at',
         'paid_at',
         'payment_claimed_at',
         'payment_proof',
@@ -39,6 +40,7 @@ class MarketplaceOrder extends Model
         'payment_claimed_at' => 'datetime',
         'confirmed_at'       => 'datetime',
         'revoked_at'         => 'datetime',
+        'expires_at'         => 'datetime',
     ];
 
     public function buyer()
@@ -81,11 +83,68 @@ class MarketplaceOrder extends Model
     }
 
     /**
+     * Punya batas waktu pembayaran? (baris lama bisa saja tidak punya)
+     */
+    public function hasPaymentDeadline()
+    {
+        return $this->expires_at !== null;
+    }
+
+    /**
+     * Pesanan masih menunggu pembayaran dan batas waktunya sudah lewat?
+     *
+     * Inilah syarat lazy expiry: sengaja tidak menangkap pesanan yang sudah
+     * ditandai "sudah bayar" — uang mungkin sudah berpindah, jadi keputusannya
+     * milik admin di antrean verifikasi, bukan milik jam.
+     */
+    public function paymentWindowExpired()
+    {
+        return $this->isPending()
+            && ! $this->isPaymentClaimed()
+            && $this->expires_at !== null
+            && $this->expires_at->isPast();
+    }
+
+    /**
+     * Detik tersisa sebelum batas waktu pembayaran (0 bila sudah lewat / tidak ada).
+     */
+    public function secondsRemaining()
+    {
+        if ($this->expires_at === null) {
+            return 0;
+        }
+
+        return max(0, $this->expires_at->getTimestamp() - now()->getTimestamp());
+    }
+
+    /**
      * Pembeli sudah menandai "sudah bayar" (menunggu verifikasi admin)?
      */
     public function isPaymentClaimed()
     {
         return $this->payment_claimed_at !== null;
+    }
+
+    /**
+     * Pesan jujur untuk pembeli yang mencoba membayar pesanan yang sudah tutup.
+     */
+    public function closedPaymentMessage()
+    {
+        if ($this->wasCancelledByExpiry()) {
+            return 'Batas waktu pembayaran pesanan ini sudah habis, jadi pesanannya dibatalkan otomatis dan stoknya dikembalikan. Silakan buat pesanan baru.';
+        }
+
+        return 'Pesanan ini sudah ' . strtolower($this->statusLabel())
+            . ', jadi tidak ada pembayaran yang perlu ditandai.';
+    }
+
+    /**
+     * Dibatalkan otomatis oleh sistem karena kehabisan waktu bayar?
+     */
+    public function wasCancelledByExpiry()
+    {
+        return $this->status === OrderStatus::CANCELLED
+            && $this->confirmation_source === OrderStatus::SOURCE_EXPIRY;
     }
 
     /**
@@ -189,6 +248,10 @@ class MarketplaceOrder extends Model
 
         if ($this->confirmation_source === OrderStatus::SOURCE_AUTO) {
             return 'Otomatis (bukti pembayaran)';
+        }
+
+        if ($this->confirmation_source === OrderStatus::SOURCE_EXPIRY) {
+            return 'Otomatis (batas waktu habis)';
         }
 
         if ($this->confirmation_source === OrderStatus::SOURCE_ADMIN) {

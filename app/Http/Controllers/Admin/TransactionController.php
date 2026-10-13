@@ -30,6 +30,10 @@ class TransactionController extends Controller
         $search = trim((string) $request->query('q', ''));
         $status = $request->query('status');
 
+        // Lazy expiry: bersihkan antrean dari pesanan yang sudah lewat batas
+        // waktu sebelum admin melihatnya (tanpa cron).
+        $this->transactions->expireOverdue();
+
         $transactions = Transaction::with(['gameTitle', 'product', 'user', 'confirmedBy'])
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($sub) use ($search) {
@@ -68,6 +72,10 @@ class TransactionController extends Controller
         $transaction = Transaction::with(['gameTitle', 'product', 'user', 'confirmedBy', 'revokedBy'])->findOrFail($id);
 
         $this->authorize('view', $transaction);
+
+        // Lazy expiry: detail harus menampilkan status sebenarnya, bukan
+        // "menunggu pembayaran" untuk pesanan yang batas waktunya sudah habis.
+        $this->transactions->expireIfDue($transaction);
 
         $activity = $this->activityFor($transaction);
 

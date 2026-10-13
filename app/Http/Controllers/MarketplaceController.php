@@ -13,6 +13,7 @@ use App\Services\Payment\PaymentGatewayManager;
 use App\Services\PromoService;
 use App\Support\ActivityLogger;
 use App\Support\PaymentMethods;
+use App\Support\PaymentWindow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -351,6 +352,7 @@ class MarketplaceController extends Controller
                 'discount_amount' => $discount,
                 'payment_method'  => $validated['payment_method'],
                 'status'          => 'pending',
+                'expires_at'      => PaymentWindow::deadline(),
             ]);
 
             // Buat tagihan ke gateway. Kegagalan gateway tidak membatalkan order.
@@ -414,6 +416,16 @@ class MarketplaceController extends Controller
     {
         $order = $this->findOwnedOrder($code);
 
+        // Batas waktu lewat? Batalkan dulu (lazy expiry) supaya pembeli tidak
+        // bisa menandai "sudah bayar" pada pesanan yang sudah kedaluwarsa.
+        $this->orders->expireIfDue($order);
+        $order->refresh();
+
+        if (! $order->isPending()) {
+            return redirect()->route('marketplace.success', $code)
+                ->with('error', $order->closedPaymentMessage());
+        }
+
         $proofPath = null;
 
         if ($request->hasFile('payment_proof')) {
@@ -463,12 +475,22 @@ class MarketplaceController extends Controller
     {
         $order = $this->findOwnedOrder($code);
 
-        if ($order->status === 'pending') {
+        // Batas waktu lewat? Biarkan sistem yang membatalkan agar jejaknya
+        // mencatat alasan "kedaluwarsa", bukan seolah pembeli yang membatalkan.
+        if ($this->orders->expireIfDue($order)) {
+            return redirect()->route('marketplace.success', $code)
+                ->with('error', $order->refresh()->closedPaymentMessage());
+        }
+
+        if ($order->isPending()) {
             $this->orders->transitionTo($order, 'cancelled');
+
+            return redirect()->route('marketplace.success', $code)
+                ->with('success', 'Pesanan dibatalkan. Stok dikembalikan ke penjual.');
         }
 
         return redirect()->route('marketplace.success', $code)
-            ->with('success', 'Pesanan dibatalkan. Stok dikembalikan ke penjual.');
+            ->with('error', $order->refresh()->closedPaymentMessage());
     }
 
     /**
@@ -477,6 +499,10 @@ class MarketplaceController extends Controller
     public function success($code)
     {
         $order = $this->findOwnedOrder($code);
+
+        // Lazy expiry: pesanan pending yang sudah lewat batas waktu dibatalkan
+        // tepat ketika halamannya dibuka — tanpa cron.
+        $this->orders->expireIfDue($order);
 
         return view('marketplace.success', compact('order'));
     }

@@ -39,6 +39,8 @@
                         @endif
                     </p>
 
+                    @include('partials.payment-countdown', ['order' => $transaction])
+
                     <div class="qr-box">
                         @include('partials.fake-qr', ['code' => $transaction->transaction_code])
                     </div>
@@ -139,15 +141,19 @@
                 <div class="card">
                     <div class="text-center">
                         <span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span>
-                        <h1 style="font-size:24px; margin:14px 0 4px;">Pesanan {{ $isCancelled ? 'Dibatalkan' : 'Gagal' }}</h1>
+                        <h1 style="font-size:24px; margin:14px 0 4px;">
+                            {{ $transaction->wasCancelledByExpiry() ? 'Waktu Pembayaran Habis' : ('Pesanan ' . ($isCancelled ? 'Dibatalkan' : 'Gagal')) }}
+                        </h1>
                         <p class="muted">
-                            @if($isCancelled)
+                            @if($transaction->wasCancelledByExpiry())
+                                Pesanan ini dibatalkan otomatis karena belum dibayar dalam batas waktu. Stok sudah dikembalikan; silakan buat pesanan baru.
+                            @elseif($isCancelled)
                                 Pesanan ini sudah dibatalkan dan stok dikembalikan. Silakan buat pesanan baru bila masih berminat.
                             @else
                                 Pesanan ini tidak dapat dikonfirmasi oleh admin. Stok sudah dikembalikan; silakan buat pesanan baru.
                             @endif
                         </p>
-                        @if(! $isCancelled && $transaction->failure_reason)
+                        @if($transaction->failure_reason)
                             <p class="muted"><strong>Alasan:</strong> {{ $transaction->failure_reason }}</p>
                         @endif
                     </div>
@@ -169,6 +175,9 @@
                 <div class="summary-row"><span>Metode</span><span>{{ $transaction->payment_method }}</span></div>
                 <div class="summary-row"><span>Tanggal</span><span>{{ $transaction->created_at->format('d-m-Y H:i') }}</span></div>
                 <div class="summary-row"><span>Status</span><span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span></div>
+                @if($transaction->hasPaymentDeadline() && ! $isSuccess)
+                    <div class="summary-row"><span>Batas Bayar</span><span>{{ $transaction->expires_at->format('d-m-Y H:i') }} WIB</span></div>
+                @endif
                 @if($transaction->confirmed_at)
                     <div class="summary-row"><span>Diverifikasi</span><span>{{ $transaction->confirmationLabel() }} &middot; {{ $transaction->confirmed_at->format('d-m-Y H:i') }}</span></div>
                 @endif

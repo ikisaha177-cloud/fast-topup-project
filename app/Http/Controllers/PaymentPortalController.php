@@ -57,7 +57,10 @@ class PaymentPortalController extends Controller
 
         $this->authorize('view', $model);
 
+        $this->expireIfDue($model, $type);
+
         return view('payment.show', [
+            'order'   => $model,
             'doc'     => $this->document($model, $type),
             'channel' => PaymentChannel::forMethod(
                 (string) $model->payment_method,
@@ -80,6 +83,8 @@ class PaymentPortalController extends Controller
 
         $this->authorize('view', $model);
 
+        $this->expireIfDue($model, $type);
+
         $service = $type === 'marketplace' ? $this->orders : $this->transactions;
         $recorded = $service->claimPayment($model, null);
 
@@ -90,13 +95,29 @@ class PaymentPortalController extends Controller
                     . $this->codeOf($model, $type) . '.',
                 $model
             );
+
+            return redirect()
+                ->route('payment.show', $this->codeOf($model, $type))
+                ->with('success', 'Pembayaran dikonfirmasi. Simpan struk di bawah sebagai bukti.');
         }
 
         return redirect()
             ->route('payment.show', $this->codeOf($model, $type))
-            ->with('success', $recorded
-                ? 'Pembayaran dikonfirmasi. Simpan struk di bawah sebagai bukti.'
-                : 'Status pesanan ini sudah tidak menunggu pembayaran.');
+            ->with('error', $model->refresh()->closedPaymentMessage());
+    }
+
+    /**
+     * Batalkan otomatis bila batas waktu pembayaran sudah lewat.
+     *
+     * Portal adalah halaman yang paling mungkin dibuka tepat setelah batas
+     * waktu habis, jadi di sinilah lazy expiry paling berguna: pembeli tidak
+     * pernah melihat instruksi bayar untuk pesanan yang sudah mati.
+     */
+    private function expireIfDue($model, string $type)
+    {
+        $service = $type === 'marketplace' ? $this->orders : $this->transactions;
+
+        $service->expireIfDue($model);
     }
 
     /**
@@ -162,6 +183,9 @@ class PaymentPortalController extends Controller
             'buyer'        => ['name' => $this->buyerName($model, $type)],
             'created_at'   => $model->created_at,
             'confirmed_at' => $model->confirmed_at,
+            'expires_at'   => $model->expires_at,
+            'remaining'    => $model->secondsRemaining(),
+            'cancelled_by_expiry' => $model->wasCancelledByExpiry(),
             'promo_code'   => $model->promo_code,
             'discount'     => (int) $model->discount_amount,
             'items'        => $this->items($model, $type),

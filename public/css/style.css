@@ -4851,3 +4851,90 @@ select.form-control option,
     .promo-input { flex-direction: column; }
     .promo-input .btn { width: 100%; }
 }
+
+
+/* =====================================================================
+   POLISH LAYER v9 — hitungan mundur batas waktu pembayaran
+   (fitur kedaluwarsa pesanan; lihat app/Support/PaymentWindow.php)
+   ===================================================================== */
+
+.pay-deadline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding: 13px 15px;
+    border: 1px solid var(--line-strong);
+    border-left: 3px solid var(--brand);
+    border-radius: var(--radius-sm);
+    background: linear-gradient(180deg, rgba(255, 214, 10, 0.07), rgba(255, 214, 10, 0.02));
+}
+
+.pay-deadline-icon {
+    display: inline-flex;
+    color: var(--brand);
+    flex: 0 0 auto;
+}
+
+.pay-deadline-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.pay-deadline-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.pay-deadline-value {
+    font-family: var(--font-display);
+    font-size: 24px;
+    line-height: 1.1;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+}
+
+.pay-deadline-until {
+    margin-left: auto;
+    font-size: 12.5px;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+/* 10 menit terakhir: detiknya berkedip lembut supaya mendesak tanpa panik. */
+.pay-deadline.is-urgent {
+    border-color: rgba(255, 92, 114, 0.45);
+    border-left-color: var(--red);
+    background: linear-gradient(180deg, rgba(255, 92, 114, 0.1), rgba(255, 92, 114, 0.02));
+}
+
+.pay-deadline.is-urgent .pay-deadline-icon,
+.pay-deadline.is-urgent .pay-deadline-value {
+    color: var(--red);
+}
+
+.pay-deadline.is-urgent .pay-deadline-value {
+    animation: pay-deadline-pulse 1s steps(2, jump-none) infinite;
+}
+
+@keyframes pay-deadline-pulse {
+    50% { opacity: 0.45; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pay-deadline.is-urgent .pay-deadline-value { animation: none; }
+}
+
+@media (max-width: 560px) {
+    .pay-deadline { gap: 6px; }
+    .pay-deadline-value { font-size: 20px; }
+    .pay-deadline-until { margin-left: 0; width: 100%; }
+}

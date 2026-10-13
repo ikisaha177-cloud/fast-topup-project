@@ -14,6 +14,7 @@ Aplikasi web **top up game** dan **marketplace item game** berbasis Laravel 8. P
 - Marketplace: katalog dengan pencarian, filter kategori, dan pagination.
 - **Harga coret & badge diskon** pada produk marketplace (kolom `compare_at_price`), jadi diskon tampil sebagai potongan eksplisit, bukan sekadar angka.
 - **Kode promo** di checkout top up & marketplace: masukkan kode → diskon langsung dihitung dan ditampilkan sebagai baris terpisah (harga item tetap harga katalog). Mendukung diskon **persen** (dengan plafon opsional) dan **nominal**, syarat **minimal belanja**, **batas pemakaian**, **masa berlaku**, serta **cakupan** (`all` / hanya top up / hanya marketplace). Kode tidak peka huruf besar-kecil. Aturan validasi hidup di satu tempat (`App\Services\PromoService`), dipakai ulang oleh checkout, halaman sukses, invoice, struk, dan riwayat.
+- **Batas waktu pembayaran yang benar-benar berlaku**: setiap pesanan baru punya jendela bayar (`PAYMENT_WINDOW_MINUTES`, default **3 jam**). Halaman sukses & portal menampilkan **hitungan mundur** yang jujur; begitu waktunya habis, pesanan dibatalkan otomatis, **stok dikembalikan**, dan alasan "kedaluwarsa" tercatat apa adanya. Pembatalan terjadi **saat halamannya diakses** (lazy expiry — tanpa cron) lewat `TransactionService`/`MarketplaceOrderService`, jadi tidak ada penjadwal yang perlu dijalankan. Pesanan yang pembelinya sudah menandai "Saya Sudah Bayar" **tidak** ikut kedaluwarsa: itu keputusan admin di antrean verifikasi, bukan keputusan jam.
 - Keranjang (session) dengan validasi stok di server.
 - **Alur konfirmasi pesanan**: pembeli memesan → menandai **"Saya Sudah Bayar"** → status **Menunggu Konfirmasi**; admin memverifikasi lalu menandai **Selesai** atau **Gagal** (stok otomatis dikembalikan). Pembeli juga bisa **membatalkan** pesanan selama masih menunggu konfirmasi. Untuk pembayaran digital, admin bisa lewat jalur otomatis — lihat *Alur Status Pesanan* di bawah.
 - **Unggah bukti pembayaran (opsional)**: saat menandai sudah bayar, pembeli boleh melampirkan gambar bukti transfer (jpg/png/webp, maks 2 MB). Bukti tampil di halaman status pembeli dan panel verifikasi admin, serta bisa disusulkan selama pesanan masih menunggu konfirmasi.
@@ -44,8 +45,10 @@ pending ──(admin setujui)───────────▶ success    (pe
    ├────(admin tolak)───────────────▶ failed     (gagal, stok dikembalikan)
    │
    └────(pembeli batal)─────────────▶ cancelled  (stok dikembalikan)
+   │
+   └────(batas waktu habis)─────────▶ cancelled  (stok dikembalikan, otomatis)
 
-failed / cancelled ──(admin buka kembali)──▶ pending  (salah klik diperbaiki; stok dikunci ulang)
+failed / cancelled ──(admin buka kembali)──▶ pending  (salah klik diperbaiki; stok dikunci ulang; jendela bayar dimulai ulang)
 ```
 
 Ada **tiga jalur menuju `success`**, dan mana yang dipakai dicatat jujur di kolom `confirmation_source`:
@@ -57,6 +60,7 @@ Ada **tiga jalur menuju `success`**, dan mana yang dipakai dicatat jujur di kolo
 Dengan driver default `simulation` dan mode default `hybrid`, pesanan tanpa bukti menunggu verifikasi admin, sedangkan pesanan **dengan bukti pembayaran** langsung selesai otomatis. Saat `PAYMENT_DRIVER=midtrans`, pesanan yang pembayarannya sudah *settlement* langsung selesai lewat jalur `gateway`.
 
 - `failed` dan `cancelled` bersifat **terminal** lewat aksi biasa. Admin punya dua jalur perbaikan salah klik: **Buka Kembali** (pada `failed`/`cancelled` → `pending`, mengunci ulang stok) dan **Batalkan Konfirmasi** (pada `success` → `failed`, mengembalikan stok). Keduanya mencatat jejak audit terpisah (`revoked_at`/`revoked_by`) sehingga informasi konfirmasi awal tetap utuh.
+- **Kedaluwarsa pembayaran** juga berakhir di `cancelled`, tapi jejaknya tidak menyamar sebagai keputusan manusia: `confirmation_source = expiry` dan `failure_reason` menyebut durasi nyatanya (mis. *"Pembayaran tidak diterima dalam batas waktu 3 jam."*). Pembeli diberi tahu lewat notifikasi email. Karena `cancelled` bisa dibuka kembali, admin yang salah membiarkan pesanan mati tetap bisa menghidupkannya — dan **jendela bayarnya dimulai ulang**, bukan diwarisi batas waktu lama yang sudah basi.
 - Admin hanya punya dua keputusan di UI saat memverifikasi: **Konfirmasi** (success) dan **Gagal** (failed). Pembatalan adalah tindakan pembeli, sehingga validasi admin sengaja dibatasi ke dua nilai itu (`OrderStatus::adminDecisions()`).
 
 ### Navigasi & Penempatan Fitur
@@ -67,8 +71,8 @@ Dengan driver default `simulation` dan mode default `hybrid`, pesanan tanpa bukt
 
 ### Admin
 - Dashboard: KPI, grafik pendapatan 7 hari, transaksi & pesanan terbaru, serta penanda **Perlu Diverifikasi**.
-- **Konfirmasi pesanan**: tombol **Konfirmasi** / **Gagal** (+ alasan opsional) langsung pada baris transaksi/pesanan yang masih menunggu; baris yang sudah ditandai "Sudah Bayar" disorot, dan baris dengan **bukti pembayaran** diberi badge "Bukti".
-- **Detail transaksi & pesanan** (`/admin/transactions/{id}`, `/admin/orders/{id}`): data pembeli, item, jejak verifikasi (tandai bayar / pembayaran diterima / diverifikasi / konfirmasi dibatalkan), pratinjau **bukti pembayaran**, riwayat aktivitas per objek, dan panel verifikasi berisi tombol Konfirmasi/Gagal — termasuk **Buka Kembali** (salah klik pada gagal/batal) dan **Batalkan Konfirmasi** (salah konfirmasi `success` → `failed`). Saat membuka kembali, status kembali `pending`, seluruh jejak verifikasi dibersihkan, dan stok dikunci ulang (dibatalkan bila stok sudah habis, supaya tidak pernah minus); saat membatalkan konfirmasi, stok dikembalikan dan jejak konfirmasi awal tetap utuh.
+- **Konfirmasi pesanan**: tombol **Konfirmasi** / **Gagal** (+ alasan opsional) langsung pada baris transaksi/pesanan yang masih menunggu; baris yang sudah ditandai "Sudah Bayar" disorot, dan baris dengan **bukti pembayaran** diberi badge "Bukti". Antrean ini otomatis **dibersihkan dari pesanan kedaluwarsa** saat dibuka, jadi yang tampil benar-benar masih menunggu keputusan — bukan pesanan yang sudah mati.
+- **Detail transaksi & pesanan** (`/admin/transactions/{id}`, `/admin/orders/{id}`): data pembeli, item, jejak verifikasi (tandai bayar / pembayaran diterima / diverifikasi / konfirmasi dibatalkan), pratinjau **bukti pembayaran**, riwayat aktivitas per objek, dan panel verifikasi berisi tombol Konfirmasi/Gagal — termasuk **Buka Kembali** (salah klik pada gagal/batal) dan **Batalkan Konfirmasi** (salah konfirmasi `success` → `failed`). Saat membuka kembali, status kembali `pending`, seluruh jejak verifikasi dibersihkan, **jendela pembayaran dimulai ulang** (bukan mewarisi batas waktu yang sudah basi), dan stok dikunci ulang (dibatalkan bila stok sudah habis, supaya tidak pernah minus); saat membatalkan konfirmasi, stok dikembalikan dan jejak konfirmasi awal tetap utuh. Panel ini juga menampilkan baris **Batas Bayar** agar admin tahu sisa waktu pembeli.
 - **Laporan harian / bulanan / tahunan**: ringkasan KPI, grafik pendapatan, tabel rincian per periode, sebaran status, game & produk terlaris (hanya pesanan selesai), breakdown metode pembayaran, filter status, dan **ekspor CSV**.
 - **Kelola kode promo** (`/admin/promos`): buat, ubah, aktif/nonaktifkan (toggle), dan hapus kode beserta deskripsi, tipe diskon, minimal belanja, plafon, batas pemakaian, masa berlaku, dan cakupan. Kode yang **sudah pernah dipakai** dijaga: hanya bisa dinonaktifkan, tidak bisa dihapus, supaya riwayat transaksi tetap utuh.
 - CRUD game (dengan upload icon) dan produk top up.
@@ -158,6 +162,26 @@ pesanan **Selesai** dengan `confirmation_source = gateway` — tanpa campur tang
 melaporkan pembayaran **gagal/kedaluwarsa** menandai pesanan `failed`/`cancelled` dan mengembalikan stok.
 Jadi admin hanya menangani pembayaran **manual** (mis. transfer yang perlu dicek manusia).
 
+### Batas waktu pembayaran
+
+```bash
+# .env
+PAYMENT_WINDOW_MINUTES=180   # 3 jam (default)
+```
+
+Berapa lama pembeli punya waktu untuk membayar sebelum pesanan `pending` dibatalkan otomatis dan
+stoknya dikembalikan. Semua hitungan memakai satu sumber (`App\Support\PaymentWindow`), sehingga
+hitungan mundur di UI dan keputusan "sudah kedaluwarsa" tidak pernah berbeda.
+
+Nilai yang tidak masuk akal dijepit otomatis (minimal **5 menit**, maksimal **7 hari**) supaya salah
+set `.env` tidak pernah mengunci stok selamanya atau membatalkan pesanan saat pembeli masih menekan
+tombol bayar.
+
+Tidak perlu cron atau penjadwal apa pun: pembatalan bersifat **lazy** — dijalankan saat pesanannya
+diakses (halaman sukses, portal pembayaran, invoice, riwayat pembeli, dan daftar/detail admin).
+Baris lama yang dibuat sebelum kolom `expires_at` ada dibiarkan **tanpa batas waktu**, jadi tidak
+pernah ikut kedaluwarsa.
+
 ### SMTP
 
 Untuk produksi ganti `MAIL_*` di `.env` ke SMTP provider (Mailtrap/Mailgun/Postmark/Gmail). Lihat contoh di `.env.example`.
@@ -188,7 +212,9 @@ Dibuat oleh `PromoCodeSeeder` (ikut `php artisan migrate --seed`). Kelola di `/a
 php vendor/bin/phpunit
 ```
 
-Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **246 test / 1028 assertion** hijau.
+Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **269 test / 1106 assertion** hijau.
+
+**Batas waktu pembayaran** (23 test): pesanan baru selalu dapat jendela bayar (`expires_at`) di kedua alur checkout, pembatalan otomatis saat halaman diakses berikut pengembalian stok (top up & marketplace), invoice/portal/riwayat menampilkan status sebenarnya setelah kedaluwarsa, daftar admin menyapu pesanan basi sementara riwayat pembeli hanya menyapu miliknya sendiri, klaim setelah batas waktu ditolak, jejak `confirmation_source = expiry` + alasan + notifikasi email, pesanan yang sudah ditandai "sudah bayar" **tidak** ikut kedaluwarsa, baris tanpa `expires_at` tidak pernah kedaluwarsa, idempotensi, pembatalan manual sebelum batas waktu tidak dicap kedaluwarsa, buka ulang memberi jendela baru, hitungan mundur tampil/sembunyi di tempat yang tepat, serta penjepitan nilai `PAYMENT_WINDOW_MINUTES`.
 
 **Kode promo** (30 test): semua aturan validasi (kedaluwarsa, belum dimulai, dipakai semua, di bawah minimal belanja, salah cakupan, nonaktif), diskon persen dengan plafon & diskon nominal, penetapan kode di session (khusus checkout, terhapus otomatis saat tak berlaku, habis saat pesanan dibuat), alur lengkap pembuatan transaksi dengan `promo_code` + `discount_amount` + `amount` bersih, `used_count` naik dalam transaksi, kode terpakai tidak bisa dihapus, cakupan top up vs marketplace, CRUD + toggle admin (otentikasi & anti-duplikat peka huruf besar-kecil), serta render diskon di halaman sukses, invoice, struk portal, dan riwayat pesanan.
 
@@ -209,8 +235,8 @@ app/Notifications/            # Email notifikasi (queue)
 app/Policies/                 # Otorisasi berbasis policy
 app/Services/                 # Logika transisi status + stok + laporan
 app/Services/Payment/         # Abstraksi gateway + processor webhook
-app/Support/                  # Helper (status pesanan, metode bayar, audit log)
-config/payment.php            # Konfigurasi gateway pembayaran
+app/Support/                  # Helper (status pesanan, metode bayar, jendela pembayaran, audit log)
+config/payment.php            # Konfigurasi gateway pembayaran + jendela pembayaran
 database/migrations/          # Skema database
 database/seeders/             # Data awal
 deploy/                       # Contoh konfigurasi Supervisor

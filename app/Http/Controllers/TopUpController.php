@@ -13,6 +13,7 @@ use App\Services\PromoService;
 use App\Services\TransactionService;
 use App\Support\ActivityLogger;
 use App\Support\PaymentMethods;
+use App\Support\PaymentWindow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -288,6 +289,7 @@ class TopUpController extends Controller
                 'discount_amount'  => $discount,
                 'amount'           => (int) $draft['amount'] - $discount,
                 'status'           => 'pending',
+                'expires_at'       => PaymentWindow::deadline(),
             ]);
 
             // Buat tagihan ke gateway (simulasi/Midtrans). Gagal gateway tidak
@@ -350,6 +352,16 @@ class TopUpController extends Controller
     {
         $transaction = $this->findOwnedTransaction($code);
 
+        // Batas waktu lewat? Batalkan dulu (lazy expiry) supaya pembeli tidak
+        // bisa menandai "sudah bayar" pada pesanan yang sudah kedaluwarsa.
+        $this->transactions->expireIfDue($transaction);
+        $transaction->refresh();
+
+        if (! $transaction->isPending()) {
+            return redirect()->route('topup.success', $code)
+                ->with('error', $transaction->closedPaymentMessage());
+        }
+
         $proofPath = null;
 
         if ($request->hasFile('payment_proof')) {
@@ -399,12 +411,22 @@ class TopUpController extends Controller
     {
         $transaction = $this->findOwnedTransaction($code);
 
-        if ($transaction->status === 'pending') {
+        // Batas waktu lewat? Biarkan sistem yang membatalkan agar jejaknya
+        // mencatat alasan "kedaluwarsa", bukan seolah pembeli yang membatalkan.
+        if ($this->transactions->expireIfDue($transaction)) {
+            return redirect()->route('topup.success', $code)
+                ->with('error', $transaction->refresh()->closedPaymentMessage());
+        }
+
+        if ($transaction->isPending()) {
             $this->transactions->transitionTo($transaction, 'cancelled');
+
+            return redirect()->route('topup.success', $code)
+                ->with('success', 'Pesanan dibatalkan. Stok kembali tersedia.');
         }
 
         return redirect()->route('topup.success', $code)
-            ->with('success', 'Pesanan dibatalkan. Stok kembali tersedia.');
+            ->with('error', $transaction->refresh()->closedPaymentMessage());
     }
 
     /**
@@ -413,6 +435,10 @@ class TopUpController extends Controller
     public function success($code)
     {
         $transaction = $this->findOwnedTransaction($code);
+
+        // Lazy expiry: pesanan pending yang sudah lewat batas waktu dibatalkan
+        // tepat ketika halamannya dibuka — tanpa cron.
+        $this->transactions->expireIfDue($transaction);
 
         return view('topup.success', compact('transaction'));
     }

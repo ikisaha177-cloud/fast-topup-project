@@ -45,6 +45,9 @@
                     <div class="summary-row"><span>Server ID</span><span>{{ $transaction->server_id ?: '-' }}</span></div>
                     <div class="summary-row"><span>Metode</span><span>{{ $transaction->payment_method }}</span></div>
                     <div class="summary-row"><span>Tanggal</span><span>{{ $transaction->created_at->format('d-m-Y H:i') }}</span></div>
+                    @if($transaction->hasPaymentDeadline() && ! $transaction->isSuccess())
+                        <div class="summary-row"><span>Batas Bayar</span><span>{{ $transaction->expires_at->format('d-m-Y H:i') }} WIB</span></div>
+                    @endif
                     @if($transaction->confirmed_at)
                         <div class="summary-row"><span>Diverifikasi</span><span>{{ $transaction->confirmationLabel() }} &middot; {{ $transaction->confirmed_at->format('d-m-Y H:i') }}</span></div>
                     @endif

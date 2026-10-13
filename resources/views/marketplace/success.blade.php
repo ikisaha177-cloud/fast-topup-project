@@ -39,6 +39,8 @@
                         @endif
                     </p>
 
+                    @include('partials.payment-countdown', ['order' => $order])
+
                     <div class="qr-box">
                         @include('partials.fake-qr', ['code' => $order->order_code])
                     </div>
@@ -139,15 +141,19 @@
                 <div class="card">
                     <div class="text-center">
                         <span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span>
-                        <h1 style="font-size:24px; margin:14px 0 4px;">Pesanan {{ $isCancelled ? 'Dibatalkan' : 'Gagal' }}</h1>
+                        <h1 style="font-size:24px; margin:14px 0 4px;">
+                            {{ $order->wasCancelledByExpiry() ? 'Waktu Pembayaran Habis' : ('Pesanan ' . ($isCancelled ? 'Dibatalkan' : 'Gagal')) }}
+                        </h1>
                         <p class="muted">
-                            @if($isCancelled)
+                            @if($order->wasCancelledByExpiry())
+                                Pesanan ini dibatalkan otomatis karena belum dibayar dalam batas waktu. Stok sudah dikembalikan ke penjual; silakan buat pesanan baru.
+                            @elseif($isCancelled)
                                 Pesanan dibatalkan dan stok sudah dikembalikan ke penjual.
                             @else
                                 Pesanan ini tidak dapat dikonfirmasi oleh admin. Stok sudah dikembalikan ke penjual.
                             @endif
                         </p>
-                        @if(! $isCancelled && $order->failure_reason)
+                        @if($order->failure_reason)
                             <p class="muted"><strong>Alasan:</strong> {{ $order->failure_reason }}</p>
                         @endif
                     </div>
@@ -161,6 +167,9 @@
                 <div class="summary-row"><span>Metode</span><span>{{ $order->payment_method }}</span></div>
                 <div class="summary-row"><span>Tanggal</span><span>{{ $order->created_at->format('d-m-Y H:i') }}</span></div>
                 <div class="summary-row"><span>Status</span><span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span></div>
+                @if($order->hasPaymentDeadline() && ! $isSuccess)
+                    <div class="summary-row"><span>Batas Bayar</span><span>{{ $order->expires_at->format('d-m-Y H:i') }} WIB</span></div>
+                @endif
                 @if($order->confirmed_at)
                     <div class="summary-row"><span>Diverifikasi</span><span>{{ $order->confirmationLabel() }} &middot; {{ $order->confirmed_at->format('d-m-Y H:i') }}</span></div>
                 @endif

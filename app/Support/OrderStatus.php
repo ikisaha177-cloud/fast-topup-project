@@ -46,6 +46,22 @@ class OrderStatus
     public const SOURCE_AUTO = 'auto';
 
     /**
+     * Pembatalan otomatis oleh sistem karena batas waktu pembayaran lewat
+     * (lazy expiry — lihat {@see PaymentWindow}).
+     */
+    public const SOURCE_EXPIRY = 'expiry';
+
+    /**
+     * Semua sumber keputusan yang sah.
+     *
+     * @return array<int, string>
+     */
+    public static function sources()
+    {
+        return [self::SOURCE_ADMIN, self::SOURCE_GATEWAY, self::SOURCE_AUTO, self::SOURCE_EXPIRY];
+    }
+
+    /**
      * Semua status yang sah.
      *
      * @return array<int, string>

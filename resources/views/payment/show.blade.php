@@ -47,8 +47,13 @@
                 <span class="badge {{ $doc['status'] === 'cancelled' ? 'badge-cancelled' : 'badge-failed' }}">{{ $doc['label'] }}</span>
                 <h2>Pesanan Tidak Dapat Dibayar</h2>
                 <p class="muted">
-                    Pesanan ini sudah {{ strtolower($doc['label']) }}, jadi tidak ada pembayaran yang perlu diselesaikan.
-                    Silakan buat pesanan baru bila masih berminat.
+                    @if($doc['cancelled_by_expiry'] ?? false)
+                        Pesanan ini dibatalkan otomatis karena melewati batas waktu pembayaran. Stok sudah dikembalikan.
+                        Silakan buat pesanan baru bila masih berminat.
+                    @else
+                        Pesanan ini sudah {{ strtolower($doc['label']) }}, jadi tidak ada pembayaran yang perlu diselesaikan.
+                        Silakan buat pesanan baru bila masih berminat.
+                    @endif
                 </p>
             </div>
             <a href="{{ $backUrl }}" class="btn btn-outline btn-block mt-16">Lihat Detail Pesanan</a>
@@ -155,6 +160,8 @@
                 <h2>{{ $channel['headline'] }}</h2>
                 <p class="muted">{{ $channel['note'] }}</p>
             </div>
+
+            @include('partials.payment-countdown', ['order' => $order])
 
             @if($channel['type'] === 'qr')
                 <div class="portal-qr">

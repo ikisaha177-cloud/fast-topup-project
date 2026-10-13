@@ -403,6 +403,11 @@
                             <p><strong>Selesaikan pembayaran {{ $doc['method'] }}.</strong></p>
                             <p>Scan QR di samping atau bayar sesuai kode <span class="mono">{{ $doc['number'] }}</span>
                                 sebesar <strong>Rp {{ number_format($doc['total'], 0, ',', '.') }}</strong>.</p>
+                            @if(! empty($doc['expires_at']) && $doc['status'] === 'pending')
+                                <p>Pembayaran harus diterima sebelum
+                                    <strong>{{ $doc['expires_at']->format('d-m-Y H:i') }} WIB</strong>.
+                                    Lewat dari itu pesanan dibatalkan otomatis dan stok dikembalikan.</p>
+                            @endif
                             <p>Setelah membayar, unggah screenshot invoice ini sebagai bukti agar pesanan diproses.</p>
                         @endif
                     </div>

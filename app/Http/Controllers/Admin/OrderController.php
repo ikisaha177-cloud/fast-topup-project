@@ -30,6 +30,10 @@ class OrderController extends Controller
         $search = trim((string) $request->query('q', ''));
         $status = $request->query('status');
 
+        // Lazy expiry: bersihkan antrean dari pesanan yang sudah lewat batas
+        // waktu sebelum admin melihatnya (tanpa cron).
+        $this->orders->expireOverdue();
+
         $orders = MarketplaceOrder::with(['buyer', 'items.product', 'confirmedBy'])
             ->withCount('items')
             ->when($search !== '', function ($query) use ($search) {
@@ -67,6 +71,10 @@ class OrderController extends Controller
         $order = MarketplaceOrder::with(['buyer', 'items.product', 'confirmedBy', 'revokedBy'])->findOrFail($id);
 
         $this->authorize('view', $order);
+
+        // Lazy expiry: detail harus menampilkan status sebenarnya, bukan
+        // "menunggu pembayaran" untuk pesanan yang batas waktunya sudah habis.
+        $this->orders->expireIfDue($order);
 
         $activity = $this->activityFor($order);
 

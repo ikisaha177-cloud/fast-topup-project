@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\MarketplaceOrder;
 use App\Models\Transaction;
+use App\Services\MarketplaceOrderService;
+use App\Services\TransactionService;
 use App\Support\OrderStatus;
 use Illuminate\Http\Request;
 
@@ -16,6 +18,18 @@ use Illuminate\Http\Request;
  */
 class InvoiceController extends Controller
 {
+    /** @var \App\Services\TransactionService */
+    protected $transactions;
+
+    /** @var \App\Services\MarketplaceOrderService */
+    protected $orders;
+
+    public function __construct(TransactionService $transactions, MarketplaceOrderService $orders)
+    {
+        $this->transactions = $transactions;
+        $this->orders       = $orders;
+    }
+
     public function show(Request $request, $code)
     {
         $transaction = Transaction::where('transaction_code', $code)
@@ -24,6 +38,10 @@ class InvoiceController extends Controller
 
         if ($transaction) {
             $this->authorize('view', $transaction);
+
+            // Lazy expiry: invoice yang dibuka setelah batas waktu habis harus
+            // menampilkan status sebenarnya, bukan "menunggu pembayaran".
+            $this->transactions->expireIfDue($transaction);
 
             return view('invoice.show', [
                 'doc'  => $this->transactionDocument($transaction),
@@ -36,6 +54,8 @@ class InvoiceController extends Controller
             ->firstOrFail();
 
         $this->authorize('view', $order);
+
+        $this->orders->expireIfDue($order);
 
         return view('invoice.show', [
             'doc'  => $this->orderDocument($order),
@@ -59,6 +79,7 @@ class InvoiceController extends Controller
             'label'     => $transaction->statusLabel(),
             'paid'      => $transaction->isSuccess(),
             'paid_at'   => $transaction->confirmed_at ?: $transaction->paid_at,
+            'expires_at' => $transaction->expires_at,
             'method'    => $transaction->payment_method,
             'provider'  => $transaction->payment_provider,
             'reference' => $transaction->payment_reference,
@@ -114,6 +135,7 @@ class InvoiceController extends Controller
             'label'     => $order->statusLabel(),
             'paid'      => $order->isSuccess(),
             'paid_at'   => $order->confirmed_at ?: $order->paid_at,
+            'expires_at' => $order->expires_at,
             'method'    => $order->payment_method,
             'provider'  => $order->payment_provider,
             'reference' => $order->payment_reference,

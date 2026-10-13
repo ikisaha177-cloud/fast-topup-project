@@ -279,6 +279,28 @@ dan kejujuran data*. Strategi paling masuk akal: **adopsi mekanisme komersial me
 4. **Kanal dukungan WhatsApp + FAQ per produk**
    - Tombol WA dari konfigurasi (tanpa hardcode), FAQ akordeon per game (data terstruktur).
 
+#### Status eksekusi
+
+| # | Item | Status | Bukti |
+|---|------|--------|-------|
+| 1 | Kode promo / voucher | ✅ **selesai** | `promo_codes` + `PromoService` + admin CRUD + 30 test (`tests/Feature/PromoCodeTest.php`) |
+| 2 | Kedaluwarsa pembayaran + auto-batal | ✅ **selesai** | kolom `expires_at`, `PaymentWindow`, `expireIfDue()`/`expireOverdue()`, jejak `confirmation_source=expiry`, hitungan mundur di halaman sukses & portal, 23 test (`tests/Feature/PaymentExpiryTest.php`) |
+| 3 | Ulasan terverifikasi | ⬜ belum | — |
+| 4 | WhatsApp CS + FAQ per produk | ⬜ belum | — |
+
+Catatan implementasi #2 (menyimpang dari rencana awal, dengan alasan):
+- Pembatalan otomatis ditandai lewat **`confirmation_source = expiry`** (konstanta baru
+  `OrderStatus::SOURCE_EXPIRY`) plus `failure_reason`, bukan kolom `expired_at` terpisah. Satu kolom
+  yang sudah ada sudah cukup untuk membedakan "dibatalkan pembeli" (kolom kosong) dari "dibatalkan
+  sistem" (kolom terisi) — tanpa menambah kolom yang hanya dipakai sekali baca.
+- Pesanan yang pembelinya **sudah menandai "sudah bayar" dikecualikan** dari auto-batal. Rencana
+  awal menyebut semua `pending`; mengetatkan ini lebih jujur karena uang mungkin sudah berpindah —
+  keputusannya milik admin, bukan jam.
+- **Buka ulang oleh admin memulai jendela bayar baru.** Tanpa ini, pesanan yang dibuka kembali akan
+  langsung kedaluwarsa lagi pada halaman berikutnya.
+- Pembatalan juga dijalankan pada **daftar admin & riwayat pembeli**, supaya antrean verifikasi dan
+  riwayat tidak menampilkan pesanan yang sebenarnya sudah mati.
+
 ### P1 — nilai jelas, biaya sedang
 
 5. Perluas kanal bayar di portal: **Alfamart/Indomaret** + tambahan VA bank (tetap simulasi, dilabeli jujur).
