@@ -26,9 +26,17 @@
                 </div>
                 <div class="summary-row"><span>User ID</span><span class="mono">{{ $draft['user_game_id'] }}</span></div>
                 <div class="summary-row"><span>Server ID</span><span>{{ $draft['server_id'] ?: '-' }}</span></div>
+                <div class="summary-row"><span>Subtotal</span><span>Rp {{ number_format($draft['amount'], 0, ',', '.') }}</span></div>
+
+                @include('partials.promo-box', [
+                    'applyRoute' => route('topup.promo.apply'),
+                    'code'       => $promoCode,
+                    'discount'   => $discount,
+                ])
+
                 <div class="summary-total">
                     <span>Total Bayar</span>
-                    <span class="amount">Rp {{ number_format($draft['amount'], 0, ',', '.') }}</span>
+                    <span class="amount">Rp {{ number_format($draft['amount'] - $discount, 0, ',', '.') }}</span>
                 </div>
             </div>
 

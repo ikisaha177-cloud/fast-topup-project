@@ -9,6 +9,7 @@ use App\Models\GameTitle;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Services\Payment\PaymentGatewayManager;
+use App\Services\PromoService;
 use App\Services\TransactionService;
 use App\Support\ActivityLogger;
 use App\Support\PaymentMethods;
@@ -25,10 +26,14 @@ class TopUpController extends Controller
     /** @var \App\Services\Payment\PaymentGatewayManager */
     protected $gateways;
 
-    public function __construct(TransactionService $transactions, PaymentGatewayManager $gateways)
+    /** @var \App\Services\PromoService */
+    protected $promo;
+
+    public function __construct(TransactionService $transactions, PaymentGatewayManager $gateways, PromoService $promo)
     {
         $this->transactions = $transactions;
         $this->gateways     = $gateways;
+        $this->promo        = $promo;
     }
 
     /**
@@ -140,10 +145,79 @@ class TopUpController extends Controller
                 ->with('error', 'Silakan pilih game dan nominal terlebih dahulu.');
         }
 
+        // Kode promo dihitung ulang setiap halaman checkout dibuka: subtotal bisa
+        // berubah (ganti nominal) dan promo bisa saja sudah kedaluwarsa.
+        $promo = $this->refreshDraftPromo($draft);
+
         return view('topup.checkout', [
             'draft'          => $draft,
+            'promoCode'      => $draft['promo_code'] ?? null,
+            'discount'       => $promo,
             'paymentMethods' => PaymentMethods::labelled(),
         ]);
+    }
+
+    /**
+     * Pasang / lepas kode promo pada draft checkout top up.
+     */
+    public function applyPromo(Request $request)
+    {
+        $draft = session('topup_draft');
+
+        if (! $draft) {
+            return redirect()->route('topup.index')
+                ->with('error', 'Sesi checkout habis, silakan ulangi.');
+        }
+
+        if ($request->boolean('remove')) {
+            unset($draft['promo_code'], $draft['promo_discount']);
+            session()->put('topup_draft', $draft);
+
+            return redirect()->route('topup.checkout')->with('success', 'Kode promo dihapus dari pesanan.');
+        }
+
+        $quote = $this->promo->quote($request->input('code'), (int) $draft['amount'], 'topup');
+
+        if (! $quote['ok']) {
+            return back()->withErrors(['promo_code' => $quote['message']]);
+        }
+
+        $draft['promo_code']     = $quote['promo']->code;
+        $draft['promo_discount'] = $quote['discount'];
+        session()->put('topup_draft', $draft);
+
+        return redirect()->route('topup.checkout')->with(
+            'success',
+            'Kode promo "' . $quote['promo']->code . '" dipakai. Kamu hemat Rp ' . number_format($quote['discount'], 0, ',', '.') . '.'
+        );
+    }
+
+    /**
+     * Hitung ulang potongan promo draft; buang kodenya bila sudah tidak berlaku.
+     *
+     * @param  array<string, mixed>  $draft
+     * @return int  Potongan rupiah yang berlaku.
+     */
+    private function refreshDraftPromo(array &$draft)
+    {
+        if (empty($draft['promo_code'])) {
+            return 0;
+        }
+
+        $quote = $this->promo->quote($draft['promo_code'], (int) $draft['amount'], 'topup');
+
+        if (! $quote['ok']) {
+            unset($draft['promo_code'], $draft['promo_discount']);
+            session()->put('topup_draft', $draft);
+
+            return 0;
+        }
+
+        $draft['promo_code']     = $quote['promo']->code;
+        $draft['promo_discount'] = $quote['discount'];
+        session()->put('topup_draft', $draft);
+
+        return $quote['discount'];
     }
 
     /**
@@ -180,6 +254,28 @@ class TopUpController extends Controller
                     ->withErrors(['product_id' => 'Stok "' . $product->name . '" habis. Pilih nominal lain.']);
             }
 
+            // Kode promo divalidasi ulang DI DALAM transaksi dengan baris promo
+            // dikunci, supaya kuota pemakaian tidak bisa dilewati dua pembeli
+            // yang menekan "Bayar" bersamaan.
+            $discount = 0;
+            $promoCode = null;
+
+            if (! empty($draft['promo_code'])) {
+                $quote = $this->promo->quote($draft['promo_code'], (int) $draft['amount'], 'topup', true);
+
+                if (! $quote['ok']) {
+                    DB::rollBack();
+
+                    return redirect()->route('topup.checkout')
+                        ->withErrors(['promo_code' => $quote['message']]);
+                }
+
+                $discount  = $quote['discount'];
+                $promoCode = $quote['promo']->code;
+
+                $quote['promo']->increment('used_count');
+            }
+
             $transaction = Transaction::create([
                 'transaction_code' => $this->generateCode('TXN'),
                 'user_id'          => auth()->id(),
@@ -188,7 +284,9 @@ class TopUpController extends Controller
                 'user_game_id'     => $draft['user_game_id'],
                 'server_id'        => $draft['server_id'],
                 'payment_method'   => $validated['payment_method'],
-                'amount'           => $draft['amount'],
+                'promo_code'       => $promoCode,
+                'discount_amount'  => $discount,
+                'amount'           => (int) $draft['amount'] - $discount,
                 'status'           => 'pending',
             ]);
 

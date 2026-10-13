@@ -60,6 +60,7 @@ Route::middleware('not-admin')->group(function () {
     Route::get('/top-up', [TopUpController::class, 'index'])->name('topup.index');
     Route::get('/top-up/checkout', [TopUpController::class, 'checkout'])->name('topup.checkout');
     Route::post('/top-up/checkout', [TopUpController::class, 'storeCheckout'])->name('topup.checkout.store');
+    Route::post('/top-up/checkout/promo', [TopUpController::class, 'applyPromo'])->name('topup.promo.apply');
     Route::post('/top-up/checkout/pay', [TopUpController::class, 'pay'])->name('topup.pay');
     Route::get('/top-up/success/{code}', [TopUpController::class, 'success'])->name('topup.success');
     Route::post('/top-up/payment/{code}/claim', [TopUpController::class, 'claimPayment'])->name('topup.payment.claim');
@@ -73,6 +74,8 @@ Route::get('/marketplace/checkout', [MarketplaceController::class, 'checkout'])
     ->middleware(['auth', 'not-admin'])->name('marketplace.checkout');
 Route::post('/marketplace/checkout', [MarketplaceController::class, 'processCheckout'])
     ->middleware(['auth', 'not-admin'])->name('marketplace.checkout.process');
+Route::post('/marketplace/checkout/promo', [MarketplaceController::class, 'applyPromo'])
+    ->middleware(['auth', 'not-admin'])->name('marketplace.promo.apply');
 Route::get('/marketplace/success/{code}', [MarketplaceController::class, 'success'])
     ->middleware(['auth', 'not-admin'])->name('marketplace.success');
 Route::post('/marketplace/payment/{code}/claim', [MarketplaceController::class, 'claimPayment'])
@@ -144,6 +147,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/marketplace/{id}', [Admin\MarketplaceProductController::class, 'update'])->name('marketplace.update');
     Route::delete('/marketplace/{id}', [Admin\MarketplaceProductController::class, 'destroy'])->name('marketplace.destroy');
     Route::post('/marketplace/{id}/toggle', [Admin\MarketplaceProductController::class, 'toggle'])->name('marketplace.toggle');
+
+    /* Kode Promo */
+    Route::get('/promos', [Admin\PromoController::class, 'index'])->name('promos.index');
+    Route::get('/promos/create', [Admin\PromoController::class, 'create'])->name('promos.create');
+    Route::post('/promos', [Admin\PromoController::class, 'store'])->name('promos.store');
+    Route::get('/promos/{id}/edit', [Admin\PromoController::class, 'edit'])->name('promos.edit');
+    Route::put('/promos/{id}', [Admin\PromoController::class, 'update'])->name('promos.update');
+    Route::delete('/promos/{id}', [Admin\PromoController::class, 'destroy'])->name('promos.destroy');
+    Route::post('/promos/{id}/toggle', [Admin\PromoController::class, 'toggle'])->name('promos.toggle');
 
     /* Transaksi Top Up & Pesanan Marketplace */
     Route::get('/transactions', [Admin\TransactionController::class, 'index'])->name('transactions.index');

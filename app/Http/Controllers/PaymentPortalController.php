@@ -162,6 +162,8 @@ class PaymentPortalController extends Controller
             'buyer'        => ['name' => $this->buyerName($model, $type)],
             'created_at'   => $model->created_at,
             'confirmed_at' => $model->confirmed_at,
+            'promo_code'   => $model->promo_code,
+            'discount'     => (int) $model->discount_amount,
             'items'        => $this->items($model, $type),
         ];
     }
@@ -209,7 +211,8 @@ class PaymentPortalController extends Controller
                 'sub'  => ($model->product->name ?? '-')
                     . ($model->user_game_id ? ' · ID ' . $model->user_game_id : ''),
                 'qty'  => 1,
-                'price' => (int) $model->amount,
+                // Harga satuan = harga katalog; potongan promo ditampilkan terpisah.
+                'price' => (int) $model->amount + (int) $model->discount_amount,
             ]];
         }
 

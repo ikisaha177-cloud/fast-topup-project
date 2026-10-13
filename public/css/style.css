@@ -4786,3 +4786,68 @@ select.form-control option,
 
     .struk-status-icon { background: #111 !important; }
 }
+
+/* ==========================================================================
+   POLISH LAYER v8 — Kode Promo (checkout, invoice, struk, panel admin)
+   ========================================================================== */
+
+.promo-box {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+}
+
+.promo-input {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.promo-input .form-control {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.promo-input .btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.promo-box .form-hint {
+    margin-top: 6px;
+}
+
+.promo-discount {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line);
+}
+
+.discount-amount {
+    color: var(--green);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* Di atas kertas putih (struk) hijau neon terlalu pucat: pakai hijau tua. */
+.struk-item .discount-amount,
+.invoice-discount-value { color: #0f7a3d; }
+
+/* Panel admin: kartu statistik pemakaian kode promo */
+.promo-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    align-items: baseline;
+}
+
+.promo-stats strong {
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 480px) {
+    .promo-input { flex-direction: column; }
+    .promo-input .btn { width: 100%; }
+}

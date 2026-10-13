@@ -56,6 +56,11 @@
                     @endif
                     <div class="summary-row"><span>Invoice</span><span><a href="{{ route('invoice.show', $transaction->transaction_code) }}">Lihat invoice</a></span></div>
 
+                    @include('partials.promo-summary', [
+                        'promoCode' => $transaction->promo_code,
+                        'discount'  => $transaction->discount_amount,
+                    ])
+
                     <div class="summary-total">
                         <span>Total</span>
                         <span class="amount">Rp {{ number_format($transaction->amount, 0, ',', '.') }}</span>

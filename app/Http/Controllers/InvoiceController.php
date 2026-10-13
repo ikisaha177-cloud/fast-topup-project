@@ -76,9 +76,12 @@ class InvoiceController extends Controller
                 'name'     => $transaction->gameTitle->name ?? 'Top Up',
                 'sub'      => $transaction->product->name ?? '-',
                 'qty'      => 1,
-                'price'    => (int) $transaction->amount,
-                'subtotal' => (int) $transaction->amount,
+                // Harga satuan tetap harga katalog; potongan promo ditampilkan terpisah.
+                'price'    => (int) $transaction->amount + (int) $transaction->discount_amount,
+                'subtotal' => (int) $transaction->amount + (int) $transaction->discount_amount,
             ]],
+            'promo_code' => $transaction->promo_code,
+            'discount'   => (int) $transaction->discount_amount,
             'total'     => (int) $transaction->amount,
         ];
     }
@@ -120,6 +123,8 @@ class InvoiceController extends Controller
             ],
             'meta'      => [],
             'items'     => $items,
+            'promo_code' => $order->promo_code,
+            'discount'   => (int) $order->discount_amount,
             'total'     => (int) $order->total_amount,
         ];
     }

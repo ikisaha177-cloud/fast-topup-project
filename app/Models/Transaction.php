@@ -21,6 +21,8 @@ class Transaction extends Model
         'payment_provider',
         'payment_reference',
         'payment_url',
+        'promo_code',
+        'discount_amount',
         'amount',
         'status',
         'paid_at',
@@ -39,6 +41,8 @@ class Transaction extends Model
         'payment_claimed_at' => 'datetime',
         'confirmed_at'       => 'datetime',
         'revoked_at'         => 'datetime',
+        'amount'             => 'integer',
+        'discount_amount'    => 'integer',
     ];
 
     public function user()

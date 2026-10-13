@@ -191,6 +191,21 @@
         border-top: 2px solid #14110a;
     }
 
+    .invoice-discount {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-top: 10px;
+        font-size: 14px;
+        color: #14110a;
+    }
+
+    .invoice-discount-value {
+        font-weight: 700;
+        color: #0f7a3d;
+        white-space: nowrap;
+    }
+
     .invoice-total span:first-child {
         font-size: 13px;
         letter-spacing: 0.06em;
@@ -360,6 +375,13 @@
                         @endforeach
                     </tbody>
                 </table>
+
+                @if(($doc['discount'] ?? 0) > 0)
+                    <div class="invoice-discount">
+                        <span>Potongan promo <span class="mono">{{ $doc['promo_code'] }}</span></span>
+                        <span class="invoice-discount-value">− Rp {{ number_format($doc['discount'], 0, ',', '.') }}</span>
+                    </div>
+                @endif
 
                 <div class="invoice-total">
                     <span>Total Tagihan</span>

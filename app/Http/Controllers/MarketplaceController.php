@@ -10,6 +10,7 @@ use App\Models\MarketplaceOrder;
 use App\Models\MarketplaceProduct;
 use App\Services\MarketplaceOrderService;
 use App\Services\Payment\PaymentGatewayManager;
+use App\Services\PromoService;
 use App\Support\ActivityLogger;
 use App\Support\PaymentMethods;
 use Illuminate\Http\Request;
@@ -25,10 +26,14 @@ class MarketplaceController extends Controller
     /** @var \App\Services\Payment\PaymentGatewayManager */
     protected $gateways;
 
-    public function __construct(MarketplaceOrderService $orders, PaymentGatewayManager $gateways)
+    /** @var \App\Services\PromoService */
+    protected $promo;
+
+    public function __construct(MarketplaceOrderService $orders, PaymentGatewayManager $gateways, PromoService $promo)
     {
         $this->orders   = $orders;
         $this->gateways = $gateways;
+        $this->promo    = $promo;
     }
 
     /**
@@ -208,11 +213,72 @@ class MarketplaceController extends Controller
             return redirect()->route('marketplace.index')->with('error', 'Keranjang masih kosong.');
         }
 
+        $subtotal = $this->total($cart);
+        $promo    = $this->refreshCartPromo($subtotal);
+
         return view('marketplace.checkout', [
             'cart'           => $cart,
-            'total'          => $this->total($cart),
+            'subtotal'       => $subtotal,
+            'promoCode'      => $promo['code'],
+            'discount'       => $promo['discount'],
+            'total'          => $subtotal - $promo['discount'],
             'paymentMethods' => PaymentMethods::labelled(),
         ]);
+    }
+
+    /**
+     * Pasang / lepas kode promo pada keranjang yang sedang di-checkout.
+     */
+    public function applyPromo(Request $request)
+    {
+        $cart = $this->getCart();
+
+        if (empty($cart)) {
+            return redirect()->route('marketplace.index')->with('error', 'Keranjang masih kosong.');
+        }
+
+        if ($request->boolean('remove')) {
+            session()->forget('promo_code');
+
+            return redirect()->route('marketplace.checkout')->with('success', 'Kode promo dihapus dari pesanan.');
+        }
+
+        $quote = $this->promo->quote($request->input('code'), $this->total($cart), 'marketplace');
+
+        if (! $quote['ok']) {
+            return back()->withErrors(['promo_code' => $quote['message']]);
+        }
+
+        session()->put('promo_code', $quote['promo']->code);
+
+        return redirect()->route('marketplace.checkout')->with(
+            'success',
+            'Kode promo "' . $quote['promo']->code . '" dipakai. Kamu hemat Rp ' . number_format($quote['discount'], 0, ',', '.') . '.'
+        );
+    }
+
+    /**
+     * Hitung ulang potongan promo keranjang; lupakan kodenya bila sudah tidak berlaku.
+     *
+     * @return array{code: string|null, discount: int}
+     */
+    private function refreshCartPromo($subtotal)
+    {
+        $code = session('promo_code');
+
+        if (! $code) {
+            return ['code' => null, 'discount' => 0];
+        }
+
+        $quote = $this->promo->quote($code, $subtotal, 'marketplace');
+
+        if (! $quote['ok']) {
+            session()->forget('promo_code');
+
+            return ['code' => null, 'discount' => 0];
+        }
+
+        return ['code' => $quote['promo']->code, 'discount' => $quote['discount']];
     }
 
     /**
@@ -227,10 +293,31 @@ class MarketplaceController extends Controller
         }
 
         $validated = $request->validated();
+        $subtotal  = $this->total($cart);
 
         DB::beginTransaction();
 
         try {
+            // Kode promo divalidasi DI DALAM transaksi dengan baris promo dikunci,
+            // supaya kuota pemakaian tidak bisa dilewati dua pembeli bersamaan.
+            $discount  = 0;
+            $promoCode = null;
+
+            if (session('promo_code')) {
+                $quote = $this->promo->quote(session('promo_code'), $subtotal, 'marketplace', true);
+
+                if (! $quote['ok']) {
+                    DB::rollBack();
+
+                    return back()->withErrors(['promo_code' => $quote['message']]);
+                }
+
+                $discount  = $quote['discount'];
+                $promoCode = $quote['promo']->code;
+
+                $quote['promo']->increment('used_count');
+            }
+
             // Kunci semua produk, cek ulang stok di server (jangan percaya input browser).
             $locked = [];
 
@@ -257,11 +344,13 @@ class MarketplaceController extends Controller
             }
 
             $order = MarketplaceOrder::create([
-                'order_code'     => $this->generateOrderCode(),
-                'user_id'        => auth()->id(),
-                'total_amount'   => $this->total($cart),
-                'payment_method' => $validated['payment_method'],
-                'status'         => 'pending',
+                'order_code'      => $this->generateOrderCode(),
+                'user_id'         => auth()->id(),
+                'total_amount'    => $subtotal - $discount,
+                'promo_code'      => $promoCode,
+                'discount_amount' => $discount,
+                'payment_method'  => $validated['payment_method'],
+                'status'          => 'pending',
             ]);
 
             // Buat tagihan ke gateway. Kegagalan gateway tidak membatalkan order.
@@ -310,6 +399,7 @@ class MarketplaceController extends Controller
         }
 
         session()->forget('cart');
+        session()->forget('promo_code');
 
         return redirect()->route('marketplace.success', $order->order_code);
     }

@@ -105,6 +105,15 @@
                         <span class="mono">Rp {{ number_format($item['price'], 0, ',', '.') }}</span>
                     </div>
                 @endforeach
+                @if(($doc['discount'] ?? 0) > 0)
+                    <div class="struk-item">
+                        <span>
+                            Potongan Promo
+                            <small class="mono">{{ $doc['promo_code'] }}</small>
+                        </span>
+                        <span class="mono discount-amount">− Rp {{ number_format($doc['discount'], 0, ',', '.') }}</span>
+                    </div>
+                @endif
             </div>
 
             <div class="struk-sep"></div>

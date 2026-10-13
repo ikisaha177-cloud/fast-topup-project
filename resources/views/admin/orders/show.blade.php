@@ -67,6 +67,11 @@
                         </table>
                     </div>
 
+                    @include('partials.promo-summary', [
+                        'promoCode' => $order->promo_code,
+                        'discount'  => $order->discount_amount,
+                    ])
+
                     <div class="summary-total">
                         <span>Total</span>
                         <span class="amount">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>

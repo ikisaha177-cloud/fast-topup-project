@@ -29,6 +29,14 @@
                         <span>Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</span>
                     </div>
                 @endforeach
+                <div class="summary-row"><span>Subtotal</span><span>Rp {{ number_format($subtotal, 0, ',', '.') }}</span></div>
+
+                @include('partials.promo-box', [
+                    'applyRoute' => route('marketplace.promo.apply'),
+                    'code'       => $promoCode,
+                    'discount'   => $discount,
+                ])
+
                 <div class="summary-total">
                     <span>Total</span>
                     <span class="amount">Rp {{ number_format($total, 0, ',', '.') }}</span>

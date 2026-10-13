@@ -164,6 +164,10 @@
                 @if($order->confirmed_at)
                     <div class="summary-row"><span>Diverifikasi</span><span>{{ $order->confirmationLabel() }} &middot; {{ $order->confirmed_at->format('d-m-Y H:i') }}</span></div>
                 @endif
+                @include('partials.promo-summary', [
+                    'promoCode' => $order->promo_code,
+                    'discount'  => $order->discount_amount,
+                ])
 
                 <h3 class="mt-24">Daftar Item</h3>
                 <div class="order-items">

@@ -18,6 +18,8 @@ class MarketplaceOrder extends Model
         'payment_provider',
         'payment_reference',
         'payment_url',
+        'promo_code',
+        'discount_amount',
         'status',
         'paid_at',
         'payment_claimed_at',
@@ -32,6 +34,7 @@ class MarketplaceOrder extends Model
 
     protected $casts = [
         'total_amount'       => 'integer',
+        'discount_amount'    => 'integer',
         'paid_at'            => 'datetime',
         'payment_claimed_at' => 'datetime',
         'confirmed_at'       => 'datetime',

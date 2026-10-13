@@ -172,6 +172,10 @@
                 @if($transaction->confirmed_at)
                     <div class="summary-row"><span>Diverifikasi</span><span>{{ $transaction->confirmationLabel() }} &middot; {{ $transaction->confirmed_at->format('d-m-Y H:i') }}</span></div>
                 @endif
+                @include('partials.promo-summary', [
+                    'promoCode' => $transaction->promo_code,
+                    'discount'  => $transaction->discount_amount,
+                ])
                 <div class="summary-total">
                     <span>Total</span>
                     <span class="amount">Rp {{ number_format($transaction->amount, 0, ',', '.') }}</span>

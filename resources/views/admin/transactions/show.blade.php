@@ -54,6 +54,10 @@
                     <div class="summary-row"><span>Dibuat</span><span>{{ $transaction->created_at->format('d-m-Y H:i') }}</span></div>
                     <div class="summary-row"><span>Diperbarui</span><span>{{ $transaction->updated_at->format('d-m-Y H:i') }}</span></div>
                     <div class="summary-row"><span>Invoice</span><span><a href="{{ route('invoice.show', $transaction->transaction_code) }}" target="_blank" rel="noopener">Lihat invoice</a></span></div>
+                    @include('partials.promo-summary', [
+                        'promoCode' => $transaction->promo_code,
+                        'discount'  => $transaction->discount_amount,
+                    ])
                     <div class="summary-total">
                         <span>Total</span>
                         <span class="amount">Rp {{ number_format($transaction->amount, 0, ',', '.') }}</span>

@@ -13,6 +13,7 @@ Aplikasi web **top up game** dan **marketplace item game** berbasis Laravel 8. P
 - Katalog game dengan **pencarian + filter kategori** (konsisten dengan marketplace).
 - Marketplace: katalog dengan pencarian, filter kategori, dan pagination.
 - **Harga coret & badge diskon** pada produk marketplace (kolom `compare_at_price`), jadi diskon tampil sebagai potongan eksplisit, bukan sekadar angka.
+- **Kode promo** di checkout top up & marketplace: masukkan kode → diskon langsung dihitung dan ditampilkan sebagai baris terpisah (harga item tetap harga katalog). Mendukung diskon **persen** (dengan plafon opsional) dan **nominal**, syarat **minimal belanja**, **batas pemakaian**, **masa berlaku**, serta **cakupan** (`all` / hanya top up / hanya marketplace). Kode tidak peka huruf besar-kecil. Aturan validasi hidup di satu tempat (`App\Services\PromoService`), dipakai ulang oleh checkout, halaman sukses, invoice, struk, dan riwayat.
 - Keranjang (session) dengan validasi stok di server.
 - **Alur konfirmasi pesanan**: pembeli memesan → menandai **"Saya Sudah Bayar"** → status **Menunggu Konfirmasi**; admin memverifikasi lalu menandai **Selesai** atau **Gagal** (stok otomatis dikembalikan). Pembeli juga bisa **membatalkan** pesanan selama masih menunggu konfirmasi. Untuk pembayaran digital, admin bisa lewat jalur otomatis — lihat *Alur Status Pesanan* di bawah.
 - **Unggah bukti pembayaran (opsional)**: saat menandai sudah bayar, pembeli boleh melampirkan gambar bukti transfer (jpg/png/webp, maks 2 MB). Bukti tampil di halaman status pembeli dan panel verifikasi admin, serta bisa disusulkan selama pesanan masih menunggu konfirmasi.
@@ -69,6 +70,7 @@ Dengan driver default `simulation` dan mode default `hybrid`, pesanan tanpa bukt
 - **Konfirmasi pesanan**: tombol **Konfirmasi** / **Gagal** (+ alasan opsional) langsung pada baris transaksi/pesanan yang masih menunggu; baris yang sudah ditandai "Sudah Bayar" disorot, dan baris dengan **bukti pembayaran** diberi badge "Bukti".
 - **Detail transaksi & pesanan** (`/admin/transactions/{id}`, `/admin/orders/{id}`): data pembeli, item, jejak verifikasi (tandai bayar / pembayaran diterima / diverifikasi / konfirmasi dibatalkan), pratinjau **bukti pembayaran**, riwayat aktivitas per objek, dan panel verifikasi berisi tombol Konfirmasi/Gagal — termasuk **Buka Kembali** (salah klik pada gagal/batal) dan **Batalkan Konfirmasi** (salah konfirmasi `success` → `failed`). Saat membuka kembali, status kembali `pending`, seluruh jejak verifikasi dibersihkan, dan stok dikunci ulang (dibatalkan bila stok sudah habis, supaya tidak pernah minus); saat membatalkan konfirmasi, stok dikembalikan dan jejak konfirmasi awal tetap utuh.
 - **Laporan harian / bulanan / tahunan**: ringkasan KPI, grafik pendapatan, tabel rincian per periode, sebaran status, game & produk terlaris (hanya pesanan selesai), breakdown metode pembayaran, filter status, dan **ekspor CSV**.
+- **Kelola kode promo** (`/admin/promos`): buat, ubah, aktif/nonaktifkan (toggle), dan hapus kode beserta deskripsi, tipe diskon, minimal belanja, plafon, batas pemakaian, masa berlaku, dan cakupan. Kode yang **sudah pernah dipakai** dijaga: hanya bisa dinonaktifkan, tidak bisa dihapus, supaya riwayat transaksi tetap utuh.
 - CRUD game (dengan upload icon) dan produk top up.
 - Kelola produk marketplace (upload gambar/edit/nonaktifkan/hapus), termasuk harga jual & harga coret.
 - Pantau transaksi & pesanan: pencarian, filter status, pagination, ubah status manual.
@@ -76,7 +78,7 @@ Dengan driver default `simulation` dan mode default `hybrid`, pesanan tanpa bukt
 - Penghapusan dijaga: game/produk yang sudah punya transaksi tidak bisa dihapus (riwayat tetap utuh).
 
 ### Tampilan
-- **Design system terang & bersih** (`public/css/style.css`) bergaya toko top up modern: permukaan putih, kartu bersih, aksen emas/oranye, dan sampul game sebagai fokus utama.
+- **Design system gelap** (`public/css/style.css`) bergaya toko top up modern: permukaan gelap berlapis, kartu dengan garis tepi halus, aksen **kuning neon**, dan sampul game sebagai fokus utama. Dokumen yang memang harus terbaca di atas kertas (invoice, struk portal) tetap putih agar siap dicetak.
 - Ikon SVG inline (tanpa font emoji) agar tampil konsisten di semua OS.
 - **Standar gambar 8:5**: gambar produk & logo game selalu dibungkus kotak rasio tetap (`aspect-ratio: 8 / 5`) dengan atribut `width`/`height`, sehingga tidak ada layout shift dan tinggi kartu konsisten di semua breakpoint. Foto produk memakai `object-fit: cover` (crop rapi); logo game memakai `object-fit: contain` supaya brand mark tidak pernah terpotong.
 - Thumbnail ringkas (`is-thumb`, 54×54) dan logo mini (`game-logo-xs`) dipakai konsisten di keranjang, checkout, riwayat pesanan, halaman sukses, serta tabel admin — jadi item selalu punya identitas visual.
@@ -171,13 +173,26 @@ Akun ini hanya untuk pengembangan/testing — **tidak ditampilkan di UI** agar h
 | Penjual | seller1@topupmarket.test | password |
 | Penjual | seller2@topupmarket.test | password |
 
+### Kode Promo Demo
+
+| Kode       | Diskon      | Syarat            |
+|------------|-------------|-------------------|
+| `WELCOME15`  | 15% (maks Rp 50.000) | min. belanja Rp 20.000 |
+| `HEMAT5000`  | Rp 5.000    | min. belanja Rp 30.000 |
+
+Dibuat oleh `PromoCodeSeeder` (ikut `php artisan migrate --seed`). Kelola di `/admin/promos`.
+
 ## Testing
 
 ```bash
 php vendor/bin/phpunit
 ```
 
-Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **214 test / 882 assertion** hijau, mencakup alur checkout, konfirmasi pesanan oleh admin (berhasil/gagal + pengembalian stok + sumber konfirmasi), **portal pembayaran & struk** (instruksi QRIS/Virtual Account/e-wallet deterministik, konfirmasi idempoten, struk setelah konfirmasi, penolakan struk pada pesanan yang ditolak admin, alur lengkap portal → unggah bukti → Selesai, serta otorisasi guest/pemilik lain/admin), **unggah bukti pembayaran** (dengan/tanpa bukti, lengkapi susulan, tolak non-gambar, buka ulang menghapus berkas), **kebijakan verifikasi pembayaran** (`manual`/`hybrid`/`auto`: auto-konfirmasi dari bukti + jejak `confirmation_source=auto` tanpa `confirmed_by`, stok tetap terkunci, berlaku di top up & marketplace), **halaman invoice** (render untuk pemilik/guest top up, otorisasi marketplace, cap LUNAS vs instruksi bayar), **pembatalan konfirmasi `success`** oleh admin (stok kembali + jejak audit tanpa menimpa konfirmasi awal), halaman detail pesanan admin & aksi buka kembali (re-lock stok), **timeline verifikasi vertikal** pada detail transaksi/pesanan, **halaman kebijakan & sitemap.xml** (render, silang tautan, valid XML, tanpa kebocoran halaman privat), laporan harian/bulanan/tahunan & ekspor CSV, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), pencarian & filter katalog, serta **kualitas tampilan katalog & aksesibilitas** (gambar rasio tetap + atribut dimensi, tidak ada rating/testimoni karangan, kartu hero jujur — guest melihat pratinjau, pengguna melihat pesanan nyata berstatus apa adanya, `sold_count` hanya dari pesanan selesai, thumbnail di keranjang & riwayat pesanan, label sumber verifikasi, meta SEO, header tabel ber-`scope`, kolom pencarian ber-`aria-label`, penanda `aria-current` pada navigasi/tab/chip aktif, dan label langkah progres yang tidak menyesatkan).
+Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **246 test / 1028 assertion** hijau.
+
+**Kode promo** (30 test): semua aturan validasi (kedaluwarsa, belum dimulai, dipakai semua, di bawah minimal belanja, salah cakupan, nonaktif), diskon persen dengan plafon & diskon nominal, penetapan kode di session (khusus checkout, terhapus otomatis saat tak berlaku, habis saat pesanan dibuat), alur lengkap pembuatan transaksi dengan `promo_code` + `discount_amount` + `amount` bersih, `used_count` naik dalam transaksi, kode terpakai tidak bisa dihapus, cakupan top up vs marketplace, CRUD + toggle admin (otentikasi & anti-duplikat peka huruf besar-kecil), serta render diskon di halaman sukses, invoice, struk portal, dan riwayat pesanan.
+
+Mencakup alur checkout, konfirmasi pesanan oleh admin (berhasil/gagal + pengembalian stok + sumber konfirmasi), **portal pembayaran & struk** (instruksi QRIS/Virtual Account/e-wallet deterministik, konfirmasi idempoten, struk setelah konfirmasi, penolakan struk pada pesanan yang ditolak admin, alur lengkap portal → unggah bukti → Selesai, serta otorisasi guest/pemilik lain/admin), **unggah bukti pembayaran** (dengan/tanpa bukti, lengkapi susulan, tolak non-gambar, buka ulang menghapus berkas), **kebijakan verifikasi pembayaran** (`manual`/`hybrid`/`auto`: auto-konfirmasi dari bukti + jejak `confirmation_source=auto` tanpa `confirmed_by`, stok tetap terkunci, berlaku di top up & marketplace), **halaman invoice** (render untuk pemilik/guest top up, otorisasi marketplace, cap LUNAS vs instruksi bayar), **pembatalan konfirmasi `success`** oleh admin (stok kembali + jejak audit tanpa menimpa konfirmasi awal), halaman detail pesanan admin & aksi buka kembali (re-lock stok), **timeline verifikasi vertikal** pada detail transaksi/pesanan, **halaman kebijakan & sitemap.xml** (render, silang tautan, valid XML, tanpa kebocoran halaman privat), laporan harian/bulanan/tahunan & ekspor CSV, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), pencarian & filter katalog, serta **kualitas tampilan katalog & aksesibilitas** (gambar rasio tetap + atribut dimensi, tidak ada rating/testimoni karangan, kartu hero jujur — guest melihat pratinjau, pengguna melihat pesanan nyata berstatus apa adanya, `sold_count` hanya dari pesanan selesai, thumbnail di keranjang & riwayat pesanan, label sumber verifikasi, meta SEO, header tabel ber-`scope`, kolom pencarian ber-`aria-label`, penanda `aria-current` pada navigasi/tab/chip aktif, dan label langkah progres yang tidak menyesatkan).
 
 ## CI
 
