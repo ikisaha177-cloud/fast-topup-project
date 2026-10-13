@@ -91,6 +91,11 @@
             <path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/>
             <path d="M20.5 4.5V10h-5.5"/>
             @break
+        @case('download')
+            <path d="M12 3.5v11"/>
+            <path d="m7.5 10.5 4.5 4.5 4.5-4.5"/>
+            <path d="M4.5 19.5h15"/>
+            @break
         @default
             <circle cx="12" cy="12" r="9"/>
     @endswitch

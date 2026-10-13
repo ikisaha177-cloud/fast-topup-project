@@ -14,6 +14,7 @@ use App\Support\ActivityLogger;
 use App\Support\PaymentMethods;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class MarketplaceController extends Controller
@@ -81,6 +82,7 @@ class MarketplaceController extends Controller
         $product = MarketplaceProduct::where('slug', $slug)
             ->where('is_active', true)
             ->with('seller')
+            ->withSoldCount()
             ->firstOrFail();
 
         $related = MarketplaceProduct::where('is_active', true)
@@ -338,6 +340,26 @@ class MarketplaceController extends Controller
                     . ($proofPath ? ' (dengan bukti pembayaran).' : '.'),
                 $order
             );
+        } elseif ($proofPath) {
+            // Klaim tidak tercatat (mis. pesanan sudah dikonfirmasi atau sudah
+            // punya bukti): jangan tinggalkan berkas unggahan tanpa rujukan.
+            Storage::disk('public')->delete($proofPath);
+        }
+
+        // Verifikasi otomatis dari bukti (kebijakan hybrid/auto) memberi pesan
+        // berbeda supaya pembeli tahu pesanannya langsung selesai.
+        $autoConfirmed = $order->fresh()->isSuccess()
+            && $order->fresh()->confirmedByAuto();
+
+        if ($autoConfirmed) {
+            ActivityLogger::log(
+                'order.auto-confirm',
+                'Pesanan ' . $order->order_code . ' terverifikasi otomatis dari bukti pembayaran.',
+                $order
+            );
+
+            return redirect()->route('marketplace.success', $code)
+                ->with('success', 'Pembayaran terverifikasi! Pesananmu langsung diproses dan selesai.');
         }
 
         return redirect()->route('marketplace.success', $code)
@@ -375,7 +397,7 @@ class MarketplaceController extends Controller
     private function findOwnedOrder($code)
     {
         $order = MarketplaceOrder::where('order_code', $code)
-            ->with(['items.product', 'buyer'])
+            ->with(['items.product', 'buyer', 'confirmedBy', 'revokedBy'])
             ->firstOrFail();
 
         $this->authorize('view', $order);

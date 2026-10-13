@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Blade;
-
 if (! function_exists('aria_current')) {
     /**
      * Kembalikan atribut aria-current bila kondisi aktif.

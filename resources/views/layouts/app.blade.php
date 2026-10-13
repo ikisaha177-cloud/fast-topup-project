@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="TopUpMarket — top up game dan marketplace voucher, skin, dan akun game dengan pembayaran QRIS, e-wallet, dan transfer bank.">
-    <meta name="theme-color" content="#4f46e5">
+    <meta name="theme-color" content="#0b0a10">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     <link rel="apple-touch-icon" href="{{ asset('favicon.svg') }}">
@@ -24,7 +24,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     @stack('styles')
     <script>document.documentElement.classList.add('js');</script>
@@ -265,6 +265,43 @@
                     if (t) t.setAttribute('aria-expanded', 'false');
                 });
             });
+
+            // ---- Efek 3D tilt pada kartu (nuansa Takapedia) ----
+            var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var finePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+            if (!prefersReduced && finePointer) {
+                var tiltEls = document.querySelectorAll('[data-tilt]');
+                var MAX_TILT = 8;
+
+                tiltEls.forEach(function (el) {
+                    var raf = null;
+                    var rx = 0;
+                    var ry = 0;
+
+                    function apply() {
+                        raf = null;
+                        el.style.transform =
+                            'perspective(900px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' +
+                            ry.toFixed(2) + 'deg) translateY(-6px)';
+                    }
+
+                    el.addEventListener('pointermove', function (e) {
+                        var rect = el.getBoundingClientRect();
+                        var px = (e.clientX - rect.left) / rect.width - 0.5;
+                        var py = (e.clientY - rect.top) / rect.height - 0.5;
+                        rx = (-py * MAX_TILT).toFixed(2);
+                        ry = (px * MAX_TILT).toFixed(2);
+                        el.classList.add('is-tilting');
+                        if (!raf) raf = window.requestAnimationFrame(apply);
+                    });
+
+                    el.addEventListener('pointerleave', function () {
+                        el.classList.remove('is-tilting');
+                        el.style.transform = '';
+                    });
+                });
+            }
 
             // Reveal on scroll
             var revealEls = document.querySelectorAll('.reveal');

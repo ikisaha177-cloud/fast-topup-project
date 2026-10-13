@@ -34,7 +34,7 @@ class OrderController extends Controller
     public function show($code)
     {
         $order = MarketplaceOrder::where('order_code', $code)
-            ->with(['items.product', 'buyer'])
+            ->with(['items.product', 'buyer', 'confirmedBy', 'revokedBy'])
             ->firstOrFail();
 
         if ($order->user_id !== auth()->id()) {

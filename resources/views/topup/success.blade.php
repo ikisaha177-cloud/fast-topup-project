@@ -19,7 +19,7 @@
 
             <div class="steps">
                 <div class="step done">Data &amp; Nominal</div>
-                <div class="step {{ $isPending ? 'current' : 'done' }}">Pembayaran</div>
+                <div class="step {{ $isPending ? 'current' : ($claimed || $isSuccess ? 'done' : '') }}">Pembayaran</div>
                 <div class="step {{ $isSuccess ? 'done' : '' }}">{{ $finalLabel }}</div>
             </div>
 
@@ -47,6 +47,15 @@
                     <p class="muted" style="margin-top:6px;">Metode: <strong>{{ $transaction->payment_method }}</strong></p>
 
                     <div class="pay-code mt-16">{{ $transaction->transaction_code }}</div>
+
+                    <div class="mt-16">
+                        <a href="{{ route('invoice.show', $transaction->transaction_code) }}" class="btn btn-outline btn-block">
+                            @include('partials.icon', ['name' => 'receipt', 'size' => 16]) Lihat Invoice Pembayaran
+                        </a>
+                        <small class="muted" style="display:block; margin-top:8px;">
+                            Screenshot invoice ini lalu unggah sebagai bukti pembayaran.
+                        </small>
+                    </div>
 
                     @if($transaction->payment_url)
                         <div class="mt-16">
@@ -104,6 +113,8 @@
                         <p class="muted">
                             @if($transaction->confirmedByGateway())
                                 Pembayaranmu terverifikasi otomatis oleh penyedia pembayaran dan pesanan sudah selesai diproses.
+                            @elseif($transaction->confirmedByAuto())
+                                Bukti pembayaranmu terverifikasi otomatis dan pesanan sudah selesai diproses.
                             @else
                                 Terima kasih! Pesanan top up kamu sudah dikonfirmasi admin dan selesai diproses.
                             @endif
@@ -155,6 +166,7 @@
 
             <div class="mt-24">
                 <a href="{{ route('topup.index') }}" class="btn btn-primary">Top Up Lagi</a>
+                <a href="{{ route('invoice.show', $transaction->transaction_code) }}" class="btn btn-outline">Lihat Invoice</a>
                 @auth
                     <a href="{{ route('transactions.index') }}" class="btn btn-outline">Riwayat Transaksi</a>
                 @endauth

@@ -14,6 +14,7 @@ use App\Support\ActivityLogger;
 use App\Support\PaymentMethods;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class TopUpController extends Controller
@@ -267,6 +268,26 @@ class TopUpController extends Controller
                     . ($proofPath ? ' (dengan bukti pembayaran).' : '.'),
                 $transaction
             );
+        } elseif ($proofPath) {
+            // Klaim tidak tercatat (mis. pesanan sudah dikonfirmasi atau sudah
+            // punya bukti): jangan tinggalkan berkas unggahan tanpa rujukan.
+            Storage::disk('public')->delete($proofPath);
+        }
+
+        // Verifikasi otomatis dari bukti (kebijakan hybrid/auto) memberi pesan
+        // berbeda supaya pembeli tahu pesanannya langsung selesai.
+        $autoConfirmed = $transaction->fresh()->isSuccess()
+            && $transaction->fresh()->confirmedByAuto();
+
+        if ($autoConfirmed) {
+            ActivityLogger::log(
+                'transaction.auto-confirm',
+                'Transaksi ' . $transaction->transaction_code . ' terverifikasi otomatis dari bukti pembayaran.',
+                $transaction
+            );
+
+            return redirect()->route('topup.success', $code)
+                ->with('success', 'Pembayaran terverifikasi! Pesananmu langsung diproses dan selesai.');
         }
 
         return redirect()->route('topup.success', $code)
@@ -303,7 +324,9 @@ class TopUpController extends Controller
      */
     private function findOwnedTransaction($code)
     {
-        $transaction = Transaction::where('transaction_code', $code)->firstOrFail();
+        $transaction = Transaction::where('transaction_code', $code)
+            ->with(['gameTitle', 'product', 'confirmedBy', 'revokedBy'])
+            ->firstOrFail();
 
         $this->authorize('view', $transaction);
 

@@ -44,7 +44,7 @@
 
         <div class="grid grid-4">
             @forelse($games as $index => $game)
-                <div class="card card-hover game-card reveal d{{ ($index % 4) + 1 }}">
+                <div class="card card-hover game-card reveal d{{ ($index % 4) + 1 }}" data-tilt>
                     @if($index === 0 && !$search && !$category)
                         <span class="game-badge is-hot">Terpopuler</span>
                     @elseif($game->products_count >= 4)

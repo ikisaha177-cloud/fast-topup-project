@@ -1,46 +1,49 @@
 /* =========================================================
-   TopUpMarket — Design System v3
-   Tema: terang, bersih, profesional (referensi gaya rrqtopup).
+   TopUpMarket — Design System v4
+   Tema: GELAP ala Takapedia — latar obsidian keunguan, aksen
+   kuning neon, nuansa gaming yang premium dan rapi.
    SEMUA nama class lama tetap dipertahankan agar view lama tetap jalan.
    ========================================================= */
 
 :root {
-    /* ---------- Permukaan ---------- */
-    --bg: #f5f6fb;
-    --surface: #ffffff;
-    --surface-2: #f8f9fd;
-    --surface-3: #eef0f8;
+    /* ---------- Permukaan (obsidian keunguan) ---------- */
+    --bg: #0b0a10;
+    --surface: #16141d;
+    --surface-2: #1c1926;
+    --surface-3: #262232;
 
     /* ---------- Teks ---------- */
-    --ink: #14161f;
-    --ink-2: #2b2f3d;
-    --text: #23283a;
-    --muted: #667085;
-    --muted-2: #8b93a7;
+    --ink: #f6f7fb;
+    --ink-2: #e3e5ef;
+    --text: #c9cddb;
+    --muted: #8a90a4;
+    --muted-2: #6a7086;
 
     /* ---------- Garis ---------- */
-    --line: #e8eaf2;
-    --line-strong: #d7dbe7;
+    --line: #262233;
+    --line-strong: #332e45;
 
-    /* ---------- Merek ---------- */
-    --brand: #4f46e5;
-    --brand-dark: #3f37c9;
-    --brand-soft: #eef0ff;
-    --brand-soft-2: #e3e7ff;
+    /* ---------- Merek (kuning neon Takapedia) ---------- */
+    --brand: #ffd60a;
+    --brand-dark: #f0b90b;
+    --brand-soft: rgba(255, 214, 10, 0.12);
+    --brand-soft-2: rgba(255, 214, 10, 0.26);
+    /* Teks gelap di atas permukaan kuning (kontras tinggi). */
+    --on-brand: #14110a;
 
-    /* ---------- Aksen (mengikuti nuansa rrqshop) ---------- */
-    --gold-ink: #b45309;
-    --gold-soft: #fff6e6;
-    --pink: #ec4899;
-    --lime: #16a34a;
+    /* ---------- Aksen ---------- */
+    --gold-ink: #ffd60a;
+    --gold-soft: rgba(255, 214, 10, 0.12);
+    --pink: #ff4d8d;
+    --lime: #35d07f;
 
     /* ---------- Status ---------- */
-    --green: #16a34a;
-    --green-soft: #ecfdf3;
-    --yellow: #d97706;
-    --yellow-soft: #fffaeb;
-    --red: #e11d48;
-    --red-soft: #fef2f4;
+    --green: #35d07f;
+    --green-soft: rgba(53, 208, 127, 0.14);
+    --yellow: #ffd60a;
+    --yellow-soft: rgba(255, 214, 10, 0.14);
+    --red: #ff5c72;
+    --red-soft: rgba(255, 92, 114, 0.14);
 
     /* ---------- Radius ---------- */
     --radius: 16px;
@@ -49,18 +52,19 @@
     --radius-xl: 28px;
 
     /* ---------- Bayangan ---------- */
-    --shadow: 0 1px 2px rgba(20, 22, 31, 0.05), 0 8px 24px -14px rgba(20, 22, 31, 0.18);
-    --shadow-md: 0 2px 4px rgba(20, 22, 31, 0.04), 0 14px 34px -18px rgba(20, 22, 31, 0.22);
-    --shadow-lg: 0 4px 8px rgba(20, 22, 31, 0.05), 0 28px 60px -26px rgba(20, 22, 31, 0.3);
-    --shadow-glow: 0 18px 44px -20px rgba(79, 70, 229, 0.45);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 28px -16px rgba(0, 0, 0, 0.85);
+    --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.45), 0 18px 40px -20px rgba(0, 0, 0, 0.9);
+    --shadow-lg: 0 6px 14px rgba(0, 0, 0, 0.5), 0 34px 70px -30px rgba(0, 0, 0, 0.95);
+    --shadow-glow: 0 20px 50px -22px rgba(255, 214, 10, 0.5);
 
     /* ---------- Gradien ---------- */
-    --grad-brand: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    --grad-accent: linear-gradient(120deg, #4f46e5 0%, #7c3aed 48%, #0ea5e9 100%);
-    --grad-warm: linear-gradient(135deg, #f6ac37 0%, #ff6135 100%);
-    --grad-surface: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+    --grad-brand: linear-gradient(135deg, #ffd60a 0%, #f0b90b 100%);
+    --grad-accent: linear-gradient(120deg, #ffd60a 0%, #f0b90b 46%, #ff8a1e 100%);
+    --grad-warm: linear-gradient(135deg, #ffd60a 0%, #ff7a1a 100%);
+    --grad-surface: linear-gradient(180deg, #191621 0%, #131119 100%);
 
     --font: "Plus Jakarta Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    --font-display: "Sora", "Plus Jakarta Sans", "Segoe UI", sans-serif;
 
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -79,8 +83,9 @@ body {
     color: var(--text);
     background-color: var(--bg);
     background-image:
-        radial-gradient(900px 480px at 4% -8%, rgba(79, 70, 229, 0.08) 0%, rgba(79, 70, 229, 0) 62%),
-        radial-gradient(760px 420px at 96% -4%, rgba(14, 165, 233, 0.08) 0%, rgba(14, 165, 233, 0) 62%);
+        radial-gradient(900px 480px at 4% -8%, rgba(255, 214, 10, 0.07) 0%, rgba(255, 214, 10, 0) 60%),
+        radial-gradient(760px 420px at 96% -4%, rgba(255, 138, 30, 0.07) 0%, rgba(255, 138, 30, 0) 62%),
+        radial-gradient(1100px 700px at 50% 120%, rgba(124, 58, 237, 0.08) 0%, rgba(124, 58, 237, 0) 60%);
     background-attachment: fixed;
     min-height: 100vh;
     line-height: 1.6;
@@ -95,7 +100,7 @@ a {
 }
 
 a:hover {
-    color: var(--brand-dark);
+    color: #ffe666;
     text-decoration: underline;
 }
 
@@ -115,7 +120,7 @@ a:hover {
     padding: 10px 16px;
     border-radius: 10px;
     background: var(--brand);
-    color: #fff;
+    color: var(--on-brand);
     font-weight: 700;
     font-size: 13.5px;
     transition: top 0.18s ease;
@@ -123,7 +128,7 @@ a:hover {
 
 .skip-link:focus {
     top: 12px;
-    color: #fff;
+    color: var(--on-brand);
     text-decoration: none;
 }
 
@@ -132,6 +137,7 @@ h1, h2, h3, h4 {
     letter-spacing: -0.02em;
     margin-top: 0;
     color: var(--ink);
+    font-family: var(--font-display);
 }
 
 img {
@@ -139,8 +145,8 @@ img {
 }
 
 ::selection {
-    background: rgba(79, 70, 229, 0.18);
-    color: var(--ink);
+    background: rgba(255, 214, 10, 0.28);
+    color: #fff;
 }
 
 /* Scrollbar halus */
@@ -150,13 +156,13 @@ img {
 }
 
 ::-webkit-scrollbar-track {
-    background: #eef0f6;
+    background: #131119;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #ccd2e2;
+    background: #332e45;
     border-radius: 999px;
-    border: 2px solid #eef0f6;
+    border: 2px solid #131119;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -227,7 +233,7 @@ img {
     margin-bottom: 0;
 }
 
-/* ---------- Aurora background (versi terang) ---------- */
+/* ---------- Aurora background (tema gelap) ---------- */
 .aurora {
     position: absolute;
     inset: 0;
@@ -249,7 +255,7 @@ img {
     height: 420px;
     top: -160px;
     left: -100px;
-    background: radial-gradient(circle, rgba(79, 70, 229, 0.34), transparent 70%);
+    background: radial-gradient(circle, rgba(255, 214, 10, 0.3), transparent 70%);
 }
 
 .aurora-blob.b2 {
@@ -257,7 +263,7 @@ img {
     height: 380px;
     top: -80px;
     right: -110px;
-    background: radial-gradient(circle, rgba(14, 165, 233, 0.3), transparent 70%);
+    background: radial-gradient(circle, rgba(255, 138, 30, 0.28), transparent 70%);
     animation-delay: -6s;
 }
 
@@ -266,7 +272,7 @@ img {
     height: 340px;
     bottom: -170px;
     left: 42%;
-    background: radial-gradient(circle, rgba(246, 172, 55, 0.28), transparent 70%);
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.32), transparent 70%);
     animation-delay: -11s;
 }
 
@@ -281,11 +287,11 @@ img {
     position: sticky;
     top: 0;
     z-index: 60;
-    background: rgba(255, 255, 255, 0.86);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background: rgba(11, 10, 16, 0.82);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
     border-bottom: 1px solid var(--line);
-    box-shadow: 0 1px 0 rgba(20, 22, 31, 0.02);
+    box-shadow: 0 1px 0 rgba(255, 214, 10, 0.06);
 }
 
 /* Beri jarak saat lompat ke anchor (#faq, #cara-kerja, dst.)
@@ -330,10 +336,10 @@ section[id],
     height: 38px;
     border-radius: 12px;
     background: var(--grad-brand);
-    color: #fff;
+    color: var(--on-brand);
     font-weight: 800;
     font-size: 19px;
-    box-shadow: 0 10px 22px -12px rgba(79, 70, 229, 0.85);
+    box-shadow: 0 10px 26px -10px rgba(255, 214, 10, 0.7);
 }
 
 .brand-logo::after {
@@ -341,7 +347,7 @@ section[id],
     position: absolute;
     inset: 1px;
     border-radius: 11px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.35);
     pointer-events: none;
 }
 
@@ -394,7 +400,7 @@ section[id],
     background: var(--surface);
     border: 1px solid var(--line-strong);
     font-size: 13px;
-    box-shadow: 0 1px 2px rgba(20, 22, 31, 0.04);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
 .nav-avatar {
@@ -405,7 +411,7 @@ section[id],
     height: 27px;
     border-radius: 50%;
     background: var(--grad-brand);
-    color: #fff;
+    color: var(--on-brand);
     font-size: 12px;
     font-weight: 800;
 }
@@ -423,6 +429,20 @@ section[id],
     line-height: 1;
 }
 
+/* Pembungkus ikon buka/tutup menu. display:inline-flex agar ikon rapi
+   terpusat, dengan pengecualian [hidden] supaya atribut hidden bawaan
+   browser tidak kalah oleh display di atas. */
+.nav-toggle-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+}
+
+.nav-toggle-icon[hidden] {
+    display: none;
+}
+
 .cart-count {
     display: inline-flex;
     align-items: center;
@@ -433,7 +453,7 @@ section[id],
     margin-left: 4px;
     border-radius: 999px;
     background: var(--grad-brand);
-    color: #fff;
+    color: var(--on-brand);
     font-size: 11px;
     font-weight: 800;
 }
@@ -587,12 +607,12 @@ section[id],
 }
 
 .nav-menu .nav-menu-logout {
-    color: var(--red, #e11d48);
+    color: var(--red);
 }
 
 .nav-menu .nav-menu-logout:hover {
     background: var(--red-soft);
-    color: #be123c;
+    color: #ff8fa1;
 }
 
 /* ---------- Buttons ---------- */
@@ -631,15 +651,15 @@ section[id],
 
 .btn-primary {
     background: var(--grad-brand);
-    color: #fff;
+    color: var(--on-brand);
     border-color: transparent;
-    box-shadow: 0 12px 26px -14px rgba(79, 70, 229, 0.9);
+    box-shadow: 0 12px 28px -14px rgba(255, 214, 10, 0.9);
 }
 
 .btn-primary:hover {
-    color: #fff;
+    color: var(--on-brand);
     border-color: transparent;
-    box-shadow: 0 20px 40px -16px rgba(79, 70, 229, 1);
+    box-shadow: 0 20px 42px -16px rgba(255, 214, 10, 1);
 }
 
 .btn-primary::after {
@@ -649,7 +669,7 @@ section[id],
     left: -60%;
     width: 40%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
     transform: skewX(-20deg);
     transition: left 0.55s var(--ease);
 }
@@ -667,7 +687,7 @@ section[id],
 .btn-outline:hover {
     background: var(--brand-soft);
     border-color: var(--brand);
-    color: var(--brand-dark);
+    color: var(--brand);
 }
 
 .btn-ghost {
@@ -683,26 +703,26 @@ section[id],
 
 .btn-danger {
     background: var(--red-soft);
-    border-color: rgba(225, 29, 72, 0.35);
-    color: #be123c;
+    border-color: rgba(255, 92, 114, 0.4);
+    color: #ff8fa1;
 }
 
 .btn-danger:hover {
-    background: #ffe4e9;
-    border-color: rgba(225, 29, 72, 0.55);
-    color: #9f1239;
+    background: rgba(255, 92, 114, 0.24);
+    border-color: rgba(255, 92, 114, 0.65);
+    color: #ffc2cc;
 }
 
 .btn-success {
     background: var(--green-soft);
-    border-color: rgba(22, 163, 74, 0.35);
-    color: #15803d;
+    border-color: rgba(53, 208, 127, 0.4);
+    color: #6ee7a8;
 }
 
 .btn-success:hover {
-    background: #dcfce7;
-    border-color: rgba(22, 163, 74, 0.55);
-    color: #14532d;
+    background: rgba(53, 208, 127, 0.24);
+    border-color: rgba(53, 208, 127, 0.65);
+    color: #b9f5d3;
 }
 
 .btn-sm {
@@ -733,9 +753,12 @@ section[id],
 .hero {
     position: relative;
     overflow: hidden;
-    padding: 80px 0 72px;
+    padding: 84px 0 76px;
     border-bottom: 1px solid var(--line);
-    background: linear-gradient(180deg, #eef0fd 0%, #f7f8fd 55%, #ffffff 100%);
+    background:
+        radial-gradient(850px 400px at 50% 0%, rgba(255, 214, 10, 0.08) 0%, transparent 70%),
+        radial-gradient(700px 360px at 80% 20%, rgba(255, 138, 30, 0.06) 0%, transparent 70%),
+        linear-gradient(180deg, #13111a 0%, #0e0d14 60%, #0b0a10 100%);
 }
 
 .hero::after {
@@ -743,8 +766,8 @@ section[id],
     position: absolute;
     inset: 0;
     background-image:
-        linear-gradient(rgba(20, 22, 31, 0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(20, 22, 31, 0.045) 1px, transparent 1px);
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
     background-size: 46px 46px;
     mask-image: radial-gradient(74% 74% at 50% 26%, #000 0%, transparent 100%);
     -webkit-mask-image: radial-gradient(74% 74% at 50% 26%, #000 0%, transparent 100%);
@@ -832,10 +855,10 @@ section[id],
 .hero-stat {
     padding: 17px 18px;
     border-radius: var(--radius);
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(22, 20, 29, 0.82);
     border: 1px solid var(--line);
-    box-shadow: 0 2px 10px -8px rgba(20, 22, 31, 0.3);
-    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px -8px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(12px);
     transition: border-color 0.2s ease, transform 0.2s var(--ease), box-shadow 0.2s ease;
 }
 
@@ -872,7 +895,7 @@ section[id],
     width: 340px;
     height: 340px;
     border-radius: 50%;
-    border: 1px dashed rgba(79, 70, 229, 0.28);
+    border: 1px dashed rgba(255, 214, 10, 0.32);
     animation: spinSlow 26s linear infinite;
 }
 
@@ -886,7 +909,7 @@ section[id],
     margin-left: -6px;
     border-radius: 50%;
     background: var(--brand);
-    box-shadow: 0 0 18px 4px rgba(79, 70, 229, 0.5);
+    box-shadow: 0 0 20px 5px rgba(255, 214, 10, 0.6);
 }
 
 @keyframes spinSlow {
@@ -929,11 +952,42 @@ section[id],
     gap: 5px;
     font-size: 11px;
     font-weight: 800;
-    color: #15803d;
+    color: #6ee7a8;
     padding: 3px 9px;
     border-radius: 999px;
     background: var(--green-soft);
-    border: 1px solid rgba(22, 163, 74, 0.28);
+    border: 1px solid rgba(53, 208, 127, 0.32);
+}
+
+/* Chip status pesanan nyata di kartu hero (jujur: menunggu/gagal/contoh). */
+.float-card .chip-warn,
+.float-card .chip-bad,
+.float-card .chip-demo {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 999px;
+}
+
+.float-card .chip-warn {
+    color: #ffd76a;
+    background: rgba(255, 214, 10, 0.14);
+    border: 1px solid rgba(255, 214, 10, 0.34);
+}
+
+.float-card .chip-bad {
+    color: #ff9d9d;
+    background: rgba(255, 92, 92, 0.14);
+    border: 1px solid rgba(255, 92, 92, 0.32);
+}
+
+.float-card .chip-demo {
+    color: var(--muted);
+    background: var(--surface-2);
+    border: 1px dashed var(--line-strong);
 }
 
 .float-row {
@@ -957,6 +1011,12 @@ section[id],
 .float-row span:last-child {
     font-weight: 700;
     color: var(--ink);
+}
+
+/* Total pada kartu pesanan melayang — ditekankan dengan warna merek. */
+.float-row .float-total {
+    font-weight: 800;
+    color: var(--brand);
 }
 
 .float-mini {
@@ -983,7 +1043,7 @@ section[id],
     height: 30px;
     border-radius: 9px;
     background: var(--grad-brand);
-    color: #fff;
+    color: var(--on-brand);
     font-size: 15px;
 }
 
@@ -1102,7 +1162,7 @@ section[id],
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(150deg, rgba(79, 70, 229, 0.55), transparent 45%);
+    background: linear-gradient(150deg, rgba(255, 214, 10, 0.6), transparent 45%);
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -1143,8 +1203,8 @@ section[id],
 .game-badge.is-hot {
     background: var(--grad-warm);
     border-color: transparent;
-    color: #fff;
-    box-shadow: 0 10px 22px -10px rgba(255, 97, 53, 0.85);
+    color: var(--on-brand);
+    box-shadow: 0 10px 24px -10px rgba(255, 122, 26, 0.9);
 }
 
 .product-card {
@@ -1222,7 +1282,7 @@ section[id],
 
 /* Varian besar untuk halaman detail: rasio sama dengan kartu agar konsisten */
 .product-thumb.is-detail {
-    background: linear-gradient(160deg, #ffffff 0%, #f2f4fb 100%);
+    background: linear-gradient(160deg, #1d1a27 0%, #141220 100%);
     padding: 20px;
     border-radius: var(--radius);
 }
@@ -1383,13 +1443,15 @@ section[id],
     font-weight: 800;
     letter-spacing: 0.02em;
     background: var(--red-soft);
-    color: #be123c;
-    border: 1px solid rgba(225, 29, 72, 0.28);
+    color: #ff8fa1;
+    border: 1px solid rgba(255, 92, 114, 0.35);
 }
 
 /* ---------- Game logo ---------- */
 /* Kotak rasio 8:5 — sama dengan kartu produk supaya grid-4 sejajar rapi.
-   Logo tetap `contain` (tidak pernah dipotong) meski rasio tiap logo beda. */
+   Logo tetap `contain` (tidak pernah dipotong) meski rasio tiap logo beda.
+   Plakat terang: logo game gelap (mis. Free Fire/PUBG) tetap terbaca jelas
+   di atas tema gelap — pola "logo card" yang lazim di toko top up. */
 .game-logo {
     display: flex;
     align-items: center;
@@ -1399,9 +1461,20 @@ section[id],
     height: auto;
     padding: 14px;
     border-radius: var(--radius-sm);
-    background: linear-gradient(160deg, #ffffff 0%, #f2f4fb 100%);
+    background: linear-gradient(160deg, #ffffff 0%, #eceff7 100%);
     overflow: hidden;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(255, 214, 10, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        inset 0 0 0 1px rgba(255, 214, 10, 0.06),
+        0 10px 24px -16px rgba(0, 0, 0, 0.95);
+    transition: box-shadow 0.3s var(--ease), border-color 0.3s ease;
+}
+
+.card-hover:hover .game-logo {
+    border-color: rgba(255, 214, 10, 0.55);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        inset 0 0 0 1px rgba(255, 214, 10, 0.1),
+        0 0 26px -10px rgba(255, 214, 10, 0.55), 0 14px 30px -18px rgba(0, 0, 0, 0.95);
 }
 
 @supports not (aspect-ratio: 8 / 5) {
@@ -1506,7 +1579,7 @@ section[id],
 }
 
 .nominal-item input:focus-visible + .nominal-box {
-    outline: 2px solid rgba(79, 70, 229, 0.5);
+    outline: 2px solid rgba(255, 214, 10, 0.6);
     outline-offset: 2px;
 }
 
@@ -1583,15 +1656,15 @@ section[id],
 .form-control:focus {
     outline: none;
     border-color: var(--brand);
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.14);
+    background: var(--surface-2);
+    box-shadow: 0 0 0 4px rgba(255, 214, 10, 0.16);
 }
 
 select.form-control {
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a90a4' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 14px center;
     padding-right: 38px;
@@ -1614,7 +1687,7 @@ select.form-control {
 }
 
 .invalid-feedback {
-    color: #be123c;
+    color: #ff8fa1;
     font-size: 12px;
     margin-top: 5px;
 }
@@ -1654,7 +1727,7 @@ select.form-control {
 .searchbar input:focus {
     outline: none;
     border-color: var(--brand);
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.14);
+    box-shadow: 0 0 0 4px rgba(255, 214, 10, 0.16);
 }
 
 .searchbar::before {
@@ -1743,7 +1816,7 @@ select.form-control {
 .payment-item input:checked + .payment-box {
     border-color: var(--brand);
     background: var(--brand-soft);
-    color: var(--brand-dark);
+    color: var(--brand);
     box-shadow: 0 0 0 1px var(--brand);
 }
 
@@ -1821,9 +1894,9 @@ table.table td.wrap {
     display: none;
 }
 
-.badge-success { background: var(--green-soft); color: #15803d; border-color: rgba(22, 163, 74, 0.28); }
-.badge-pending { background: var(--yellow-soft); color: #b45309; border-color: rgba(217, 119, 6, 0.28); }
-.badge-failed { background: var(--red-soft); color: #be123c; border-color: rgba(225, 29, 72, 0.28); }
+.badge-success { background: var(--green-soft); color: #6ee7a8; border-color: rgba(53, 208, 127, 0.32); }
+.badge-pending { background: var(--yellow-soft); color: #ffd60a; border-color: rgba(255, 214, 10, 0.32); }
+.badge-failed { background: var(--red-soft); color: #ff8fa1; border-color: rgba(255, 92, 114, 0.32); }
 .badge-cancelled { background: var(--surface-3); color: var(--muted); border-color: var(--line-strong); }
 .badge-muted { background: var(--surface-3); color: var(--muted); border-color: var(--line-strong); }
 .badge-info { background: var(--brand-soft); color: var(--brand); border-color: var(--brand-soft-2); }
@@ -1845,14 +1918,14 @@ table.table td.wrap {
 
 .alert-success {
     background: var(--green-soft);
-    color: #14532d;
-    border-color: rgba(22, 163, 74, 0.3);
+    color: #8ff0ba;
+    border-color: rgba(53, 208, 127, 0.34);
 }
 
 .alert-error {
     background: var(--red-soft);
-    color: #9f1239;
-    border-color: rgba(225, 29, 72, 0.3);
+    color: #ffb0bc;
+    border-color: rgba(255, 92, 114, 0.34);
 }
 
 .alert ul {
@@ -1935,8 +2008,8 @@ table.table td.wrap {
 .step.done::before {
     content: "✓";
     background: var(--green-soft);
-    border-color: rgba(22, 163, 74, 0.55);
-    color: #15803d;
+    border-color: rgba(53, 208, 127, 0.6);
+    color: #6ee7a8;
 }
 
 .step.current::before {
@@ -1944,7 +2017,7 @@ table.table td.wrap {
     background: var(--brand-soft);
     border-color: var(--brand);
     color: var(--brand);
-    box-shadow: 0 0 0 5px rgba(79, 70, 229, 0.1);
+    box-shadow: 0 0 0 5px rgba(255, 214, 10, 0.12);
 }
 
 .step.done,
@@ -1969,7 +2042,7 @@ table.table td.wrap {
     border-radius: var(--radius);
     background: #ffffff;
     border: 1px solid var(--line-strong);
-    box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.05);
+    box-shadow: 0 0 0 6px rgba(255, 214, 10, 0.08);
 }
 
 .qr-box svg {
@@ -2108,7 +2181,7 @@ table.table td.wrap {
 .pagination span[aria-current="page"] > span {
     background: var(--grad-brand);
     border-color: transparent;
-    color: #fff;
+    color: var(--on-brand);
 }
 
 .pagination a:hover {
@@ -2142,9 +2215,9 @@ table.table td.wrap {
     padding: 52px 0 30px;
     border-top: 1px solid var(--line);
     background:
-        radial-gradient(700px 320px at 10% 0%, rgba(79, 70, 229, 0.28) 0%, transparent 70%),
-        #14161f;
-    color: #b9bed0;
+        radial-gradient(700px 320px at 10% 0%, rgba(255, 214, 10, 0.1) 0%, transparent 70%),
+        #0a0910;
+    color: #9aa1b6;
     font-size: 14px;
 }
 
@@ -2291,7 +2364,7 @@ table.table td.wrap {
 
 .stat-card.is-accent .stat-number,
 .stat-card.is-accent .stat-label {
-    color: #fff;
+    color: var(--on-brand);
 }
 
 .stat-card.is-accent .stat-label {
@@ -2335,7 +2408,7 @@ table.table td.wrap {
     min-height: 6px;
     border-radius: 8px 8px 4px 4px;
     background: var(--grad-brand);
-    box-shadow: 0 -6px 20px -12px rgba(79, 70, 229, 0.9);
+    box-shadow: 0 -6px 20px -12px rgba(255, 214, 10, 0.9);
     transition: filter 0.2s ease;
 }
 
@@ -2532,11 +2605,11 @@ table.table td.wrap {
     height: 34px;
     border-radius: 11px;
     background: var(--grad-brand);
-    color: #fff;
+    color: var(--on-brand);
     font-weight: 800;
     font-size: 14px;
     margin-bottom: 13px;
-    box-shadow: 0 10px 22px -12px rgba(79, 70, 229, 0.9);
+    box-shadow: 0 10px 24px -12px rgba(255, 214, 10, 0.9);
 }
 
 .step-card::after {
@@ -2618,10 +2691,11 @@ table.table td.wrap {
     padding: 58px 26px;
     border-radius: var(--radius-xl);
     background:
-        radial-gradient(600px 300px at 50% 0%, rgba(255, 255, 255, 0.22) 0%, transparent 70%),
-        var(--grad-brand);
-    border: 1px solid transparent;
-    box-shadow: var(--shadow-glow);
+        radial-gradient(600px 300px at 50% 0%, rgba(255, 214, 10, 0.28) 0%, transparent 70%),
+        radial-gradient(500px 260px at 80% 100%, rgba(255, 122, 26, 0.2) 0%, transparent 70%),
+        linear-gradient(135deg, #1c1827 0%, #13101b 100%);
+    border: 1px solid rgba(255, 214, 10, 0.25);
+    box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.9), 0 0 40px -15px rgba(255, 214, 10, 0.25);
     color: #fff;
 }
 
@@ -2632,17 +2706,17 @@ table.table td.wrap {
 }
 
 .cta-band p {
-    color: rgba(255, 255, 255, 0.88);
+    color: rgba(255, 255, 255, 0.82);
     margin-bottom: 26px;
     font-size: 15.5px;
 }
 
 .cta-band .eyebrow {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--brand);
 }
 
 .cta-band .eyebrow::before {
-    background: rgba(255, 255, 255, 0.75);
+    background: var(--brand);
 }
 
 .cta-band a {
@@ -2651,27 +2725,23 @@ table.table td.wrap {
 }
 
 .cta-band .btn-primary {
-    background: #fff;
-    color: var(--brand-dark);
-    box-shadow: 0 16px 34px -18px rgba(0, 0, 0, 0.6);
+    background: var(--grad-brand);
+    color: var(--on-brand);
+    box-shadow: 0 16px 36px -16px rgba(255, 214, 10, 0.9);
 }
 
 .cta-band .btn-primary:hover {
-    color: var(--brand-dark);
-}
-
-.cta-band .btn-primary::after {
-    display: none;
+    color: var(--on-brand);
 }
 
 .cta-band .btn-outline {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.6);
-    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 214, 10, 0.45);
+    color: var(--brand);
 }
 
 .cta-band .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--brand-soft);
     color: #fff;
 }
 
@@ -2723,9 +2793,9 @@ table.table td.wrap {
     padding: 46px 0 40px;
     border-bottom: 1px solid var(--line);
     background:
-        radial-gradient(760px 360px at 10% 0%, rgba(79, 70, 229, 0.12) 0%, transparent 68%),
-        radial-gradient(620px 320px at 90% 0%, rgba(14, 165, 233, 0.12) 0%, transparent 70%),
-        linear-gradient(180deg, #f2f4fd 0%, #ffffff 100%);
+        radial-gradient(760px 360px at 10% 0%, rgba(255, 214, 10, 0.1) 0%, transparent 68%),
+        radial-gradient(620px 320px at 90% 0%, rgba(255, 138, 30, 0.08) 0%, transparent 70%),
+        linear-gradient(180deg, #14111d 0%, #0e0d14 100%);
 }
 
 .page-banner::after {
@@ -2733,8 +2803,8 @@ table.table td.wrap {
     position: absolute;
     inset: 0;
     background-image:
-        linear-gradient(rgba(20, 22, 31, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(20, 22, 31, 0.04) 1px, transparent 1px);
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 46px 46px;
     mask-image: radial-gradient(70% 70% at 40% 20%, #000 0%, transparent 100%);
     -webkit-mask-image: radial-gradient(70% 70% at 40% 20%, #000 0%, transparent 100%);
@@ -2801,10 +2871,11 @@ table.table td.wrap {
     padding: 40px 36px;
     border-radius: var(--radius-lg);
     background:
-        radial-gradient(520px 300px at 20% 0%, rgba(255, 255, 255, 0.16) 0%, transparent 70%),
-        var(--grad-brand);
-    border: 1px solid transparent;
-    box-shadow: var(--shadow-glow);
+        radial-gradient(520px 300px at 20% 0%, rgba(255, 214, 10, 0.22) 0%, transparent 70%),
+        radial-gradient(420px 260px at 90% 100%, rgba(255, 122, 26, 0.18) 0%, transparent 70%),
+        linear-gradient(135deg, #1c1827 0%, #13101b 100%);
+    border: 1px solid rgba(255, 214, 10, 0.22);
+    box-shadow: 0 20px 50px -22px rgba(0, 0, 0, 0.9), 0 0 40px -18px rgba(255, 214, 10, 0.3);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -2819,15 +2890,15 @@ table.table td.wrap {
 }
 
 .auth-aside p {
-    color: rgba(255, 255, 255, 0.86);
+    color: rgba(255, 255, 255, 0.8);
     font-size: 14.5px;
     margin: 0 0 22px;
 }
 
 .auth-aside .hero-badge {
-    background: rgba(255, 255, 255, 0.16);
-    border-color: rgba(255, 255, 255, 0.35);
-    color: #fff;
+    background: rgba(255, 214, 10, 0.14);
+    border-color: rgba(255, 214, 10, 0.4);
+    color: var(--brand);
     box-shadow: none;
 }
 
@@ -2862,9 +2933,9 @@ table.table td.wrap {
     width: 30px;
     height: 30px;
     border-radius: 9px;
-    background: rgba(255, 255, 255, 0.18);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #fff;
+    background: rgba(255, 214, 10, 0.16);
+    border: 1px solid rgba(255, 214, 10, 0.32);
+    color: var(--brand);
     font-size: 15px;
 }
 
@@ -2916,7 +2987,7 @@ input[type="file"].form-control::file-selector-button {
     border: 0;
     border-radius: 9px;
     background: var(--brand-soft);
-    color: var(--brand-dark);
+    color: var(--brand);
     font-family: inherit;
     font-weight: 700;
     font-size: 13px;
@@ -2988,16 +3059,16 @@ html.js .reveal.d4 { transition-delay: 0.32s; }
 }
 
 .account-tabs a.active {
-    color: #fff;
+    color: var(--on-brand);
     background: var(--grad-brand);
-    box-shadow: 0 10px 22px -12px rgba(79, 70, 229, 0.9);
+    box-shadow: 0 10px 24px -12px rgba(255, 214, 10, 0.9);
 }
 
 /* ---------- Utils ---------- */
 .icon { display: block; flex: 0 0 auto; }
 .trust-item .trust-icon { color: var(--brand); }
-.auth-list .al-icon { color: #fff; }
-.float-mini .mini-icon { color: #fff; }
+.auth-list .al-icon { color: var(--brand); }
+.float-mini .mini-icon { color: var(--on-brand); }
 .empty .empty-icon svg { margin: 0 auto; }
 .empty .empty-icon { color: var(--brand); }
 .text-right { text-align: right; }
@@ -3122,8 +3193,55 @@ html.js .reveal.d4 { transition-delay: 0.32s; }
 }
 
 @media print {
-    .navbar, .footer, .admin-nav, .btn, .ticker, .aurora { display: none !important; }
-    body { background: #fff; color: #000; }
+    .navbar, .footer, .admin-nav, .btn, .ticker, .aurora, .skip-link,
+    .nav-toggle, .float-mini, .hero-visual { display: none !important; }
+
+    body {
+        background: #fff !important;
+        background-image: none !important;
+        color: #111;
+    }
+
+    /* Permukaan gelap dikembalikan ke putih agar tidak boros tinta */
+    .card, .summary-card, .trust-item, .step-card, .faq-item, .empty,
+    .stat-band .band-item, .order-card, .pay-panel, .nominal-box,
+    .payment-box, .auth-card, .admin-nav, .page-banner, .cta-band {
+        background: #fff !important;
+        background-image: none !important;
+        border-color: #d0d0d0 !important;
+        box-shadow: none !important;
+    }
+
+    /* Teks & aksen dipaksa gelap (gradien text tidak tercetak) */
+    h1, h2, h3, h4, .section-title, .section-subtitle, .muted,
+    .pay-amount, .summary-total .amount, .stat-card .stat-number,
+    .cell-link, a, .badge, .eyebrow, .error-code, .text-gradient,
+    .stat-band .band-item strong, .nominal-price {
+        color: #111 !important;
+        background: none !important;
+        -webkit-text-fill-color: #111 !important;
+    }
+
+    table.table th {
+        background: #f0f0f0 !important;
+        color: #333 !important;
+    }
+
+    table.table td {
+        background: #fff !important;
+    }
+
+    /* Kotak yang memang harus terang tetap rapi tanpa glow */
+    .qr-box, .game-logo, .proof-preview {
+        border-color: #c8c8c8 !important;
+        box-shadow: none !important;
+    }
+
+    .step::before {
+        background: #fff !important;
+        border-color: #999 !important;
+        color: #333 !important;
+    }
 }
 
 /* =========================================================
@@ -3161,9 +3279,13 @@ html.js .reveal.d4 { transition-delay: 0.32s; }
     box-shadow: 0 0 0 3px var(--brand-soft);
 }
 
-/* Baris yang butuh tindakan admin */
+/* Baris yang butuh tindakan admin — sorot rata, tanpa pita per-sel */
 tr.row-highlight > td {
-    background: linear-gradient(90deg, rgba(79, 70, 229, 0.07) 0%, rgba(79, 70, 229, 0) 60%);
+    background: rgba(255, 214, 10, 0.07);
+}
+
+tr.row-highlight > td:first-child {
+    box-shadow: inset 3px 0 0 var(--brand);
 }
 
 /* Footer tabel (baris total laporan) */
@@ -3345,7 +3467,7 @@ table.table tfoot th {
 /* Tautan pada sel tabel (kode transaksi menuju detail) */
 .table a.cell-link {
     font-weight: 700;
-    color: var(--brand-dark);
+    color: var(--brand);
     text-decoration: none;
 }
 
@@ -3416,7 +3538,7 @@ table.table tfoot th {
 }
 
 .legal-body a {
-    color: var(--brand-dark);
+    color: var(--brand);
     font-weight: 600;
 }
 
@@ -3452,7 +3574,7 @@ table.table tfoot th {
     justify-content: center;
     font-size: 13px;
     font-weight: 700;
-    color: #fff;
+    color: var(--on-brand);
     background: var(--grad-brand);
     border-radius: 50%;
 }
@@ -3576,9 +3698,518 @@ table.table tfoot th {
     margin-top: 7px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--brand-dark);
+    color: var(--brand);
 }
 
 .vt-proof:hover {
     text-decoration: underline;
+}
+
+/* =========================================================
+   POLISH LAYER v4 — nuansa Takapedia: neon, glow, dan kedalaman.
+   Hanya menyempurnakan tampilan; tidak mengubah nama class apa pun.
+   ========================================================= */
+
+/* ---------- Judul & eyebrow bernuansa neon ---------- */
+.section-title {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+}
+
+.eyebrow {
+    color: var(--brand);
+}
+
+.eyebrow::before {
+    background: var(--grad-brand);
+    box-shadow: 0 0 12px rgba(255, 214, 10, 0.8);
+}
+
+.text-gradient {
+    background: linear-gradient(100deg, #ffe45c 0%, #ffd60a 40%, #ff9a1f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ---------- Kartu: kedalaman + glow neon saat hover ---------- */
+.card {
+    border-color: var(--line);
+    box-shadow: var(--shadow);
+}
+
+.card-hover:hover {
+    border-color: rgba(255, 214, 10, 0.5);
+    box-shadow: 0 22px 50px -24px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 214, 10, 0.25),
+        0 0 34px -12px rgba(255, 214, 10, 0.35);
+}
+
+.game-card:hover::before {
+    background: linear-gradient(150deg, rgba(255, 214, 10, 0.85), transparent 50%);
+}
+
+/* Badge "Populer" (bukan hot) — kaca gelap yang rapi */
+.game-badge {
+    background: rgba(11, 10, 16, 0.72);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: var(--ink-2);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 6px 16px -10px rgba(0, 0, 0, 0.9);
+}
+
+.game-badge.is-hot {
+    background: var(--grad-warm);
+    border-color: transparent;
+    color: var(--on-brand);
+    box-shadow: 0 10px 24px -8px rgba(255, 122, 26, 0.95), 0 0 22px -6px rgba(255, 214, 10, 0.6);
+}
+
+/* ---------- Nominal: kartu harga dengan ring neon saat dipilih ---------- */
+.nominal-box {
+    background: var(--surface-2);
+    border-color: var(--line-strong);
+}
+
+.nominal-box:hover {
+    background: var(--surface-3);
+    box-shadow: 0 14px 30px -18px rgba(0, 0, 0, 0.9);
+}
+
+.nominal-item input:checked + .nominal-box {
+    border-color: var(--brand);
+    background: linear-gradient(180deg, rgba(255, 214, 10, 0.14) 0%, rgba(255, 214, 10, 0.05) 100%);
+    box-shadow: 0 0 0 1px var(--brand), 0 0 26px -6px rgba(255, 214, 10, 0.55),
+        0 16px 34px -20px rgba(0, 0, 0, 0.9);
+}
+
+.nominal-item input:checked + .nominal-box::after {
+    color: var(--brand);
+    text-shadow: 0 0 10px rgba(255, 214, 10, 0.9);
+}
+
+.nominal-box .nominal-price {
+    color: var(--brand);
+}
+
+/* ---------- Radio pembayaran: glow saat dipilih ---------- */
+.payment-box {
+    background: var(--surface-2);
+    border-color: var(--line-strong);
+}
+
+.payment-item input:checked + .payment-box {
+    border-color: var(--brand);
+    background: linear-gradient(180deg, rgba(255, 214, 10, 0.14) 0%, rgba(255, 214, 10, 0.04) 100%);
+    color: var(--brand);
+    box-shadow: 0 0 0 1px var(--brand), 0 0 24px -8px rgba(255, 214, 10, 0.55);
+}
+
+/* ---------- Chip filter: neon saat aktif ---------- */
+.chip {
+    background: var(--surface-2);
+    border-color: var(--line-strong);
+}
+
+.chip.active {
+    background: var(--grad-brand);
+    border-color: transparent;
+    color: var(--on-brand);
+    box-shadow: 0 10px 24px -12px rgba(255, 214, 10, 0.85);
+}
+
+.chip.active:hover {
+    color: var(--on-brand);
+}
+
+/* ---------- Tabel: header & hover bernuansa gelap premium ---------- */
+table.table th {
+    background: #1b1826;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line-strong);
+}
+
+table.table tbody tr {
+    transition: background 0.16s ease;
+}
+
+table.table tbody tr:hover {
+    background: rgba(255, 214, 10, 0.045);
+}
+
+table.table tfoot th {
+    background: #1b1826;
+}
+
+/* ---------- Badge & pill: sedikit glow agar terbaca di latar gelap ---------- */
+.badge {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.pill {
+    background: var(--surface-2);
+    border-color: var(--line-strong);
+}
+
+.role-badge {
+    border-color: rgba(255, 214, 10, 0.45);
+}
+
+/* ---------- Stat band & kartu statistik: angka bercahaya ---------- */
+.stat-band .band-item {
+    background: var(--surface);
+    transition: transform 0.22s var(--ease), border-color 0.22s ease, box-shadow 0.24s ease;
+}
+
+.stat-band .band-item:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 214, 10, 0.4);
+    box-shadow: 0 20px 44px -24px rgba(0, 0, 0, 0.95), 0 0 28px -12px rgba(255, 214, 10, 0.35);
+}
+
+.stat-band .band-item strong {
+    background: linear-gradient(120deg, #ffe45c 0%, #ffd60a 45%, #ff9a1f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ---------- Kartu trust & langkah: glow tepi halus ---------- */
+.trust-item:hover,
+.step-card:hover {
+    border-color: rgba(255, 214, 10, 0.45);
+    box-shadow: 0 22px 48px -26px rgba(0, 0, 0, 0.95), 0 0 30px -14px rgba(255, 214, 10, 0.35);
+}
+
+.trust-item .trust-icon {
+    background: var(--brand-soft);
+    border-color: var(--brand-soft-2);
+    color: var(--brand);
+}
+
+.step-card::after {
+    background: linear-gradient(90deg, rgba(255, 214, 10, 0.5), transparent);
+}
+
+/* ---------- FAQ: ring neon saat dibuka ---------- */
+.faq-item {
+    background: var(--surface);
+}
+
+.faq-item[open] {
+    border-color: rgba(255, 214, 10, 0.4);
+    box-shadow: 0 20px 44px -26px rgba(0, 0, 0, 0.95), 0 0 26px -14px rgba(255, 214, 10, 0.3);
+}
+
+.faq-item summary::after {
+    color: var(--brand);
+}
+
+/* ---------- Nav admin & tab akun: item aktif menyala ---------- */
+.admin-nav {
+    background: var(--surface);
+}
+
+.admin-nav a:hover,
+.admin-nav a.active {
+    background: var(--brand-soft);
+    color: var(--brand);
+    box-shadow: inset 0 0 0 1px var(--brand-soft-2);
+}
+
+.account-tabs a.active {
+    color: var(--on-brand);
+}
+
+/* ---------- Banner halaman: garis aksen bawah neon ---------- */
+.page-banner {
+    position: relative;
+}
+
+.page-banner::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 214, 10, 0.55), transparent);
+    z-index: 2;
+}
+
+.page-banner h1 {
+    font-family: var(--font-display);
+}
+
+/* ---------- Hero: judul & badge lebih tegas ---------- */
+.hero h1 {
+    font-family: var(--font-display);
+    letter-spacing: -0.04em;
+}
+
+.hero-badge {
+    background: rgba(255, 214, 10, 0.1);
+    border-color: rgba(255, 214, 10, 0.35);
+    color: var(--brand);
+    box-shadow: 0 0 22px -10px rgba(255, 214, 10, 0.5);
+}
+
+.hero-stat strong {
+    background: linear-gradient(120deg, #ffe45c 0%, #ffd60a 45%, #ff9a1f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ---------- Ticker: garis neon ---------- */
+.ticker {
+    background: #0f0d16;
+    border-top: 1px solid rgba(255, 214, 10, 0.16);
+    border-bottom: 1px solid rgba(255, 214, 10, 0.16);
+}
+
+.ticker-item .tick-dot {
+    background: var(--grad-brand);
+    box-shadow: 0 0 10px rgba(255, 214, 10, 0.8);
+}
+
+/* ---------- Empty state: ikon bercahaya ---------- */
+.empty {
+    background: var(--surface);
+}
+
+.empty-icon {
+    background: var(--brand-soft);
+    border-color: var(--brand-soft-2);
+    color: var(--brand);
+    box-shadow: 0 0 26px -10px rgba(255, 214, 10, 0.5);
+}
+
+/* ---------- Timeline verifikasi: titik menyala ---------- */
+.vtimeline-item.is-done::before {
+    background: var(--brand);
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--brand-soft), 0 0 14px rgba(255, 214, 10, 0.7);
+}
+
+.timeline-item::before {
+    background: var(--brand);
+    box-shadow: 0 0 0 3px var(--brand-soft), 0 0 12px rgba(255, 214, 10, 0.6);
+}
+
+/* ---------- Input otomatis browser: jangan putih di tema gelap ---------- */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    -webkit-text-fill-color: var(--ink);
+    -webkit-box-shadow: 0 0 0 1000px #1c1926 inset;
+    caret-color: var(--ink);
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ---------- Selector opsi select: latar gelap agar teks terbaca ---------- */
+select.form-control option,
+.inline-form select option,
+.filter-form select option,
+.input-sm option {
+    background: #1c1926;
+    color: var(--ink);
+}
+
+/* ---------- Berkas bukti: tetap terang agar terbaca, dengan bingkai neon ---------- */
+.proof-preview {
+    border-color: var(--line-strong);
+}
+
+.proof-preview:hover {
+    border-color: var(--brand);
+    box-shadow: 0 0 24px -10px rgba(255, 214, 10, 0.45);
+}
+
+/* ---------- Legal steps: nomor menyala ---------- */
+.legal-steps > li {
+    background: var(--surface-2);
+}
+
+/* ---------- Kartu ringkasan (checkout): tepi atas neon ---------- */
+.summary-card {
+    border-color: var(--line-strong);
+}
+
+/* ---------- Pay code & countdown ---------- */
+.pay-code {
+    background: var(--surface-2);
+    border-color: var(--line-strong);
+    color: var(--ink);
+}
+
+/* ---------- Skip link: tetap kontras ---------- */
+.skip-link {
+    color: var(--on-brand);
+}
+
+.skip-link:focus {
+    color: var(--on-brand);
+}
+
+/* =========================================================
+   POLISH LAYER v5 — penyempurnaan akhir.
+   Angka tampil dengan font display + lebar digit seragam,
+   plus dukungan "prefers-reduced-motion".
+   ========================================================= */
+
+/* Nominal & angka statistik: konsisten, rapi, dan mudah dibaca */
+.pay-amount,
+.summary-total .amount,
+.stat-card .stat-number,
+.stat-band .band-item strong,
+.hero-stat strong {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+}
+
+/* Nominal utama pada halaman pembayaran diberi pendar halus */
+.pay-amount {
+    text-shadow: 0 0 28px rgba(255, 214, 10, 0.35);
+}
+
+/* Hormati preferensi pengguna yang mengurangi gerakan */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .card-hover:hover,
+    .trust-item:hover,
+    .step-card:hover,
+    .nominal-box:hover,
+    .payment-item:hover .payment-box,
+    .stat-band .band-item:hover {
+        transform: none !important;
+    }
+}
+
+/* =========================================================
+   POLISH LAYER v6 — bintang jatuh 3D, kartu tilt, & invoice.
+   Nuansa "Takapedia": latar bintang + interaksi kartu 3D.
+   Semua efek di bawah tetap menghormati prefers-reduced-motion.
+   ========================================================= */
+
+/* ---------- Latar bintang jatuh (hero) ---------- */
+.starfield {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.starfield-dust,
+.starfield-shooting {
+    position: absolute;
+    inset: 0;
+}
+
+.sf-dust {
+    position: absolute;
+    border-radius: 50%;
+    background: #fff;
+    opacity: 0.55;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.7);
+    animation-name: sfTwinkle;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+
+@keyframes sfTwinkle {
+    0%, 100% { opacity: 0.18; transform: scale(0.8); }
+    50%      { opacity: 0.85; transform: scale(1.15); }
+}
+
+/* Bintang jatuh: garis cahaya melesat diagonal ke kiri-bawah. */
+.sf-shoot {
+    position: absolute;
+    width: var(--shoot-len, 120px);
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(255, 214, 10, 0) 0%, rgba(255, 214, 10, 0.9) 60%, #fff 100%);
+    filter: drop-shadow(0 0 6px rgba(255, 214, 10, 0.75));
+    opacity: 0;
+    transform: rotate(35deg);
+    animation-name: sfShoot;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in;
+}
+
+@keyframes sfShoot {
+    0%   { opacity: 0; transform: translate3d(0, 0, 0) rotate(35deg) scaleX(0.4); }
+    6%   { opacity: 1; }
+    22%  { opacity: 1; }
+    32%  { opacity: 0; transform: translate3d(-280px, 200px, 0) rotate(35deg) scaleX(1); }
+    100% { opacity: 0; transform: translate3d(-280px, 200px, 0) rotate(35deg) scaleX(1); }
+}
+
+/* Kedalaman 3D halus: lapisan bintang bergeser saat hero di-hover. */
+.hero:hover .starfield-dust { transform: translate3d(0, -6px, 0); }
+.starfield-dust { transition: transform 0.6s var(--ease, ease); }
+
+/* ---------- Kartu tilt 3D ---------- */
+[data-tilt] {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.35s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), box-shadow 0.35s ease;
+}
+
+[data-tilt].is-tilting {
+    transition: transform 0.08s linear, box-shadow 0.35s ease;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--brand-soft-2);
+}
+
+/* Lapisan kilau mengikuti kartu saat miring. */
+[data-tilt]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.14), transparent 42%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+}
+
+[data-tilt].is-tilting::after { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+    [data-tilt] { transform: none !important; }
+    [data-tilt]::after { display: none; }
+    .sf-dust, .sf-shoot { animation: none !important; opacity: 0.4; }
+    .sf-shoot { opacity: 0; }
+    .hero:hover .starfield-dust { transform: none; }
+}
+
+/* ---------- Halaman invoice: aturan cetak ---------- */
+@media print {
+    .invoice-actions { display: none !important; }
+
+    .invoice-doc {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        color: #111 !important;
+    }
+
+    .invoice-doc::before { display: none !important; }
+    .invoice-stamp { border-color: #111 !important; color: #111 !important; }
+    .invoice-pay { background: #f5f5f5 !important; }
 }

@@ -160,12 +160,32 @@ class MarketplaceOrder extends Model
     }
 
     /**
+     * Dikonfirmasi otomatis oleh sistem dari bukti/penandaan pembeli?
+     */
+    public function confirmedByAuto()
+    {
+        return $this->confirmation_source === OrderStatus::SOURCE_AUTO;
+    }
+
+    /**
+     * Dikonfirmasi otomatis (gateway atau sistem), bukan admin?
+     */
+    public function confirmedAutomatically()
+    {
+        return $this->confirmedByGateway() || $this->confirmedByAuto();
+    }
+
+    /**
      * Label sumber konfirmasi untuk ditampilkan di UI.
      */
     public function confirmationLabel()
     {
         if ($this->confirmation_source === OrderStatus::SOURCE_GATEWAY) {
             return 'Otomatis (gateway pembayaran)';
+        }
+
+        if ($this->confirmation_source === OrderStatus::SOURCE_AUTO) {
+            return 'Otomatis (bukti pembayaran)';
         }
 
         if ($this->confirmation_source === OrderStatus::SOURCE_ADMIN) {

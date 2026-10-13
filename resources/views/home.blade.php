@@ -15,7 +15,7 @@
         'target' => route('marketplace.index') . '?q={search_term_string}',
         'query-input' => 'required name=search_term_string',
     ],
-], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}
 </script>
 @endsection
 
@@ -34,6 +34,8 @@
         <span class="aurora-blob b2"></span>
         <span class="aurora-blob b3"></span>
     </div>
+
+    @include('partials.starfield')
 
     <div class="container hero-grid">
         <div class="hero-inner">
@@ -79,25 +81,18 @@
 
             <div class="float-mini m1">
                 <span class="mini-icon">@include('partials.icon', ['name' => 'bolt', 'size' => 16])</span>
-                <span>Saldo Masuk<small>Terverifikasi</small></span>
+                <span>Bayar Kilat<small>QRIS &amp; e-wallet</small></span>
             </div>
 
             <div class="float-card">
                 <div class="float-card-head">
-                    <strong>Pesanan Kamu</strong>
-                    <span class="chip-ok">● Selesai</span>
+                    <strong>{{ $heroCard['title'] }}</strong>
+                    <span class="{{ $heroCard['chip']['class'] }}">● {{ $heroCard['chip']['text'] }}</span>
                 </div>
-                @if($heroProduct)
-                    <div class="float-row"><span>Game</span><span>{{ $heroProduct->gameTitle->name ?? 'Game' }}</span></div>
-                    <div class="float-row"><span>Nominal</span><span>{{ $heroProduct->name }}</span></div>
-                    <div class="float-row"><span>Metode</span><span>QRIS</span></div>
-                    <div class="float-row"><span>Total</span><span class="float-total">Rp {{ number_format($heroProduct->price, 0, ',', '.') }}</span></div>
-                @else
-                    <div class="float-row"><span>Game</span><span>Mobile Legends</span></div>
-                    <div class="float-row"><span>Nominal</span><span>500 Diamonds</span></div>
-                    <div class="float-row"><span>Metode</span><span>QRIS</span></div>
-                    <div class="float-row"><span>Total</span><span class="float-total">Rp 145.000</span></div>
-                @endif
+                @foreach($heroCard['rows'] as $row)
+                    <div class="float-row"><span>{{ $row['label'] }}</span><span>{{ $row['value'] }}</span></div>
+                @endforeach
+                <div class="float-row"><span>Total</span><span class="float-total">{{ $heroCard['total'] }}</span></div>
             </div>
 
             <div class="float-mini m2">
@@ -138,7 +133,7 @@
 
         <div class="grid grid-4">
             @forelse($featured as $index => $game)
-                <div class="card card-hover game-card reveal d{{ ($index % 4) + 1 }}">
+                <div class="card card-hover game-card reveal d{{ ($index % 4) + 1 }}" data-tilt>
                     @if($index === 0)
                         <span class="game-badge is-hot">Terpopuler</span>
                     @elseif($game->products_count >= 4)
@@ -296,7 +291,7 @@
             </details>
             <details class="faq-item reveal d4">
                 <summary>Bagaimana kalau saya salah memasukkan User ID?</summary>
-                <div class="faq-body">Selama status pesanan masih <em>pending</em>, kamu bisa membatalkannya dan stock otomatis dikembalikan. Setelah berhasil, pesanan tidak bisa dibatalkan.</div>
+                <div class="faq-body">Selama status pesanan masih <em>Menunggu Konfirmasi</em>, kamu bisa membatalkannya dan stok otomatis dikembalikan. Setelah dinyatakan selesai, pesanan tidak bisa dibatalkan sendiri oleh pembeli.</div>
             </details>
         </div>
     </div>

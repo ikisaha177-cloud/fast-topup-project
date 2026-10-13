@@ -18,6 +18,10 @@ use Tests\TestCase;
  * "Saya Sudah Bayar"; admin melihatnya saat memverifikasi.
  *
  * Unggahan bersifat opsional supaya alur lama (tanpa bukti) tetap jalan.
+ *
+ * Kelas ini menguji alur verifikasi MANUAL (bukti hanya lampiran; admin yang
+ * memutuskan), jadi mode verifikasi disematkan ke "manual". Perilaku
+ * auto-verifikasi dari bukti diuji terpisah di PaymentVerificationModeTest.
  */
 class PaymentProofTest extends TestCase
 {
@@ -26,6 +30,8 @@ class PaymentProofTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        config(['payment.verification' => 'manual']);
 
         Notification::fake();
         Storage::fake('public');
@@ -220,5 +226,32 @@ class PaymentProofTest extends TestCase
         $this->assertNull($transaction->payment_proof);
         $this->assertNull($transaction->payment_claimed_at);
         Storage::disk('public')->assertMissing($path);
+    }
+
+    /**
+     * Berkas unggahan yang ditolak (karena pesanan sudah punya bukti) otomatis
+     * dibersihkan dari disk supaya tidak menumpuk sebagai berkas yatim.
+     */
+    public function test_redundant_proof_upload_is_deleted_when_claim_is_rejected()
+    {
+        $buyer = $this->buyer();
+        $transaction = $this->makeTransaction($buyer, Product::first());
+
+        // Klaim pertama dengan bukti — berkas primer tersimpan.
+        $this->actingAs($buyer)->post(route('topup.payment.claim', $transaction->transaction_code), [
+            'payment_proof' => UploadedFile::fake()->image('bukti1.jpg', 600, 400),
+        ]);
+        $primaryProof = $transaction->fresh()->payment_proof;
+        Storage::disk('public')->assertExists($primaryProof);
+
+        // Klaim kedua dengan bukti baru pada pesanan yang sudah berbukti:
+        // klaim ditolak (false), dan berkas kedua yang baru di-upload harus langsung dihapus.
+        $this->actingAs($buyer)->post(route('topup.payment.claim', $transaction->transaction_code), [
+            'payment_proof' => UploadedFile::fake()->image('bukti2.jpg', 600, 400),
+        ]);
+
+        $allFiles = Storage::disk('public')->allFiles('payment-proofs');
+        $this->assertCount(1, $allFiles);
+        $this->assertSame($primaryProof, $allFiles[0]);
     }
 }

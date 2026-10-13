@@ -33,7 +33,7 @@ class TransactionController extends Controller
     public function show($code)
     {
         $transaction = Transaction::where('transaction_code', $code)
-            ->with(['gameTitle', 'product', 'user'])
+            ->with(['gameTitle', 'product', 'user', 'confirmedBy', 'revokedBy'])
             ->firstOrFail();
 
         if (! auth()->check() || $transaction->user_id !== auth()->id()) {

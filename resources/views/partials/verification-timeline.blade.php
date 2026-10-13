@@ -33,7 +33,9 @@
             'state' => 'done',
             'title' => 'Kamu Menandai Sudah Bayar',
             'time'  => $model->payment_claimed_at,
-            'note'  => 'Pembayaran menunggu diverifikasi admin.',
+            'note'  => $isPending
+                ? 'Pembayaran menunggu diverifikasi admin.'
+                : 'Pembayaran sudah diterima.',
         ];
     } elseif ($isPending) {
         $steps[] = [
@@ -62,16 +64,20 @@
         ];
     }
 
-    // 4. Verifikasi admin / gateway.
+    // 4. Verifikasi admin / gateway / otomatis dari bukti.
     if ($confirmed) {
         $byGateway = $model->confirmedByGateway();
+        $byAuto    = $model->confirmedByAuto();
+
         $steps[] = [
             'state' => 'done',
-            'title' => $byGateway ? 'Terverifikasi Otomatis' : 'Diverifikasi Admin',
+            'title' => $byGateway || $byAuto ? 'Terverifikasi Otomatis' : 'Diverifikasi Admin',
             'time'  => $model->confirmed_at,
             'note'  => $byGateway
                 ? 'Dikonfirmasi otomatis oleh gateway pembayaran.'
-                : ('Dikonfirmasi oleh ' . ($model->confirmedBy->name ?? 'admin') . '.'),
+                : ($byAuto
+                    ? 'Dikonfirmasi otomatis oleh sistem dari bukti pembayaran.'
+                    : ('Dikonfirmasi oleh ' . ($model->confirmedBy->name ?? 'admin') . '.')),
         ];
     } elseif ($isPending && $claimed) {
         $steps[] = [

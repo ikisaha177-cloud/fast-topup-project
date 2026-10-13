@@ -12,7 +12,7 @@
     $sold          = (int) $product->sold_count;
 @endphp
 
-<div class="card card-hover product-card reveal d{{ ($index % 4) + 1 }}">
+<div class="card card-hover product-card reveal d{{ ($index % 4) + 1 }}" data-tilt>
     @include('partials.marketplace-image', ['product' => $product])
 
     <div class="product-subrow">

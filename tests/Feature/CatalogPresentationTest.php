@@ -194,6 +194,29 @@ class CatalogPresentationTest extends TestCase
         $this->assertStringContainsString('schema.org/InStock', $html);
     }
 
+    /** Karakter berbahaya di nama/deskripsi produk di-escape hex agar tidak breakout script tag. */
+    public function test_json_ld_escapes_script_tags_in_product_attributes()
+    {
+        $seller = User::factory()->create(['role' => 'user']);
+        $product = MarketplaceProduct::create([
+            'user_id'     => $seller->id,
+            'name'        => 'Item </script><script>alert("xss")</script>',
+            'slug'        => 'item-xss-test-' . uniqid(),
+            'description' => 'Deskripsi dengan </script>',
+            'price'       => 50000,
+            'stock'       => 5,
+            'is_active'   => true,
+        ]);
+
+        $html = $this->get(route('marketplace.show', $product->slug))
+            ->assertOk()
+            ->getContent();
+
+        // Tag </script> literal TIDAK boleh muncul di dalam payload JSON-LD.
+        $this->assertStringNotContainsString('</script><script>alert("xss")', $html);
+        $this->assertStringContainsString('\u003C/script\u003E', $html);
+    }
+
     /** Home membawa data terstruktur WebSite + tautan lompat aksesibilitas. */
     public function test_home_exposes_website_structured_data_and_skip_link()
     {
@@ -282,5 +305,70 @@ class CatalogPresentationTest extends TestCase
             ->get(route('orders.index', ['status' => 'pending']))
             ->assertOk()
             ->assertSee('aria-current="true"', false);
+    }
+
+    /** Guest tidak boleh melihat klaim "Pesanan Kamu" — cukup pratinjau katalog. */
+    public function test_home_hero_shows_preview_for_guest_not_a_fake_order()
+    {
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $this->assertStringContainsString('Pratinjau Pesanan', $html);
+        $this->assertStringContainsString('Contoh', $html);
+        $this->assertStringNotContainsString('Pesanan Kamu', $html);
+        $this->assertStringNotContainsString('Pesanan Terakhir', $html);
+    }
+
+    /** Pengguna tanpa pesanan juga hanya melihat pratinjau, bukan pesanan orang lain. */
+    public function test_home_hero_does_not_leak_other_users_orders()
+    {
+        $owner = $this->buyer();
+        $other = $this->buyer();
+
+        $game = \App\Models\GameTitle::first();
+        $product = \App\Models\Product::where('game_title_id', $game->id)->first();
+
+        \App\Models\Transaction::create([
+            'transaction_code' => 'TXN-HERO-' . uniqid(),
+            'user_id'          => $owner->id,
+            'game_title_id'    => $game->id,
+            'product_id'       => $product->id,
+            'user_game_id'     => '11223344',
+            'payment_method'   => 'QRIS',
+            'amount'           => $product->price,
+            'status'           => 'success',
+        ]);
+
+        $this->actingAs($other)
+            ->get('/')
+            ->assertOk()
+            ->assertSee('Pratinjau Pesanan')
+            ->assertDontSee('Pesanan Terakhir');
+    }
+
+    /** Pengguna dengan pesanan nyata melihat pesanannya — dengan status yang jujur. */
+    public function test_home_hero_shows_real_order_with_truthful_status()
+    {
+        $buyer = $this->buyer();
+        $game = \App\Models\GameTitle::first();
+        $product = \App\Models\Product::where('game_title_id', $game->id)->first();
+
+        \App\Models\Transaction::create([
+            'transaction_code' => 'TXN-HERO-' . uniqid(),
+            'user_id'          => $buyer->id,
+            'game_title_id'    => $game->id,
+            'product_id'       => $product->id,
+            'user_game_id'     => '55667788',
+            'payment_method'   => 'QRIS',
+            'amount'           => $product->price,
+            'status'           => 'pending',
+        ]);
+
+        $html = $this->actingAs($buyer)->get('/')->assertOk()->getContent();
+
+        $this->assertStringContainsString('Pesanan Terakhir', $html);
+        $this->assertStringContainsString('Menunggu Konfirmasi', $html);
+        // Pending tidak boleh diklaim "Selesai".
+        $this->assertStringNotContainsString('chip-ok', $html);
+        $this->assertStringContainsString($product->name, $html);
     }
 }

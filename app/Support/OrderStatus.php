@@ -18,8 +18,9 @@ namespace App\Support;
  *   success --(admin batalkan konfirmasi)--> failed  : salah konfirmasi
  *                                                      diperbaiki; stok kembali.
  *
- * Perbedaan dua jalur menuju `success` dicatat pada kolom
- * `confirmation_source` (admin|gateway) supaya jejak audit tetap jujur.
+ * Perbedaan jalur menuju `success` dicatat pada kolom `confirmation_source`
+ * (admin|gateway|auto) supaya jejak audit tetap jujur: siapa yang benar-benar
+ * menyelesaikan pesanan.
  *
  * Catatan: `success` bukan lagi jalan buntu. Admin boleh membatalkan
  * konfirmasi yang salah (success -> failed); stok dikembalikan dan alasan
@@ -37,6 +38,12 @@ class OrderStatus
 
     /** Konfirmasi dilakukan otomatis oleh webhook gateway pembayaran. */
     public const SOURCE_GATEWAY = 'gateway';
+
+    /**
+     * Konfirmasi otomatis oleh sistem dari penandaan/bukti pembayaran pembeli
+     * (kebijakan verifikasi hybrid/auto — lihat {@see PaymentVerification}).
+     */
+    public const SOURCE_AUTO = 'auto';
 
     /**
      * Semua status yang sah.

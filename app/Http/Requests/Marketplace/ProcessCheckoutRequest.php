@@ -17,7 +17,6 @@ class ProcessCheckoutRequest extends FormRequest
     {
         return [
             'payment_method' => ['required', 'string', Rule::in(PaymentMethods::all())],
-            'note'           => 'nullable|string|max:255',
         ];
     }
 
@@ -26,7 +25,6 @@ class ProcessCheckoutRequest extends FormRequest
         return [
             'payment_method.required' => 'Pilih metode pembayaran.',
             'payment_method.in'       => 'Metode pembayaran tidak valid.',
-            'note.max'                => 'Catatan maksimal 255 karakter.',
         ];
     }
 }

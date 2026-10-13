@@ -82,6 +82,7 @@
                     <div class="summary-row"><span>Referensi</span><span class="mono">{{ $order->payment_reference ?: '-' }}</span></div>
                     <div class="summary-row"><span>Dibuat</span><span>{{ $order->created_at->format('d-m-Y H:i') }}</span></div>
                     <div class="summary-row"><span>Diperbarui</span><span>{{ $order->updated_at->format('d-m-Y H:i') }}</span></div>
+                    <div class="summary-row"><span>Invoice</span><span><a href="{{ route('invoice.show', $order->order_code) }}" target="_blank" rel="noopener">Lihat invoice</a></span></div>
                 </div>
 
                 <div class="card mt-16">

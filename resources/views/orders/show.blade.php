@@ -87,6 +87,7 @@
                     @if($order->hasPaymentProof())
                         <div class="summary-row"><span>Bukti Bayar</span><span><a href="{{ $order->paymentProofUrl() }}" target="_blank" rel="noopener">Lihat bukti</a></span></div>
                     @endif
+                    <div class="summary-row"><span>Invoice</span><span><a href="{{ route('invoice.show', $order->order_code) }}">Lihat invoice</a></span></div>
                 </div>
 
                 <div class="card mt-16">

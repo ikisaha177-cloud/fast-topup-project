@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Transaction;
 use App\Notifications\TransactionStatusChanged;
 use App\Support\OrderStatus;
+use App\Support\PaymentVerification;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -102,10 +103,15 @@ class TransactionService
     }
 
     /**
-     * Tandai pembeli sudah membayar (masih menunggu verifikasi admin).
+     * Tandai pembeli sudah membayar.
+     *
+     * Secara bawaan pesanan menunggu verifikasi admin. Namun bila kebijakan
+     * verifikasi ({@see PaymentVerification}) mengizinkan — mis. bukti
+     * pembayaran diunggah pada mode "hybrid" — pesanan langsung Selesai
+     * dengan jejak audit `confirmation_source = auto`.
      *
      * @param  string|null  $proofPath  path bukti pembayaran (opsional)
-     * @return bool  true bila penandaan baru saja dicatat
+     * @return bool  true bila ada penandaan/kelengkapan bukti yang dicatat
      */
     public function claimPayment(Transaction $transaction, $proofPath = null)
     {
@@ -113,24 +119,37 @@ class TransactionService
             return false;
         }
 
+        $recorded = false;
+
         // Sudah ditandai sebelumnya: hanya izinkan melengkapi bukti yang belum ada.
         if ($transaction->isPaymentClaimed()) {
             if ($proofPath && ! $transaction->hasPaymentProof()) {
                 $transaction->update(['payment_proof' => $proofPath]);
 
-                return true;
+                $recorded = true;
+            }
+        } else {
+            $attributes = ['payment_claimed_at' => now()];
+
+            if ($proofPath) {
+                $attributes['payment_proof'] = $proofPath;
             }
 
+            $transaction->update($attributes);
+
+            $recorded = true;
+        }
+
+        if (! $recorded) {
             return false;
         }
 
-        $attributes = ['payment_claimed_at' => now()];
-
-        if ($proofPath) {
-            $attributes['payment_proof'] = $proofPath;
+        // Kebijakan verifikasi: mungkin langsung Selesai tanpa admin.
+        if (PaymentVerification::autoConfirms($transaction->fresh()->hasPaymentProof())) {
+            $this->transitionTo($transaction, OrderStatus::SUCCESS, true, [
+                'source' => OrderStatus::SOURCE_AUTO,
+            ]);
         }
-
-        $transaction->update($attributes);
 
         return true;
     }
@@ -206,19 +225,24 @@ class TransactionService
     }
 
     /**
-     * Sumber konfirmasi: admin (manual) atau gateway (webhook otomatis).
+     * Sumber konfirmasi: admin (manual), gateway (webhook otomatis), atau
+     * auto (sistem, dari bukti/penandaan pembeli).
      */
     private function normalizeSource(array $context)
     {
-        return ($context['source'] ?? null) === OrderStatus::SOURCE_GATEWAY
-            ? OrderStatus::SOURCE_GATEWAY
-            : OrderStatus::SOURCE_ADMIN;
+        $source = $context['source'] ?? null;
+
+        if (in_array($source, [OrderStatus::SOURCE_GATEWAY, OrderStatus::SOURCE_AUTO], true)) {
+            return $source;
+        }
+
+        return OrderStatus::SOURCE_ADMIN;
     }
 
     /**
      * Kirim email pemberitahuan status ke pemilik transaksi.
      *
-     * @param  string|null  $source  admin|gateway — memengaruhi kata-kata email.
+     * @param  string|null  $source  admin|gateway|auto — memengaruhi kata-kata email.
      */
     public function notify(Transaction $transaction, string $status, $source = null)
     {
@@ -229,11 +253,14 @@ class TransactionService
         }
 
         $byGateway = $source === OrderStatus::SOURCE_GATEWAY;
+        $byAuto    = $source === OrderStatus::SOURCE_AUTO;
 
         $headline = [
             OrderStatus::SUCCESS   => $byGateway
                 ? 'Pembayaran diterima, pesananmu selesai'
-                : 'Pesananmu sudah dikonfirmasi admin dan selesai',
+                : ($byAuto
+                    ? 'Pembayaran terverifikasi otomatis, pesananmu selesai'
+                    : 'Pesananmu sudah dikonfirmasi admin dan selesai'),
             OrderStatus::CANCELLED => 'Pesanan dibatalkan',
             OrderStatus::FAILED    => $byGateway
                 ? 'Pembayaran gagal diproses'

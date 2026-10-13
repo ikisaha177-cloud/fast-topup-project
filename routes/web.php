@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\OrderController;
@@ -80,6 +81,11 @@ Route::post('/marketplace/payment/{code}/cancel', [MarketplaceController::class,
 Route::get('/marketplace/{slug}', [MarketplaceController::class, 'show'])->name('marketplace.show');
 Route::post('/marketplace/{slug}/add', [MarketplaceController::class, 'addToCart'])
     ->middleware(['auth', 'not-admin'])->name('marketplace.add-to-cart');
+
+/* ---------- Invoice pembayaran (top up & marketplace) ----------
+   Otorisasi lewat policy masing-masing model, jadi guest yang tahu kode
+   transaksi top up tetap boleh membukanya. */
+Route::get('/invoice/{code}', [InvoiceController::class, 'show'])->name('invoice.show');
 
 /* ---------- Keranjang / Cart (session, admin diblokir) ---------- */
 Route::middleware('not-admin')->group(function () {

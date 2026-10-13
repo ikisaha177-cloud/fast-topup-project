@@ -20,7 +20,7 @@
 
         <div class="steps">
             <div class="step done">Data &amp; Nominal</div>
-            <div class="step {{ $status === 'pending' ? 'current' : 'done' }}">Pembayaran</div>
+            <div class="step {{ $status === 'pending' ? 'current' : ($transaction->isPaymentClaimed() || $status === 'success' ? 'done' : '') }}">Pembayaran</div>
             <div class="step {{ $status === 'success' ? 'done' : '' }}">{{ $finalLabel }}</div>
         </div>
 
@@ -54,6 +54,7 @@
                     @if($transaction->hasPaymentProof())
                         <div class="summary-row"><span>Bukti Bayar</span><span><a href="{{ $transaction->paymentProofUrl() }}" target="_blank" rel="noopener">Lihat bukti</a></span></div>
                     @endif
+                    <div class="summary-row"><span>Invoice</span><span><a href="{{ route('invoice.show', $transaction->transaction_code) }}">Lihat invoice</a></span></div>
 
                     <div class="summary-total">
                         <span>Total</span>
