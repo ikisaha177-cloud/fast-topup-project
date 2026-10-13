@@ -9,6 +9,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PaymentPortalController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\TopUpController;
@@ -86,6 +87,17 @@ Route::post('/marketplace/{slug}/add', [MarketplaceController::class, 'addToCart
    Otorisasi lewat policy masing-masing model, jadi guest yang tahu kode
    transaksi top up tetap boleh membukanya. */
 Route::get('/invoice/{code}', [InvoiceController::class, 'show'])->name('invoice.show');
+
+/* ---------- Portal pembayaran (halaman terpisah, khas "hosted checkout") ----------
+   Tempat pembeli diarahkan untuk membayar lewat QRIS / e-wallet / transfer bank,
+   lalu menerima STRUK yang bisa di-screenshot dan diunggah sebagai bukti.
+   Otorisasi tetap lewat policy model — sama seperti invoice — jadi guest yang
+   tahu kode transaksi top up boleh membukanya; akun admin diblokir karena
+   portal ini khusus sisi pembeli. */
+Route::middleware('not-admin')->group(function () {
+    Route::get('/payment/{code}', [PaymentPortalController::class, 'show'])->name('payment.show');
+    Route::post('/payment/{code}/confirm', [PaymentPortalController::class, 'confirm'])->name('payment.confirm');
+});
 
 /* ---------- Keranjang / Cart (session, admin diblokir) ---------- */
 Route::middleware('not-admin')->group(function () {

@@ -49,7 +49,21 @@
                     <div class="pay-code mt-16">{{ $transaction->transaction_code }}</div>
 
                     <div class="mt-16">
-                        <a href="{{ route('invoice.show', $transaction->transaction_code) }}" class="btn btn-outline btn-block">
+                        @if(! $claimed)
+                            <a href="{{ route('payment.show', $transaction->transaction_code) }}" class="btn btn-primary btn-lg btn-block">
+                                @include('partials.icon', ['name' => 'card', 'size' => 18]) Bayar Sekarang di Portal Pembayaran
+                            </a>
+                            <small class="muted" style="display:block; margin-top:8px;">
+                                Kamu akan diarahkan ke halaman pembayaran terpisah (QRIS / e-wallet / transfer bank).
+                                Setelah membayar, <strong>struk</strong> akan muncul dan bisa diunggah sebagai bukti.
+                            </small>
+                        @else
+                            <a href="{{ route('payment.show', $transaction->transaction_code) }}" class="btn btn-primary btn-block">
+                                @include('partials.icon', ['name' => 'receipt', 'size' => 16]) Lihat Struk Pembayaran
+                            </a>
+                        @endif
+
+                        <a href="{{ route('invoice.show', $transaction->transaction_code) }}" class="btn btn-outline btn-block mt-8">
                             @include('partials.icon', ['name' => 'receipt', 'size' => 16]) Lihat Invoice Pembayaran
                         </a>
                         <small class="muted" style="display:block; margin-top:8px;">
