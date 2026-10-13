@@ -30,7 +30,7 @@
     <div class="container">
         <div class="toolbar">
             <form method="GET" action="{{ route('topup.index') }}" class="searchbar">
-                <input type="text" name="q" value="{{ $search }}" placeholder="Cari game favoritmu…">
+                <input type="text" name="q" aria-label="Cari game" value="{{ $search }}" placeholder="Cari game favoritmu…">
             </form>
             <div class="chips">
                 <a href="{{ route('topup.index', $search ? ['q' => $search] : []) }}"

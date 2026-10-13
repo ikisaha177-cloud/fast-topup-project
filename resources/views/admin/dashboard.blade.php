@@ -119,12 +119,12 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Kode Order</th>
-                            <th>Pembeli</th>
-                            <th>Total</th>
-                            <th>Metode</th>
-                            <th>Status</th>
-                            <th>Tanggal</th>
+                            <th scope="col">Kode Order</th>
+                            <th scope="col">Pembeli</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Metode</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Tanggal</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -215,4 +215,20 @@ class CatalogPresentationTest extends TestCase
             ->assertSee('product-subrow', false)
             ->assertSee('Belum terjual');
     }
+
+    /** Tabel admin/katalog memakai header ber-scope dan kolom cari berlabel. */
+    public function test_tables_and_search_fields_are_accessible()
+    {
+        $admin = User::where('role', 'admin')->firstOrFail();
+
+        // Header tabel: setiap <th> punya scope="col" agar pembaca layar
+        // mengaitkan sel dengan kolomnya.
+        $html = $this->actingAs($admin)
+            ->get(route('admin.transactions.index'))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringContainsString('<th scope="col">Kode</th>', $html);
+        $this->assertStringContainsString('aria-label="Cari transaksi"', $html);
+    }
 }

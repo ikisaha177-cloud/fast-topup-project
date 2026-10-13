@@ -17,7 +17,7 @@
 
         <div class="toolbar">
             <form method="GET" action="{{ route('admin.products.index') }}" class="searchbar">
-                <input type="text" name="q" value="{{ $search }}" placeholder="Cari nama produk…">
+                <input type="text" name="q" aria-label="Cari produk top up" value="{{ $search }}" placeholder="Cari nama produk…">
             </form>
             <div class="chips">
                 <a href="{{ route('admin.products.index', $search ? ['q' => $search] : []) }}"
@@ -33,12 +33,12 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Game</th>
-                        <th>Nama</th>
-                        <th>Harga</th>
-                        <th>Stok</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
+                        <th scope="col">Game</th>
+                        <th scope="col">Nama</th>
+                        <th scope="col">Harga</th>
+                        <th scope="col">Stok</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>

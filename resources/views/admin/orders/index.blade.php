@@ -48,7 +48,7 @@
 
 <div class="toolbar">
     <form method="GET" action="{{ route('admin.orders.index') }}" class="searchbar">
-        <input type="text" name="q" value="{{ $search }}" placeholder="Cari kode order atau nama/email pembeli…">
+        <input type="text" name="q" aria-label="Cari pesanan" value="{{ $search }}" placeholder="Cari kode order atau nama/email pembeli…">
     </form>
     <div class="chips">
         <a href="{{ route('admin.orders.index') }}" class="chip {{ $status ? '' : 'active' }}">Semua</a>
@@ -62,15 +62,15 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Kode Order</th>
-                <th>Pembeli</th>
-                <th>Item</th>
-                <th>Total</th>
-                <th>Metode</th>
-                <th>Status</th>
-                <th>Pembayaran</th>
-                <th>Tanggal</th>
-                <th>Aksi</th>
+                <th scope="col">Kode Order</th>
+                <th scope="col">Pembeli</th>
+                <th scope="col">Item</th>
+                <th scope="col">Total</th>
+                <th scope="col">Metode</th>
+                <th scope="col">Status</th>
+                <th scope="col">Pembayaran</th>
+                <th scope="col">Tanggal</th>
+                <th scope="col">Aksi</th>
             </tr>
         </thead>
         <tbody>

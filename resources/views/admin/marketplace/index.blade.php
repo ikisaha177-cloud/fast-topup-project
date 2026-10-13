@@ -16,7 +16,7 @@
 
         <div class="toolbar">
             <form method="GET" action="{{ route('admin.marketplace.index') }}" class="searchbar">
-                <input type="text" name="q" value="{{ $search }}" placeholder="Cari nama produk atau kategori…">
+                <input type="text" name="q" aria-label="Cari produk marketplace" value="{{ $search }}" placeholder="Cari nama produk atau kategori…">
             </form>
         </div>
 
@@ -24,13 +24,13 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Produk</th>
-                        <th>Penjual</th>
-                        <th>Kategori</th>
-                        <th>Harga</th>
-                        <th>Stok</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
+                        <th scope="col">Produk</th>
+                        <th scope="col">Penjual</th>
+                        <th scope="col">Kategori</th>
+                        <th scope="col">Harga</th>
+                        <th scope="col">Stok</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>

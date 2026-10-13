@@ -17,7 +17,7 @@
 
         <div class="toolbar">
             <form method="GET" action="{{ route('admin.games.index') }}" class="searchbar">
-                <input type="text" name="q" value="{{ $search }}" placeholder="Cari nama, slug, atau kategori…">
+                <input type="text" name="q" aria-label="Cari game" value="{{ $search }}" placeholder="Cari nama, slug, atau kategori…">
             </form>
         </div>
 
@@ -25,12 +25,12 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Nama</th>
-                        <th>Slug</th>
-                        <th>Kategori</th>
-                        <th>Jumlah Produk</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
+                        <th scope="col">Nama</th>
+                        <th scope="col">Slug</th>
+                        <th scope="col">Kategori</th>
+                        <th scope="col">Jumlah Produk</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>

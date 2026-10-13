@@ -132,12 +132,12 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Periode</th>
-                        <th class="text-right">Transaksi Top Up</th>
-                        <th class="text-right">Pesanan Marketplace</th>
-                        <th class="text-right">Pendapatan Top Up</th>
-                        <th class="text-right">Pendapatan Marketplace</th>
-                        <th class="text-right">Total Pendapatan</th>
+                        <th scope="col">Periode</th>
+                        <th scope="col" class="text-right">Transaksi Top Up</th>
+                        <th scope="col" class="text-right">Pesanan Marketplace</th>
+                        <th scope="col" class="text-right">Pendapatan Top Up</th>
+                        <th scope="col" class="text-right">Pendapatan Marketplace</th>
+                        <th scope="col" class="text-right">Total Pendapatan</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -156,12 +156,12 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th>Total</th>
-                        <th class="text-right">{{ $report['summary']['topup_count'] }}</th>
-                        <th class="text-right">{{ $report['summary']['order_count'] }}</th>
-                        <th class="text-right">Rp {{ number_format($report['summary']['topup_revenue'], 0, ',', '.') }}</th>
-                        <th class="text-right">Rp {{ number_format($report['summary']['market_revenue'], 0, ',', '.') }}</th>
-                        <th class="text-right">Rp {{ number_format($report['summary']['revenue'], 0, ',', '.') }}</th>
+                        <th scope="col">Total</th>
+                        <th scope="col" class="text-right">{{ $report['summary']['topup_count'] }}</th>
+                        <th scope="col" class="text-right">{{ $report['summary']['order_count'] }}</th>
+                        <th scope="col" class="text-right">Rp {{ number_format($report['summary']['topup_revenue'], 0, ',', '.') }}</th>
+                        <th scope="col" class="text-right">Rp {{ number_format($report['summary']['market_revenue'], 0, ',', '.') }}</th>
+                        <th scope="col" class="text-right">Rp {{ number_format($report['summary']['revenue'], 0, ',', '.') }}</th>
                     </tr>
                 </tfoot>
             </table>
@@ -191,9 +191,9 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Game</th>
-                            <th class="text-right">Terjual</th>
-                            <th class="text-right">Pendapatan</th>
+                            <th scope="col">Game</th>
+                            <th scope="col" class="text-right">Terjual</th>
+                            <th scope="col" class="text-right">Pendapatan</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -217,9 +217,9 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Produk</th>
-                            <th class="text-right">Terjual</th>
-                            <th class="text-right">Pendapatan</th>
+                            <th scope="col">Produk</th>
+                            <th scope="col" class="text-right">Terjual</th>
+                            <th scope="col" class="text-right">Pendapatan</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -243,9 +243,9 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Metode</th>
-                        <th class="text-right">Jumlah Pesanan</th>
-                        <th class="text-right">Pendapatan (Selesai)</th>
+                        <th scope="col">Metode</th>
+                        <th scope="col" class="text-right">Jumlah Pesanan</th>
+                        <th scope="col" class="text-right">Pendapatan (Selesai)</th>
                     </tr>
                 </thead>
                 <tbody>

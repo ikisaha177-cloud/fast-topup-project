@@ -33,11 +33,11 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Produk</th>
-                                <th>Harga</th>
-                                <th>Jumlah</th>
-                                <th>Subtotal</th>
-                                <th>Aksi</th>
+                                <th scope="col">Produk</th>
+                                <th scope="col">Harga</th>
+                                <th scope="col">Jumlah</th>
+                                <th scope="col">Subtotal</th>
+                                <th scope="col">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,6 +61,7 @@
                                             @csrf
                                             <input type="hidden" name="product_id" value="{{ $item['id'] }}">
                                             <input type="number" name="quantity" class="form-control"
+                                                   aria-label="Jumlah {{ $item['name'] }}"
                                                    value="{{ $item['quantity'] }}" min="1" max="{{ $item['stock'] }}">
                                             <button type="submit" class="btn btn-outline btn-sm">Update</button>
                                         </form>

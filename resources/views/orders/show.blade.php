@@ -28,10 +28,10 @@
                         <table class="table" style="min-width:0;">
                             <thead>
                                 <tr>
-                                    <th>Produk</th>
-                                    <th class="text-right">Harga</th>
-                                    <th class="text-right">Jumlah</th>
-                                    <th class="text-right">Subtotal</th>
+                                    <th scope="col">Produk</th>
+                                    <th scope="col" class="text-right">Harga</th>
+                                    <th scope="col" class="text-right">Jumlah</th>
+                                    <th scope="col" class="text-right">Subtotal</th>
                                 </tr>
                             </thead>
                             <tbody>

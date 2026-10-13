@@ -16,7 +16,7 @@
         <div class="card">
             <form action="{{ route('admin.activity.index') }}" method="GET" class="toolbar">
                 <div class="searchbar">
-                    <input type="text" name="q" value="{{ $search }}" placeholder="Cari deskripsi, aksi, atau admin...">
+                    <input type="text" name="q" aria-label="Cari aktivitas" value="{{ $search }}" placeholder="Cari deskripsi, aksi, atau admin...">
                 </div>
                 <button type="submit" class="btn btn-primary">Cari</button>
                 @if($search !== '')
@@ -28,11 +28,11 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Waktu</th>
-                            <th>Admin</th>
-                            <th>Aksi</th>
-                            <th>Deskripsi</th>
-                            <th>IP</th>
+                            <th scope="col">Waktu</th>
+                            <th scope="col">Admin</th>
+                            <th scope="col">Aksi</th>
+                            <th scope="col">Deskripsi</th>
+                            <th scope="col">IP</th>
                         </tr>
                     </thead>
                     <tbody>

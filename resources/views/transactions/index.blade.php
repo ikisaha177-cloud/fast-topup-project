@@ -40,15 +40,15 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Kode</th>
-                            <th>Game</th>
-                            <th>Produk</th>
-                            <th>User ID</th>
-                            <th>Metode</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Tanggal</th>
-                            <th></th>
+                            <th scope="col">Kode</th>
+                            <th scope="col">Game</th>
+                            <th scope="col">Produk</th>
+                            <th scope="col">User ID</th>
+                            <th scope="col">Metode</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Tanggal</th>
+                            <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
