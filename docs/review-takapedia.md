@@ -341,7 +341,7 @@ Catatan implementasi #3 (dengan alasan):
 ### P1 — nilai jelas, biaya sedang
 
 5. Perluas kanal bayar di portal: **Alfamart/Indomaret** + tambahan VA bank (tetap simulasi, dilabeli jujur) — ✅ **selesai**: 9 metode (QRIS, 3 e-wallet, Bank Transfer, BCA VA, Mandiri VA, Alfamart, Indomaret).
-6. Feed **"aktivitas terbaru"** publik dengan penyamaran identitas.
+6. Feed **"aktivitas terbaru"** publik dengan penyamaran identitas — ✅ **selesai**: `ActivityFeed` di halaman marketplace (ulasan + pesanan sukses, nama disamarkan, waktu relatif Indonesia).
 7. **Kalkulator** gratis (winrate MLBB) sebagai mesin trafik organik.
 
 ### P2 — ekspansi

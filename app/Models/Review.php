@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 /**
  * Ulasan pembeli untuk sebuah produk marketplace.
@@ -78,19 +77,7 @@ class Review extends Model
      */
     public function reviewerLabel()
     {
-        $name = trim((string) ($this->user->name ?? ''));
-
-        if ($name === '') {
-            return 'Pembeli';
-        }
-
-        $parts = preg_split('/\s+/', $name, 2);
-
-        if (count($parts) < 2) {
-            return Str::limit($parts[0], 18, '');
-        }
-
-        return $parts[0] . ' ' . Str::upper(Str::substr($parts[1], 0, 1)) . '.';
+        return $this->user !== null ? $this->user->publicName() : 'Pembeli';
     }
 
     /**

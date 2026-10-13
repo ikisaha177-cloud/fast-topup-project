@@ -61,6 +61,8 @@
 
             {{ $products->links() }}
         @endif
+
+        @include('partials.activity-feed')
     </div>
 </section>
 @endsection
