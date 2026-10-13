@@ -65,7 +65,7 @@ class TransactionController extends Controller
      */
     public function show($id)
     {
-        $transaction = Transaction::with(['gameTitle', 'product', 'user', 'confirmedBy'])->findOrFail($id);
+        $transaction = Transaction::with(['gameTitle', 'product', 'user', 'confirmedBy', 'revokedBy'])->findOrFail($id);
 
         $this->authorize('view', $transaction);
 
@@ -130,17 +130,35 @@ class TransactionController extends Controller
         $data  = $request->validated();
         $label = OrderStatus::label($data['status']);
 
+        // Pembatalan konfirmasi yang salah (success -> failed) dicatat khusus.
+        $revoking = $transaction->status === OrderStatus::SUCCESS
+            && $data['status'] === OrderStatus::FAILED;
+
         $changed = $this->transactions->transitionTo($transaction, $data['status'], true, [
             'actor_id' => auth()->id(),
             'reason'   => $data['failure_reason'] ?? null,
         ]);
 
         if (! $changed) {
-            $message = OrderStatus::isFinal($transaction->status)
-                ? 'Transaksi ' . $transaction->transaction_code . ' sudah final (' . OrderStatus::label($transaction->status) . ') dan tidak dapat diubah lagi.'
-                : 'Status transaksi ' . $transaction->transaction_code . ' tidak berubah.';
+            if ($transaction->status === OrderStatus::SUCCESS) {
+                $message = 'Transaksi ' . $transaction->transaction_code . ' sudah berstatus Selesai. Untuk membatalkannya, gunakan aksi "Batalkan Konfirmasi".';
+            } elseif (OrderStatus::isFinal($transaction->status)) {
+                $message = 'Transaksi ' . $transaction->transaction_code . ' sudah final (' . OrderStatus::label($transaction->status) . ') dan tidak dapat diubah lagi.';
+            } else {
+                $message = 'Status transaksi ' . $transaction->transaction_code . ' tidak berubah.';
+            }
 
             return back()->with('success', $message);
+        }
+
+        if ($revoking) {
+            ActivityLogger::log(
+                'transaction.revoke',
+                'Konfirmasi transaksi ' . $transaction->transaction_code . ' dibatalkan oleh admin (ditandai Gagal); stok dikembalikan.',
+                $transaction
+            );
+
+            return back()->with('success', 'Konfirmasi transaksi ' . $transaction->transaction_code . ' dibatalkan; status menjadi Gagal dan stok dikembalikan.');
         }
 
         ActivityLogger::log(

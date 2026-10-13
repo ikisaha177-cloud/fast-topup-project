@@ -197,21 +197,27 @@ class OrderConfirmationTest extends TestCase
         $this->assertSame($stockBefore, $product->fresh()->stock);
     }
 
-    /** Status akhir tidak bisa diubah lagi (stok & laporan tetap konsisten). */
-    public function test_final_status_cannot_be_changed_again()
+    /**
+     * Status terminal tetap tidak bisa diubah lewat jalur normal.
+     *
+     * Catatan: `success` kini punya satu jalan keluar khusus (dibatalkan admin,
+     * lihat OrderRevocationTest). Di sini diuji status `failed`, yang benar-benar
+     * tidak bisa berpindah lewat update status biasa.
+     */
+    public function test_terminal_status_cannot_be_changed_via_normal_update()
     {
         $admin = $this->admin();
         $buyer = $this->buyer();
         $product = Product::first();
 
         $transaction = $this->makeTransaction($buyer, $product);
-        $transaction->update(['status' => 'success']);
+        $transaction->update(['status' => 'failed']);
 
         $this->actingAs($admin)
-            ->post(route('admin.transactions.status', $transaction->id), ['status' => 'failed'])
+            ->post(route('admin.transactions.status', $transaction->id), ['status' => 'success'])
             ->assertRedirect();
 
-        $this->assertSame('success', $transaction->fresh()->status);
+        $this->assertSame('failed', $transaction->fresh()->status);
     }
 
     /** Pembeli tidak boleh memverifikasi pesanannya sendiri. */

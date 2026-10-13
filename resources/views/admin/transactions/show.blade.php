@@ -67,6 +67,9 @@
                     @if($transaction->failure_reason)
                         <div class="summary-row"><span>Alasan Gagal</span><span>{{ $transaction->failure_reason }}</span></div>
                     @endif
+                    @if($transaction->wasRevoked())
+                        <div class="summary-row"><span>Konfirmasi Dibatalkan</span><span>{{ $transaction->revoked_at->format('d-m-Y H:i') }}@if($transaction->revokedBy) · {{ $transaction->revokedBy->name }}@endif</span></div>
+                    @endif
                 </div>
 
                 @if($transaction->hasPaymentProof())
@@ -138,8 +141,23 @@
                             @include('partials.icon', ['name' => 'rotate', 'size' => 16]) Buka Kembali
                         </button>
                     </form>
+                @elseif($transaction->canBeRevoked())
+                    <p class="muted">
+                        Transaksi ini sudah <strong>{{ $badge[1] }}</strong>. Bila salah dikonfirmasi,
+                        batalkan konfirmasinya: status kembali menjadi <strong>Gagal</strong> dan stok
+                        dikembalikan. Tindakan ini tercatat pada jejak audit.
+                    </p>
+                    <form method="POST" action="{{ route('admin.transactions.status', $transaction->id) }}" class="mt-16 verify-panel"
+                          onsubmit="return confirm('Batalkan konfirmasi transaksi ini? Status menjadi Gagal dan stok dikembalikan.');">
+                        @csrf
+                        <input type="hidden" name="status" value="failed">
+                        <input type="text" name="failure_reason" class="input-sm" placeholder="Alasan pembatalan (opsional)" maxlength="255" aria-label="Alasan pembatalan konfirmasi">
+                        <button type="submit" class="btn btn-danger btn-block">
+                            @include('partials.icon', ['name' => 'rotate', 'size' => 16]) Batalkan Konfirmasi
+                        </button>
+                    </form>
                 @else
-                    <p class="muted">Transaksi sudah selesai dan bersifat final. Tidak ada tindakan lanjutan.</p>
+                    <p class="muted">Tidak ada tindakan lanjutan yang tersedia untuk transaksi ini.</p>
                 @endif
 
                 <a href="{{ route('admin.reports.index') }}" class="btn btn-ghost btn-block mt-16">Lihat Laporan</a>

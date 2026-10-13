@@ -49,10 +49,11 @@ class TransactionService
             return false;
         }
 
-        // Stok dikembalikan saat pesanan pending dibatalkan/digagal,
-        // dan dikunci ULANG saat keputusan gagal/batal dibuka kembali.
+        // Stok dikembalikan saat pesanan yang masih memegang stok
+        // (pending/success) dibatalkan/digagal, dan dikunci ULANG saat
+        // keputusan gagal/batal dibuka kembali.
         $shouldRestoreStock = in_array($status, [OrderStatus::FAILED, OrderStatus::CANCELLED], true)
-            && $transaction->status === OrderStatus::PENDING;
+            && in_array($transaction->status, [OrderStatus::PENDING, OrderStatus::SUCCESS], true);
 
         $shouldReserveStock = $reopening;
 
@@ -154,6 +155,8 @@ class TransactionService
             $attributes['confirmed_by']        = null;
             $attributes['confirmation_source'] = null;
             $attributes['failure_reason']      = null;
+            $attributes['revoked_at']          = null;
+            $attributes['revoked_by']          = null;
 
             return $attributes;
         }
@@ -166,6 +169,8 @@ class TransactionService
             $attributes['confirmed_at']        = $transaction->confirmed_at ?: now();
             $attributes['confirmation_source'] = $source;
             $attributes['failure_reason']      = null;
+            $attributes['revoked_at']          = null;
+            $attributes['revoked_by']          = null;
 
             // Hanya konfirmasi manual admin yang mengisi confirmed_by.
             $attributes['confirmed_by'] = $source === OrderStatus::SOURCE_ADMIN
@@ -176,11 +181,21 @@ class TransactionService
         if ($status === OrderStatus::FAILED) {
             $source = $this->normalizeSource($context);
 
-            $attributes['confirmed_at']        = $transaction->confirmed_at ?: now();
-            $attributes['confirmation_source'] = $source;
-            $attributes['confirmed_by']        = $source === OrderStatus::SOURCE_ADMIN
-                ? ($context['actor_id'] ?? $transaction->confirmed_by)
-                : null;
+            // Pembatalan konfirmasi yang salah (success -> failed): pertahankan
+            // jejak konfirmasi awal (siapa & kapan menyetujui) dan catat
+            // pembatalannya di kolom terpisah.
+            $revoking = $transaction->status === OrderStatus::SUCCESS;
+
+            if ($revoking) {
+                $attributes['revoked_at'] = now();
+                $attributes['revoked_by'] = $context['actor_id'] ?? null;
+            } else {
+                $attributes['confirmed_at']        = $transaction->confirmed_at ?: now();
+                $attributes['confirmation_source'] = $source;
+                $attributes['confirmed_by']        = $source === OrderStatus::SOURCE_ADMIN
+                    ? ($context['actor_id'] ?? $transaction->confirmed_by)
+                    : null;
+            }
 
             if (! empty($context['reason'])) {
                 $attributes['failure_reason'] = $context['reason'];
@@ -226,6 +241,12 @@ class TransactionService
             OrderStatus::PENDING   => 'Pesanan dibuka kembali, menunggu konfirmasi admin',
         ][$status] ?? 'Status pesanan diperbarui';
 
-        $user->notify(new TransactionStatusChanged($transaction, $headline));
+        // Kegagalan pengiriman email (mis. SMTP tidak tersedia) tidak boleh
+        // membatalkan perubahan status yang sudah tersimpan — cukup dicatat.
+        try {
+            $user->notify(new TransactionStatusChanged($transaction, $headline));
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 }

@@ -45,8 +45,11 @@ class MarketplaceOrderService
             return false;
         }
 
+        // Stok dikembalikan saat pesanan yang masih memegang stok
+        // (pending/success) dibatalkan/digagal, dan dikunci ULANG saat
+        // keputusan gagal/batal dibuka kembali.
         $shouldRestoreStock = in_array($status, [OrderStatus::FAILED, OrderStatus::CANCELLED], true)
-            && $order->status === OrderStatus::PENDING;
+            && in_array($order->status, [OrderStatus::PENDING, OrderStatus::SUCCESS], true);
 
         $shouldReserveStock = $reopening;
 
@@ -163,6 +166,8 @@ class MarketplaceOrderService
             $attributes['confirmed_by']        = null;
             $attributes['confirmation_source'] = null;
             $attributes['failure_reason']      = null;
+            $attributes['revoked_at']          = null;
+            $attributes['revoked_by']          = null;
 
             return $attributes;
         }
@@ -175,6 +180,8 @@ class MarketplaceOrderService
             $attributes['confirmed_at']        = $order->confirmed_at ?: now();
             $attributes['confirmation_source'] = $source;
             $attributes['failure_reason']      = null;
+            $attributes['revoked_at']          = null;
+            $attributes['revoked_by']          = null;
 
             $attributes['confirmed_by'] = $source === OrderStatus::SOURCE_ADMIN
                 ? ($context['actor_id'] ?? $order->confirmed_by)
@@ -184,11 +191,20 @@ class MarketplaceOrderService
         if ($status === OrderStatus::FAILED) {
             $source = $this->normalizeSource($context);
 
-            $attributes['confirmed_at']        = $order->confirmed_at ?: now();
-            $attributes['confirmation_source'] = $source;
-            $attributes['confirmed_by']        = $source === OrderStatus::SOURCE_ADMIN
-                ? ($context['actor_id'] ?? $order->confirmed_by)
-                : null;
+            // Pembatalan konfirmasi yang salah (success -> failed): pertahankan
+            // jejak konfirmasi awal dan catat pembatalannya di kolom terpisah.
+            $revoking = $order->status === OrderStatus::SUCCESS;
+
+            if ($revoking) {
+                $attributes['revoked_at'] = now();
+                $attributes['revoked_by'] = $context['actor_id'] ?? null;
+            } else {
+                $attributes['confirmed_at']        = $order->confirmed_at ?: now();
+                $attributes['confirmation_source'] = $source;
+                $attributes['confirmed_by']        = $source === OrderStatus::SOURCE_ADMIN
+                    ? ($context['actor_id'] ?? $order->confirmed_by)
+                    : null;
+            }
 
             if (! empty($context['reason'])) {
                 $attributes['failure_reason'] = $context['reason'];
@@ -234,6 +250,12 @@ class MarketplaceOrderService
             OrderStatus::PENDING   => 'Pesanan dibuka kembali, menunggu konfirmasi admin',
         ][$status] ?? 'Status pesanan diperbarui';
 
-        $buyer->notify(new OrderStatusChanged($order, $headline));
+        // Kegagalan pengiriman email (mis. SMTP tidak tersedia) tidak boleh
+        // membatalkan perubahan status yang sudah tersimpan — cukup dicatat.
+        try {
+            $buyer->notify(new OrderStatusChanged($order, $headline));
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 }

@@ -15,9 +15,15 @@ namespace App\Support;
  *
  *   failed/cancelled --(admin buka ulang)--> pending : salah klik diperbaiki;
  *                                                      stok dikunci ulang.
+ *   success --(admin batalkan konfirmasi)--> failed  : salah konfirmasi
+ *                                                      diperbaiki; stok kembali.
  *
  * Perbedaan dua jalur menuju `success` dicatat pada kolom
  * `confirmation_source` (admin|gateway) supaya jejak audit tetap jujur.
+ *
+ * Catatan: `success` bukan lagi jalan buntu. Admin boleh membatalkan
+ * konfirmasi yang salah (success -> failed); stok dikembalikan dan alasan
+ * pembatalan dicatat. Ini satu-satunya jalan keluar dari `success`.
  */
 class OrderStatus
 {
@@ -85,19 +91,22 @@ class OrderStatus
     /**
      * Status yang boleh dicapai dari status saat ini.
      *
-     * Status akhir (success/failed/cancelled) bersifat terminal: tidak bisa
-     * diubah lagi, supaya stok dan laporan tetap konsisten.
+     * Sebagian besar status akhir bersifat terminal. Pengecualian: `success`
+     * boleh turun ke `failed` bila admin salah mengonfirmasi (lihat
+     * {@see revocable()}).
      *
      * @return array<int, string>
      */
     public static function allowedTransitions($current)
     {
-        if (self::isFinal($current)) {
-            return [];
-        }
-
         if ($current === self::PENDING) {
             return [self::SUCCESS, self::FAILED, self::CANCELLED];
+        }
+
+        if ($current === self::SUCCESS) {
+            // Batalkan konfirmasi yang salah: pesanan selesai dikembalikan
+            // menjadi gagal. Stok ikut dikembalikan oleh service.
+            return [self::FAILED];
         }
 
         return [];
@@ -109,7 +118,12 @@ class OrderStatus
     }
 
     /**
-     * Status akhir? (tidak ada perpindahan lagi)
+     * Status akhir? (tidak ada perpindahan normal lagi)
+     *
+     * Catatan: `success` masih bisa dibatalkan admin (success -> failed) dan
+     * `failed`/`cancelled` bisa dibuka kembali — keduanya lewat jalur admin
+     * khusus, bukan transisi normal. Jadi `isFinal` dipakai untuk memutuskan
+     * pesan, bukan sebagai pagar keras.
      */
     public static function isFinal($status)
     {
@@ -146,6 +160,24 @@ class OrderStatus
     public static function isReopenable($status)
     {
         return in_array($status, self::reopenable(), true);
+    }
+
+    /**
+     * Status yang boleh dibatalkan konfirmasinya oleh admin (salah konfirmasi).
+     *
+     * Hanya `success`: pembatalan mengembalikan stok dan menurunkan status ke
+     * `failed`, sehingga tidak boleh dipakai untuk membatalkan keputusan gagal.
+     *
+     * @return array<int, string>
+     */
+    public static function revocable()
+    {
+        return [self::SUCCESS];
+    }
+
+    public static function canRevoke($status)
+    {
+        return in_array($status, self::revocable(), true);
     }
 
     /**

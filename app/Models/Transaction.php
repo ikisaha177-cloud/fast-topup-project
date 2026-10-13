@@ -30,12 +30,15 @@ class Transaction extends Model
         'confirmed_by',
         'confirmation_source',
         'failure_reason',
+        'revoked_at',
+        'revoked_by',
     ];
 
     protected $casts = [
         'paid_at'            => 'datetime',
         'payment_claimed_at' => 'datetime',
         'confirmed_at'       => 'datetime',
+        'revoked_at'         => 'datetime',
     ];
 
     public function user()
@@ -59,6 +62,14 @@ class Transaction extends Model
     public function confirmedBy()
     {
         return $this->belongsTo(User::class, 'confirmed_by');
+    }
+
+    /**
+     * Admin yang membatalkan konfirmasi transaksi ini (bila ada).
+     */
+    public function revokedBy()
+    {
+        return $this->belongsTo(User::class, 'revoked_by');
     }
 
     /**
@@ -117,6 +128,22 @@ class Transaction extends Model
     public function canBeReopened()
     {
         return OrderStatus::isReopenable($this->status);
+    }
+
+    /**
+     * Bisa dibatalkan konfirmasinya oleh admin? (salah konfirmasi success)
+     */
+    public function canBeRevoked()
+    {
+        return OrderStatus::canRevoke($this->status);
+    }
+
+    /**
+     * Konfirmasi pernah dibatalkan admin? (jejak audit)
+     */
+    public function wasRevoked()
+    {
+        return $this->revoked_at !== null;
     }
 
     /**

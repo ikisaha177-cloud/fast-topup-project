@@ -64,7 +64,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        $order = MarketplaceOrder::with(['buyer', 'items.product', 'confirmedBy'])->findOrFail($id);
+        $order = MarketplaceOrder::with(['buyer', 'items.product', 'confirmedBy', 'revokedBy'])->findOrFail($id);
 
         $this->authorize('view', $order);
 
@@ -129,17 +129,35 @@ class OrderController extends Controller
         $data  = $request->validated();
         $label = OrderStatus::label($data['status']);
 
+        // Pembatalan konfirmasi yang salah (success -> failed) dicatat khusus.
+        $revoking = $order->status === OrderStatus::SUCCESS
+            && $data['status'] === OrderStatus::FAILED;
+
         $changed = $this->orders->transitionTo($order, $data['status'], true, [
             'actor_id' => auth()->id(),
             'reason'   => $data['failure_reason'] ?? null,
         ]);
 
         if (! $changed) {
-            $message = OrderStatus::isFinal($order->status)
-                ? 'Pesanan ' . $order->order_code . ' sudah final (' . OrderStatus::label($order->status) . ') dan tidak dapat diubah lagi.'
-                : 'Status pesanan ' . $order->order_code . ' tidak berubah.';
+            if ($order->status === OrderStatus::SUCCESS) {
+                $message = 'Pesanan ' . $order->order_code . ' sudah berstatus Selesai. Untuk membatalkannya, gunakan aksi "Batalkan Konfirmasi".';
+            } elseif (OrderStatus::isFinal($order->status)) {
+                $message = 'Pesanan ' . $order->order_code . ' sudah final (' . OrderStatus::label($order->status) . ') dan tidak dapat diubah lagi.';
+            } else {
+                $message = 'Status pesanan ' . $order->order_code . ' tidak berubah.';
+            }
 
             return back()->with('success', $message);
+        }
+
+        if ($revoking) {
+            ActivityLogger::log(
+                'order.revoke',
+                'Konfirmasi pesanan ' . $order->order_code . ' dibatalkan oleh admin (ditandai Gagal); stok dikembalikan.',
+                $order
+            );
+
+            return back()->with('success', 'Konfirmasi pesanan ' . $order->order_code . ' dibatalkan; status menjadi Gagal dan stok dikembalikan.');
         }
 
         ActivityLogger::log(
