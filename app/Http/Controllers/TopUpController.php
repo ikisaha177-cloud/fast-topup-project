@@ -61,8 +61,9 @@ class TopUpController extends Controller
         // supaya angka di hero tetap merepresentasikan keseluruhan toko.
         $totalGames    = GameTitle::where('is_active', true)->count();
         $totalNominals = Product::where('is_active', true)->count();
+        $paymentMethodCount = count(PaymentMethods::all());
 
-        return view('topup.index', compact('games', 'categories', 'search', 'category', 'totalGames', 'totalNominals'));
+        return view('topup.index', compact('games', 'categories', 'search', 'category', 'totalGames', 'totalNominals', 'paymentMethodCount'));
     }
 
     /**
@@ -113,6 +114,7 @@ class TopUpController extends Controller
             'game_id'      => $game->id,
             'game_name'    => $game->name,
             'game_slug'    => $game->slug,
+            'game_icon'    => $game->icon,
             'product_id'   => $product->id,
             'product_name' => $product->name,
             'amount'       => (int) $product->price,

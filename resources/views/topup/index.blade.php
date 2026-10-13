@@ -7,7 +7,7 @@
     <div class="container">
         <span class="eyebrow">Katalog Game</span>
         <h1>Top Up Game</h1>
-        <p>Pilih game, masukkan User ID, dan pilih nominal. Proses otomatis 24/7 tanpa nunggu.</p>
+        <p>Pilih game, masukkan User ID, dan pilih nominal. Pesanan diproses setelah pembayaran terverifikasi.</p>
 
         <div class="banner-stats">
             <div class="banner-stat">
@@ -19,8 +19,8 @@
                 <span>Pilihan nominal</span>
             </div>
             <div class="banner-stat">
-                <strong>± 12s</strong>
-                <span>Rata-rata proses</span>
+                <strong>{{ $paymentMethodCount }}</strong>
+                <span>Metode bayar</span>
             </div>
         </div>
     </div>

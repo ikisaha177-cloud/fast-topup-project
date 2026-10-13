@@ -83,8 +83,13 @@
                     </td>
                     <td>{{ $trx->user->name ?? 'Guest' }}</td>
                     <td>
-                        {{ $trx->gameTitle->name ?? '-' }}<br>
-                        <span class="muted">{{ $trx->product->name ?? '-' }}</span>
+                        <div class="item-cell">
+                            @include('partials.game-icon', ['game' => $trx->gameTitle ?? (object) [], 'size' => 'xs'])
+                            <span>
+                                <span class="item-name">{{ $trx->gameTitle->name ?? '-' }}</span>
+                                <span class="item-sub">{{ $trx->product->name ?? '-' }}</span>
+                            </span>
+                        </div>
                     </td>
                     <td>{{ $trx->user_game_id }}{{ $trx->server_id ? ' (' . $trx->server_id . ')' : '' }}</td>
                     <td>{{ $trx->payment_method }}</td>

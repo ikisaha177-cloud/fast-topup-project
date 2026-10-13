@@ -81,7 +81,16 @@
                            title="Buka detail pesanan">{{ $order->order_code }}</a>
                     </td>
                     <td>{{ $order->buyer->name ?? 'Guest' }}</td>
-                    <td>{{ $order->items_count }}</td>
+                    <td>
+                        @php $firstItem = $order->items->first(); @endphp
+                        <div class="item-cell">
+                            @include('partials.marketplace-image', ['product' => $firstItem->product ?? (object) [], 'variant' => 'is-thumb'])
+                            <span>
+                                <span class="item-name">{{ $order->items_count }} item</span>
+                                <span class="item-sub">{{ $firstItem->product->name ?? '-' }}@if($order->items_count > 1) +{{ $order->items_count - 1 }} lainnya @endif</span>
+                            </span>
+                        </div>
+                    </td>
                     <td>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
                     <td>{{ $order->payment_method }}</td>
                     <td>

@@ -20,11 +20,11 @@
 
     <div class="container hero-grid">
         <div class="hero-inner">
-            <span class="hero-badge"><span class="hero-dot"></span> Proses instan, online 24/7</span>
+            <span class="hero-badge"><span class="hero-dot"></span> Pembayaran aman, online 24/7</span>
             <h1>Top Up Game &amp; Belanja Item<br><span class="text-gradient">Tanpa Ribet, Tanpa Nunggu</span></h1>
             <p>
                 Pilih game favoritmu, masukkan User ID, lalu tentukan nominal. Bayar pakai QRIS, e-wallet,
-                atau transfer bank — pesanan diproses dalam hitungan detik dan tercatat rapi di akunmu.
+                atau transfer bank — pesanan diproses setelah pembayaran terverifikasi dan tercatat rapi di akunmu.
             </p>
 
             <div class="hero-cta">
@@ -46,11 +46,11 @@
                     <span>Pilihan nominal</span>
                 </div>
                 <div class="hero-stat">
-                    <strong>{{ $marketplaceProducts->count() }}+</strong>
+                    <strong>{{ $totalMarketplaceProducts }}</strong>
                     <span>Item marketplace</span>
                 </div>
                 <div class="hero-stat">
-                    <strong>5</strong>
+                    <strong>{{ $paymentMethodCount }}</strong>
                     <span>Metode bayar</span>
                 </div>
             </div>
@@ -62,7 +62,7 @@
 
             <div class="float-mini m1">
                 <span class="mini-icon">@include('partials.icon', ['name' => 'bolt', 'size' => 16])</span>
-                <span>Saldo Masuk<small>± 12 detik</small></span>
+                <span>Saldo Masuk<small>Terverifikasi</small></span>
             </div>
 
             <div class="float-card">
@@ -96,10 +96,10 @@
     <div class="ticker-track">
         @for($i = 0; $i < 2; $i++)
             <span class="ticker-item"><span class="tick-dot"></span> Pembayaran QRIS &amp; E-Wallet</span>
-            <span class="ticker-item"><span class="tick-dot"></span> Proses Otomatis 24/7</span>
+            <span class="ticker-item"><span class="tick-dot"></span> Konfirmasi Pembayaran 24/7</span>
             <span class="ticker-item"><span class="tick-dot"></span> Harga Resmi &amp; Transparan</span>
             <span class="ticker-item"><span class="tick-dot"></span> Riwayat Pesanan Lengkap</span>
-            <span class="ticker-item"><span class="tick-dot"></span> Dukungan Penjual Terverifikasi</span>
+            <span class="ticker-item"><span class="tick-dot"></span> Penjual dengan Stok Real-time</span>
             <span class="ticker-item"><span class="tick-dot"></span> Tanpa Biaya Layanan Tersembunyi</span>
         @endfor
     </div>
@@ -112,7 +112,7 @@
             <div>
                 <span class="eyebrow">Katalog Game</span>
                 <h2 class="section-title">Top Up Game Favoritmu</h2>
-                <p class="section-subtitle mb-0">Semua game populer dengan harga resmi dan proses otomatis.</p>
+                <p class="section-subtitle mb-0">Semua game populer dengan harga resmi dan proses terverifikasi.</p>
             </div>
             @if(! $isAdmin)
                 <a href="{{ route('topup.index') }}" class="btn btn-ghost">Lihat Semua Game →</a>
@@ -152,7 +152,7 @@
             <div>
                 <span class="eyebrow">Marketplace</span>
                 <h2 class="section-title">Item Game Terbaru</h2>
-                <p class="section-subtitle mb-0">Voucher, skin, akun, dan koin dari penjual terpercaya.</p>
+                <p class="section-subtitle mb-0">Voucher, skin, akun, dan koin dari penjual yang terdaftar.</p>
             </div>
             <a href="{{ route('marketplace.index') }}" class="btn btn-ghost">Lihat Semua Item →</a>
         </div>
@@ -161,9 +161,9 @@
             @forelse($marketplaceProducts as $index => $product)
                 <div class="card card-hover product-card reveal d{{ ($index % 4) + 1 }}">
                     @include('partials.marketplace-image', ['product' => $product])
-                    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:12px;">
-                        <span class="muted">{{ $product->category ?? 'Umum' }}</span>
-                        <span class="rating"><span class="star">★</span> 4.9</span>
+                    <div class="product-subrow">
+                        <span>{{ $product->category ?? 'Umum' }}</span>
+                        <span class="sold-line">Terjual {{ number_format($product->sold_count) }}</span>
                     </div>
                     <div class="product-name">{{ $product->name }}</div>
                     @include('partials.marketplace-price', ['product' => $product])
@@ -197,8 +197,8 @@
                 <span>Layanan Nonstop</span>
             </div>
             <div class="band-item">
-                <strong>± 12s</strong>
-                <span>Rata-rata Proses</span>
+                <strong>{{ $paymentMethodCount }}</strong>
+                <span>Metode Pembayaran</span>
             </div>
         </div>
     </div>
@@ -217,8 +217,8 @@
             <div class="trust-item reveal d1">
                 <span class="trust-icon">@include('partials.icon', ['name' => 'bolt', 'size' => 20])</span>
                 <div>
-                    <strong>Proses Instan</strong>
-                    <span>Pembayaran terverifikasi, saldo langsung diproses tanpa antre lama.</span>
+                    <strong>Proses Terverifikasi</strong>
+                    <span>Setelah pembayaran terverifikasi, pesanan langsung diproses tanpa antre lama.</span>
                 </div>
             </div>
             <div class="trust-item reveal d2">
@@ -268,44 +268,6 @@
     </div>
 </section>
 
-{{-- ============ TESTIMONI ============ --}}
-<section class="section" style="padding-top:0;">
-    <div class="container">
-        <div class="text-center reveal" style="margin-bottom:30px;">
-            <span class="eyebrow" style="justify-content:center;">Kata Pengguna</span>
-            <h2 class="section-title">Dipercaya Para Gamer</h2>
-            <p class="section-subtitle mb-0">Ribuan transaksi berjalan lancar setiap hari.</p>
-        </div>
-
-        <div class="testimonial-grid">
-            <div class="testimonial-card reveal d1">
-                <span class="rating"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></span>
-                <p>"Top up ML cuma butuh semenit, diamond langsung masuk. Gak pernah gagal."</p>
-                <div class="testimonial-who">
-                    <span class="tw-avatar">R</span>
-                    <span><strong>Rizky A.</strong><small>Mobile Legends Player</small></span>
-                </div>
-            </div>
-            <div class="testimonial-card reveal d2">
-                <span class="rating"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></span>
-                <p>"Marketplace-nya lengkap, harga voucher lebih murah dan penjualnya jelas."</p>
-                <div class="testimonial-who">
-                    <span class="tw-avatar">D</span>
-                    <span><strong>Dinda P.</strong><small>Free Fire Player</small></span>
-                </div>
-            </div>
-            <div class="testimonial-card reveal d3">
-                <span class="rating"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></span>
-                <p>"Bayar pakai QRIS, riwayatnya rapi. Cocok buat yang suka main aman."</p>
-                <div class="testimonial-who">
-                    <span class="tw-avatar">B</span>
-                    <span><strong>Bagas S.</strong><small>Valorant Player</small></span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 {{-- ============ FAQ ============ --}}
 <section class="section" id="faq" style="padding-top:0;">
     <div class="container">
@@ -318,7 +280,7 @@
         <div class="faq">
             <details class="faq-item reveal d1" open>
                 <summary>Berapa lama pesanan saya diproses?</summary>
-                <div class="faq-body">Setelah pembayaran terkonfirmasi, pesanan biasanya diproses dalam hitungan detik. Statusnya bisa kamu pantau di halaman Riwayat Transaksi.</div>
+                <div class="faq-body">Setelah pembayaran terverifikasi admin, pesanan langsung diproses. Statusnya bisa kamu pantau di halaman Riwayat Transaksi.</div>
             </details>
             <details class="faq-item reveal d2">
                 <summary>Metode pembayaran apa saja yang tersedia?</summary>

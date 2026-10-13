@@ -14,12 +14,14 @@
             <a href="{{ route('transactions.index') }}">Riwayat Transaksi</a> / {{ $transaction->transaction_code }}
         </p>
 
+        @php
+            $finalLabel = $status === 'success' ? 'Selesai' : ($status === 'failed' ? 'Gagal' : 'Dibatalkan');
+        @endphp
+
         <div class="steps">
             <div class="step done">Data &amp; Nominal</div>
             <div class="step {{ $status === 'pending' ? 'current' : 'done' }}">Pembayaran</div>
-            <div class="step {{ $status === 'success' ? 'done' : '' }}">
-                {{ $status === 'cancelled' ? 'Dibatalkan' : 'Selesai' }}
-            </div>
+            <div class="step {{ $status === 'success' ? 'done' : '' }}">{{ $finalLabel }}</div>
         </div>
 
         <div class="detail-grid">
@@ -29,15 +31,21 @@
                     <span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span>
                 </div>
 
+                <div class="item-cell mt-16" style="margin-bottom:16px;">
+                    @include('partials.game-icon', ['game' => $transaction->gameTitle ?? (object) [], 'size' => 'xs'])
+                    <span>
+                        <span class="item-name">{{ $transaction->gameTitle->name ?? '-' }}</span>
+                        <span class="item-sub">{{ $transaction->product->name ?? '-' }}</span>
+                    </span>
+                </div>
+
                 <div class="summary-row"><span>Kode Transaksi</span><span class="mono">{{ $transaction->transaction_code }}</span></div>
-                <div class="summary-row"><span>Game</span><span>{{ $transaction->gameTitle->name ?? '-' }}</span></div>
-                <div class="summary-row"><span>Produk</span><span>{{ $transaction->product->name ?? '-' }}</span></div>
                 <div class="summary-row"><span>User ID</span><span class="mono">{{ $transaction->user_game_id }}</span></div>
                 <div class="summary-row"><span>Server ID</span><span>{{ $transaction->server_id ?: '-' }}</span></div>
                 <div class="summary-row"><span>Metode</span><span>{{ $transaction->payment_method }}</span></div>
                 <div class="summary-row"><span>Tanggal</span><span>{{ $transaction->created_at->format('d-m-Y H:i') }}</span></div>
                 @if($transaction->confirmed_at)
-                    <div class="summary-row"><span>Diverifikasi Admin</span><span>{{ $transaction->confirmed_at->format('d-m-Y H:i') }}</span></div>
+                    <div class="summary-row"><span>Diverifikasi</span><span>{{ $transaction->confirmationLabel() }} &middot; {{ $transaction->confirmed_at->format('d-m-Y H:i') }}</span></div>
                 @endif
                 @if($transaction->failure_reason)
                     <div class="summary-row"><span>Alasan Gagal</span><span>{{ $transaction->failure_reason }}</span></div>
@@ -63,7 +71,15 @@
                         {{ $transaction->isPaymentClaimed() ? 'Lihat Status' : 'Bayar Sekarang' }}
                     </a>
                 @else
-                    <p class="muted">Transaksi sudah selesai diproses.</p>
+                    <p class="muted">
+                        @if($status === 'success')
+                            Transaksi sudah selesai diproses.
+                        @elseif($status === 'failed')
+                            Transaksi ini gagal diproses dan stok sudah dikembalikan.
+                        @else
+                            Transaksi ini dibatalkan dan stok sudah dikembalikan.
+                        @endif
+                    </p>
                 @endif
                 <a href="{{ route('transactions.index') }}" class="btn btn-ghost btn-block mt-16">Kembali ke Riwayat</a>
                 <a href="{{ route('topup.index') }}" class="btn btn-outline btn-block mt-16">Top Up Lagi</a>

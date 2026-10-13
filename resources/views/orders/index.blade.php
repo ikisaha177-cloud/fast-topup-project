@@ -54,6 +54,19 @@
                             </div>
                         </div>
 
+                        <div class="order-thumbs">
+                            @foreach($order->items->take(4) as $item)
+                                @include('partials.marketplace-image', ['product' => $item->product, 'variant' => 'is-thumb'])
+                            @endforeach
+                            @if($order->items_count > 4)
+                                <span class="order-thumb-more">+{{ $order->items_count - 4 }}</span>
+                            @endif
+                            <span class="muted">
+                                {{ $order->items->pluck('product.name')->filter()->take(2)->implode(', ') }}
+                                @if($order->items_count > 2) dan {{ $order->items_count - 2 }} lainnya @endif
+                            </span>
+                        </div>
+
                         <div class="flex-between">
                             <span class="muted">Total</span>
                             <strong class="product-price">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</strong>

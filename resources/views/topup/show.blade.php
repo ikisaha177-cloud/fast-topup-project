@@ -17,7 +17,7 @@
                 <span class="muted">{{ $game->category ?? 'Game' }} &middot; {{ $products->count() }} nominal tersedia</span>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <span class="badge badge-info badge-plain">@include('partials.icon', ['name' => 'bolt', 'size' => 13]) Proses Instan</span>
+                <span class="badge badge-info badge-plain">@include('partials.icon', ['name' => 'bolt', 'size' => 13]) Verifikasi Cepat</span>
                 <span class="badge badge-success badge-plain">@include('partials.icon', ['name' => 'shield', 'size' => 13]) Aman</span>
             </div>
         </div>

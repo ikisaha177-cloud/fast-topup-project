@@ -5,6 +5,7 @@
     $isPending   = $order->isPending();
     $isSuccess   = $order->isSuccess();
     $isCancelled = $status === 'cancelled';
+    $finalLabel  = $isSuccess ? 'Selesai' : ($isCancelled ? 'Dibatalkan' : 'Gagal');
     $claimed     = $isPending && $order->isPaymentClaimed();
     $badge       = [$order->statusBadge(), $order->statusLabel()];
 @endphp
@@ -19,7 +20,7 @@
             <div class="steps">
                 <div class="step done">Keranjang</div>
                 <div class="step {{ $isPending ? 'current' : 'done' }}">Pembayaran</div>
-                <div class="step {{ $isSuccess ? 'done' : '' }}">{{ $isCancelled ? 'Dibatalkan' : 'Selesai' }}</div>
+                <div class="step {{ $isSuccess ? 'done' : '' }}">{{ $finalLabel }}</div>
             </div>
 
             @if($isPending)
@@ -117,7 +118,10 @@
                 <div class="order-items">
                     @foreach($order->items as $item)
                         <div class="order-item-row">
-                            <span>{{ $item->product->name ?? '-' }} &times; {{ $item->quantity }}</span>
+                            <div class="item-cell">
+                                @include('partials.marketplace-image', ['product' => $item->product, 'variant' => 'is-thumb'])
+                                <span>{{ $item->product->name ?? 'Produk Dihapus' }} &times; {{ $item->quantity }}</span>
+                            </div>
                             <span>Rp {{ number_format($item->subtotal, 0, ',', '.') }}</span>
                         </div>
                     @endforeach

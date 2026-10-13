@@ -16,9 +16,9 @@
 
             <div>
                 <div class="card">
-                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-                        <span class="muted">{{ $product->category ?? 'Umum' }}</span>
-                        <span class="rating"><span class="star">★</span> 4.9 <span class="muted" style="font-weight:600;">(terjual)</span></span>
+                    <div class="product-subrow" style="margin-top:0;">
+                        <span>{{ $product->category ?? 'Umum' }}</span>
+                        <span class="sold-line">Terjual {{ number_format($product->sold_count) }}</span>
                     </div>
                     <h1 style="font-size:26px; margin:8px 0;">{{ $product->name }}</h1>
                     @include('partials.marketplace-price', ['product' => $product, 'size' => 'lg'])
@@ -43,7 +43,7 @@
                             <span>Pembayaran</span><span>QRIS · E-Wallet · Transfer Bank</span>
                         </div>
                         <div class="summary-row" style="padding:8px 0; border-bottom:none;">
-                            <span>Pengiriman item</span><span>Otomatis setelah pembayaran</span>
+                            <span>Pengiriman item</span><span>Setelah pembayaran diverifikasi</span>
                         </div>
                     </div>
 
@@ -85,9 +85,9 @@
                 @foreach($related as $index => $item)
                     <div class="card card-hover product-card reveal d{{ ($index % 4) + 1 }}">
                         @include('partials.marketplace-image', ['product' => $item])
-                        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:12px;">
-                            <span class="muted">{{ $item->category ?? 'Umum' }}</span>
-                            <span class="rating"><span class="star">★</span> 4.9</span>
+                        <div class="product-subrow">
+                            <span>{{ $item->category ?? 'Umum' }}</span>
+                            <span class="sold-line">Terjual {{ number_format($item->sold_count) }}</span>
                         </div>
                         <div class="product-name">{{ $item->name }}</div>
                         @include('partials.marketplace-price', ['product' => $item])

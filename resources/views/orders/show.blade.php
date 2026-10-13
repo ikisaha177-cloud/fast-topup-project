@@ -37,7 +37,12 @@
                             <tbody>
                                 @foreach($order->items as $item)
                                     <tr>
-                                        <td class="wrap">{{ $item->product->name ?? '-' }}</td>
+                                        <td class="wrap">
+                                            <div class="item-cell">
+                                                @include('partials.marketplace-image', ['product' => $item->product, 'variant' => 'is-thumb'])
+                                                <span class="item-name">{{ $item->product->name ?? 'Produk Dihapus' }}</span>
+                                            </div>
+                                        </td>
                                         <td class="text-right">Rp {{ number_format($item->price, 0, ',', '.') }}</td>
                                         <td class="text-right">{{ $item->quantity }}</td>
                                         <td class="text-right">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
@@ -73,7 +78,7 @@
                 <div class="summary-row"><span>Terakhir Diperbarui</span><span>{{ $order->updated_at->format('d-m-Y H:i') }}</span></div>
                 <div class="summary-row"><span>Status</span><span class="badge {{ $badge[0] }}">{{ $badge[1] }}</span></div>
                 @if($order->confirmed_at)
-                    <div class="summary-row"><span>Diverifikasi Admin</span><span>{{ $order->confirmed_at->format('d-m-Y H:i') }}</span></div>
+                    <div class="summary-row"><span>Diverifikasi</span><span>{{ $order->confirmationLabel() }} &middot; {{ $order->confirmed_at->format('d-m-Y H:i') }}</span></div>
                 @endif
                 @if($order->failure_reason)
                     <div class="summary-row"><span>Alasan Gagal</span><span>{{ $order->failure_reason }}</span></div>

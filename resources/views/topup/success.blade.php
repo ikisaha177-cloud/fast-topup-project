@@ -5,6 +5,7 @@
     $isPending   = $transaction->isPending();
     $isSuccess   = $transaction->isSuccess();
     $isCancelled = $status === 'cancelled';
+    $finalLabel  = $isSuccess ? 'Selesai' : ($isCancelled ? 'Dibatalkan' : 'Gagal');
     $claimed     = $isPending && $transaction->isPaymentClaimed();
     $badge       = [$transaction->statusBadge(), $transaction->statusLabel()];
 @endphp
@@ -19,9 +20,7 @@
             <div class="steps">
                 <div class="step done">Data &amp; Nominal</div>
                 <div class="step {{ $isPending ? 'current' : 'done' }}">Pembayaran</div>
-                <div class="step {{ $isSuccess ? 'done' : '' }}">
-                    {{ $isCancelled ? 'Dibatalkan' : 'Selesai' }}
-                </div>
+                <div class="step {{ $isSuccess ? 'done' : '' }}">{{ $finalLabel }}</div>
             </div>
 
             @if($isPending)
@@ -106,9 +105,14 @@
 
             <div class="card mt-16">
                 <h3>Detail Transaksi</h3>
+                <div class="item-cell" style="margin-bottom:14px;">
+                    @include('partials.game-icon', ['game' => $transaction->gameTitle ?? (object) [], 'size' => 'xs'])
+                    <span>
+                        <span class="item-name">{{ $transaction->gameTitle->name ?? '-' }}</span>
+                        <span class="item-sub">{{ $transaction->product->name ?? '-' }}</span>
+                    </span>
+                </div>
                 <div class="summary-row"><span>Kode Transaksi</span><span class="mono">{{ $transaction->transaction_code }}</span></div>
-                <div class="summary-row"><span>Game</span><span>{{ $transaction->gameTitle->name ?? '-' }}</span></div>
-                <div class="summary-row"><span>Produk</span><span>{{ $transaction->product->name ?? '-' }}</span></div>
                 <div class="summary-row"><span>User ID</span><span>{{ $transaction->user_game_id }}</span></div>
                 <div class="summary-row"><span>Server ID</span><span>{{ $transaction->server_id ?: '-' }}</span></div>
                 <div class="summary-row"><span>Metode</span><span>{{ $transaction->payment_method }}</span></div>

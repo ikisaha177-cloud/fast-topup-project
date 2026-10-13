@@ -16,6 +16,7 @@ class OrderController extends Controller
         $status = $request->query('status');
 
         $orders = MarketplaceOrder::where('user_id', auth()->id())
+            ->with(['items.product'])
             ->withCount('items')
             ->when(in_array($status, OrderStatus::all(), true), function ($query) use ($status) {
                 $query->where('status', $status);

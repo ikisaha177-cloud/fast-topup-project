@@ -40,6 +40,7 @@ class MarketplaceController extends Controller
         $products = MarketplaceProduct::where('is_active', true)
             ->where('stock', '>', 0)
             ->with('seller')
+            ->withSoldCount()
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($sub) use ($search) {
                     $sub->where('name', 'like', "%{$search}%")
@@ -64,7 +65,11 @@ class MarketplaceController extends Controller
             ->where('stock', '>', 0)
             ->count();
 
-        return view('marketplace.index', compact('products', 'categories', 'search', 'category', 'totalProducts'));
+        $sellerCount = MarketplaceProduct::where('is_active', true)
+            ->distinct()
+            ->count('user_id');
+
+        return view('marketplace.index', compact('products', 'categories', 'search', 'category', 'totalProducts', 'sellerCount'));
     }
 
     /**
@@ -84,6 +89,7 @@ class MarketplaceController extends Controller
                 $query->where('category', $product->category);
             })
             ->latest()
+            ->withSoldCount()
             ->take(4)
             ->get();
 
@@ -124,6 +130,7 @@ class MarketplaceController extends Controller
             'price'    => (int) $product->price,
             'quantity' => $newQty,
             'stock'    => (int) $product->stock,
+            'image'    => $product->image,
         ];
 
         session()->put('cart', $cart);

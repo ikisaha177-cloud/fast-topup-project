@@ -64,6 +64,9 @@ Dengan driver default `simulation`, tidak ada webhook yang datang sendiri, jadi 
 ### Tampilan
 - **Design system terang & bersih** (`public/css/style.css`) bergaya toko top up modern: permukaan putih, kartu bersih, aksen emas/oranye, dan sampul game sebagai fokus utama.
 - Ikon SVG inline (tanpa font emoji) agar tampil konsisten di semua OS.
+- **Standar gambar 8:5**: gambar produk & logo game selalu dibungkus kotak rasio tetap (`aspect-ratio: 8 / 5`) dengan atribut `width`/`height`, sehingga tidak ada layout shift dan tinggi kartu konsisten di semua breakpoint. Foto produk memakai `object-fit: cover` (crop rapi); logo game memakai `object-fit: contain` supaya brand mark tidak pernah terpotong.
+- Thumbnail ringkas (`is-thumb`, 54×54) dan logo mini (`game-logo-xs`) dipakai konsisten di keranjang, checkout, riwayat pesanan, halaman sukses, serta tabel admin — jadi item selalu punya identitas visual.
+- **Konten jujur, tanpa social proof karangan**: tidak ada rating palsu, testimoni fiktif, klaim "100% penjual terverifikasi", atau estimasi durasi proses. Angka yang tampil diambil dari data nyata: jumlah produk & penjual aktif dari katalog, dan label **"Terjual N"** dihitung dari kuantitas item pada pesanan berstatus **Selesai** (`MarketplaceProduct::scopeWithSoldCount()` — anti N+1).
 - Animasi *reveal on scroll* sebagai progressive enhancement (halaman tetap tampil penuh bila JS mati).
 
 ### Keamanan
@@ -155,7 +158,7 @@ Akun ini hanya untuk pengembangan/testing — **tidak ditampilkan di UI** agar h
 php vendor/bin/phpunit
 ```
 
-Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **138 test / 535 assertion** hijau, mencakup alur checkout, konfirmasi pesanan oleh admin (berhasil/gagal + pengembalian stok + sumber konfirmasi), halaman detail pesanan admin & aksi buka kembali (re-lock stok), laporan harian/bulanan/tahunan & ekspor CSV, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), serta pencarian & filter katalog.
+Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **146 test / 572 assertion** hijau, mencakup alur checkout, konfirmasi pesanan oleh admin (berhasil/gagal + pengembalian stok + sumber konfirmasi), halaman detail pesanan admin & aksi buka kembali (re-lock stok), laporan harian/bulanan/tahunan & ekspor CSV, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), pencarian & filter katalog, serta **kualitas tampilan katalog** (gambar rasio tetap + atribut dimensi, tidak ada rating/testimoni karangan, `sold_count` hanya dari pesanan selesai, thumbnail di keranjang & riwayat pesanan, dan label sumber verifikasi).
 
 ## CI
 

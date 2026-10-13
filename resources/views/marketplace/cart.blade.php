@@ -44,8 +44,16 @@
                             @foreach($cart as $item)
                                 <tr>
                                     <td class="wrap">
-                                        <a href="{{ route('marketplace.show', $item['slug']) }}">{{ $item['name'] }}</a>
-                                        <div class="muted">Stok: {{ $item['stock'] }}</div>
+                                        <div class="item-cell">
+                                            @include('partials.marketplace-image', [
+                                                'product' => (object) ['image' => $item['image'] ?? null, 'name' => $item['name']],
+                                                'variant' => 'is-thumb',
+                                            ])
+                                            <span>
+                                                <a href="{{ route('marketplace.show', $item['slug']) }}" class="item-name">{{ $item['name'] }}</a>
+                                                <span class="item-sub">Stok: {{ $item['stock'] }}</span>
+                                            </span>
+                                        </div>
                                     </td>
                                     <td>Rp {{ number_format($item['price'], 0, ',', '.') }}</td>
                                     <td>

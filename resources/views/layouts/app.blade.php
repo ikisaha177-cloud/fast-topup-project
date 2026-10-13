@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="TopUpMarket — top up game instan dan marketplace voucher, skin, dan akun game dengan pembayaran QRIS, e-wallet, dan transfer bank.">
+    <meta name="description" content="TopUpMarket — top up game dan marketplace voucher, skin, dan akun game dengan pembayaran QRIS, e-wallet, dan transfer bank.">
     <title>@yield('title', 'TopUpMarket — Top Up Game & Marketplace')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -140,7 +140,7 @@
                         <span class="footer-title">TopUpMarket</span>
                     </div>
                     <p class="muted" style="margin:0 0 14px;">
-                        Top up game instan, voucher, skin, dan akun game — cepat, aman, dan transparan.
+                        Top up game, voucher, skin, dan akun game — cepat, aman, dan transparan.
                     </p>
                     <div class="pill-row" style="margin-top:0;">
                         <span class="pill">QRIS</span>

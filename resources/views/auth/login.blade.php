@@ -12,7 +12,7 @@
                 <p>Kelola transaksi, pantau pesanan, dan top up game favoritmu dari satu tempat.</p>
 
                 <ul class="auth-list">
-                    <li><span class="al-icon">@include('partials.icon', ['name' => 'bolt', 'size' => 16])</span> Proses top up instan 24/7 tanpa nunggu lama.</li>
+                    <li><span class="al-icon">@include('partials.icon', ['name' => 'bolt', 'size' => 16])</span> Pembayaran QRIS &amp; e-wallet, diproses setelah terverifikasi.</li>
                     <li><span class="al-icon">@include('partials.icon', ['name' => 'shield', 'size' => 16])</span> Riwayat transaksi &amp; pesanan tercatat rapi.</li>
                     <li><span class="al-icon">@include('partials.icon', ['name' => 'card', 'size' => 16])</span> Bayar pakai QRIS, e-wallet, atau transfer bank.</li>
                 </ul>

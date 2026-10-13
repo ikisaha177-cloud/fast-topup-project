@@ -52,7 +52,12 @@
                             <tbody>
                                 @foreach($order->items as $item)
                                     <tr>
-                                        <td class="wrap">{{ $item->product->name ?? 'Produk Dihapus' }}</td>
+                                        <td class="wrap">
+                                            <div class="item-cell">
+                                                @include('partials.marketplace-image', ['product' => $item->product, 'variant' => 'is-thumb'])
+                                                <span class="item-name">{{ $item->product->name ?? 'Produk Dihapus' }}</span>
+                                            </div>
+                                        </td>
                                         <td class="text-right">Rp {{ number_format($item->price, 0, ',', '.') }}</td>
                                         <td class="text-right">{{ $item->quantity }}</td>
                                         <td class="text-right">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
@@ -72,8 +77,7 @@
                     <h3>Data Pembeli</h3>
                     <div class="summary-row"><span>Nama</span><span>{{ $order->buyer->name ?? '-' }}</span></div>
                     <div class="summary-row"><span>Email</span><span>{{ $order->buyer->email ?? '-' }}</span></div>
-                    <div class="summary-row"><span>Metode</span><span>{{ $order->payment_method }}</span></div>
-                    <div class="summary-row"><span>Provider</span><span>{{ $order->payment_provider ?: 'Simulasi' }}</span></div>
+                    <div class="summary-row"><span>Metode</span><span>{{ $order->payment_method }}</span></div>                    <div class="summary-row"><span>Provider</span><span>{{ $order->payment_provider ?: 'Simulasi' }}</span></div>
                     <div class="summary-row"><span>Referensi</span><span class="mono">{{ $order->payment_reference ?: '-' }}</span></div>
                     <div class="summary-row"><span>Dibuat</span><span>{{ $order->created_at->format('d-m-Y H:i') }}</span></div>
                     <div class="summary-row"><span>Diperbarui</span><span>{{ $order->updated_at->format('d-m-Y H:i') }}</span></div>

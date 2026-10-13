@@ -41,8 +41,13 @@
 
                 <div class="card mt-16">
                     <h3>Data Pesanan</h3>
-                    <div class="summary-row"><span>Game</span><span>{{ $transaction->gameTitle->name ?? '-' }}</span></div>
-                    <div class="summary-row"><span>Produk</span><span>{{ $transaction->product->name ?? '-' }}</span></div>
+                    <div class="item-cell" style="margin-bottom:14px;">
+                        @include('partials.game-icon', ['game' => $transaction->gameTitle ?? (object) [], 'size' => 'xs'])
+                        <span>
+                            <span class="item-name">{{ $transaction->gameTitle->name ?? '-' }}</span>
+                            <span class="item-sub">{{ $transaction->product->name ?? '-' }}</span>
+                        </span>
+                    </div>
                     <div class="summary-row"><span>Metode</span><span>{{ $transaction->payment_method }}</span></div>
                     <div class="summary-row"><span>Provider</span><span>{{ $transaction->payment_provider ?: 'Simulasi' }}</span></div>
                     <div class="summary-row"><span>Referensi</span><span class="mono">{{ $transaction->payment_reference ?: '-' }}</span></div>

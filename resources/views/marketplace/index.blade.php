@@ -7,7 +7,7 @@
     <div class="container">
         <span class="eyebrow">Marketplace</span>
         <h1>Marketplace Item Game</h1>
-        <p>Voucher, skin, akun, dan koin dari penjual terpercaya. Semua transaksi tercatat aman.</p>
+        <p>Voucher, skin, akun, dan koin dari penjual yang terdaftar. Semua transaksi tercatat aman.</p>
 
         <div class="banner-stats">
             <div class="banner-stat">
@@ -19,8 +19,8 @@
                 <span>Kategori</span>
             </div>
             <div class="banner-stat">
-                <strong>100%</strong>
-                <span>Penjual terverifikasi</span>
+                <strong>{{ $sellerCount }}</strong>
+                <span>Penjual aktif</span>
             </div>
         </div>
     </div>
@@ -57,9 +57,9 @@
                 @foreach($products as $index => $product)
                     <div class="card card-hover product-card reveal d{{ ($index % 4) + 1 }}">
                         @include('partials.marketplace-image', ['product' => $product])
-                        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:12px;">
-                            <span class="muted">{{ $product->category ?? 'Umum' }}</span>
-                            <span class="rating"><span class="star">★</span> 4.9</span>
+                        <div class="product-subrow">
+                            <span>{{ $product->category ?? 'Umum' }}</span>
+                            <span class="sold-line">Terjual {{ number_format($product->sold_count) }}</span>
                         </div>
                         <div class="product-name">{{ $product->name }}</div>
                         @include('partials.marketplace-price', ['product' => $product])

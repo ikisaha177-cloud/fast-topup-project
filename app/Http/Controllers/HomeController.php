@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\GameTitle;
 use App\Models\MarketplaceProduct;
 use App\Models\Product;
+use App\Support\PaymentMethods;
 
 class HomeController extends Controller
 {
@@ -21,9 +22,17 @@ class HomeController extends Controller
         $marketplaceProducts = MarketplaceProduct::where('is_active', true)
             ->where('stock', '>', 0)
             ->with('seller')
+            ->withSoldCount()
             ->latest()
             ->take(8)
             ->get();
+
+        // Angka nyata untuk statistik hero (bukan hardcoded).
+        $totalMarketplaceProducts = MarketplaceProduct::where('is_active', true)
+            ->where('stock', '>', 0)
+            ->count();
+
+        $paymentMethodCount = count(PaymentMethods::all());
 
         // Kartu melayang di hero harus menampilkan harga yang benar-benar ada
         // di katalog, supaya tidak ada nominal yang tidak cocok dengan produk.
@@ -38,6 +47,12 @@ class HomeController extends Controller
             ->first()
             ?? Product::where('is_active', true)->with('gameTitle')->orderBy('price')->first();
 
-        return view('home', compact('games', 'marketplaceProducts', 'heroProduct'));
+        return view('home', compact(
+            'games',
+            'marketplaceProducts',
+            'heroProduct',
+            'totalMarketplaceProducts',
+            'paymentMethodCount'
+        ));
     }
 }

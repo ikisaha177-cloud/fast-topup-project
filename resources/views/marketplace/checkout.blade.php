@@ -19,7 +19,13 @@
                 <h3>Ringkasan Pesanan</h3>
                 @foreach($cart as $item)
                     <div class="summary-row">
-                        <span>{{ $item['name'] }} × {{ $item['quantity'] }}</span>
+                        <div class="item-cell">
+                            @include('partials.marketplace-image', [
+                                'product' => (object) ['image' => $item['image'] ?? null, 'name' => $item['name']],
+                                'variant' => 'is-thumb',
+                            ])
+                            <span>{{ $item['name'] }} × {{ $item['quantity'] }}</span>
+                        </div>
                         <span>Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</span>
                     </div>
                 @endforeach

@@ -17,8 +17,13 @@
         <div class="grid grid-2 grid-start">
             <div class="card">
                 <h3>Detail Pesanan</h3>
-                <div class="summary-row"><span>Game</span><span>{{ $draft['game_name'] }}</span></div>
-                <div class="summary-row"><span>Produk</span><span>{{ $draft['product_name'] }}</span></div>
+                <div class="item-cell" style="margin-bottom:14px;">
+                    @include('partials.game-icon', ['game' => (object) ['icon' => $draft['game_icon'] ?? null, 'name' => $draft['game_name']], 'size' => 'xs'])
+                    <span>
+                        <span class="item-name">{{ $draft['game_name'] }}</span>
+                        <span class="item-sub">{{ $draft['product_name'] }}</span>
+                    </span>
+                </div>
                 <div class="summary-row"><span>User ID</span><span class="mono">{{ $draft['user_game_id'] }}</span></div>
                 <div class="summary-row"><span>Server ID</span><span>{{ $draft['server_id'] ?: '-' }}</span></div>
                 <div class="summary-total">

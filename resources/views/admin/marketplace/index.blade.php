@@ -36,7 +36,12 @@
                 <tbody>
                     @forelse($products as $product)
                         <tr>
-                            <td>{{ $product->name }}</td>
+                            <td>
+                                <div class="item-cell">
+                                    @include('partials.marketplace-image', ['product' => $product, 'variant' => 'is-thumb'])
+                                    <span class="item-name">{{ $product->name }}</span>
+                                </div>
+                            </td>
                             <td>{{ $product->seller->name ?? '-' }}</td>
                             <td>{{ $product->category ?? '-' }}</td>
                             <td>Rp {{ number_format($product->price, 0, ',', '.') }}</td>

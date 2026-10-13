@@ -55,7 +55,12 @@
                         @forelse($transactions as $trx)
                             <tr>
                                 <td class="mono">{{ $trx->transaction_code }}</td>
-                                <td>{{ $trx->gameTitle->name ?? '-' }}</td>
+                                <td>
+                                    <div class="item-cell">
+                                        @include('partials.game-icon', ['game' => $trx->gameTitle ?? (object) [], 'size' => 'xs'])
+                                        <span class="item-name">{{ $trx->gameTitle->name ?? '-' }}</span>
+                                    </div>
+                                </td>
                                 <td>{{ $trx->product->name ?? '-' }}</td>
                                 <td>{{ $trx->user_game_id }}</td>
                                 <td>{{ $trx->payment_method }}</td>
