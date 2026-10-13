@@ -51,9 +51,9 @@
         <input type="text" name="q" aria-label="Cari pesanan" value="{{ $search }}" placeholder="Cari kode order atau nama/email pembeli…">
     </form>
     <div class="chips">
-        <a href="{{ route('admin.orders.index') }}" class="chip {{ $status ? '' : 'active' }}">Semua</a>
+        <a href="{{ route('admin.orders.index') }}" class="chip {{ $status ? '' : 'active' }}" {!! aria_current(! $status, 'true') !!}>Semua</a>
         @foreach($statusOptions as $value => $text)
-            <a href="{{ route('admin.orders.index', ['status' => $value]) }}" class="chip {{ $status === $value ? 'active' : '' }}">{{ $text }}</a>
+            <a href="{{ route('admin.orders.index', ['status' => $value]) }}" class="chip {{ $status === $value ? 'active' : '' }}" {!! aria_current($status === $value, 'true') !!}>{{ $text }}</a>
         @endforeach
     </div>
 </div>

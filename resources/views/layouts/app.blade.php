@@ -72,7 +72,7 @@
                                     <strong>{{ $user->name }}</strong>
                                     <span>{{ $user->email }}</span>
                                 </div>
-                                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">@include('partials.icon', ['name' => 'grid', 'size' => 16]) Dashboard Admin</a>
+                                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" {!! aria_current(request()->routeIs('admin.dashboard')) !!}>@include('partials.icon', ['name' => 'grid', 'size' => 16]) Dashboard Admin</a>
                                 <a href="{{ route('admin.transactions.index') }}">@include('partials.icon', ['name' => 'receipt', 'size' => 16]) Verifikasi Pembayaran</a>
                                 <a href="{{ route('admin.orders.index') }}">@include('partials.icon', ['name' => 'cart', 'size' => 16]) Pesanan Masuk</a>
                                 <a href="{{ route('admin.reports.index') }}">@include('partials.icon', ['name' => 'grid', 'size' => 16]) Laporan Penjualan</a>
@@ -84,10 +84,10 @@
                             </div>
                         </div>
                     @else
-                        <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
-                        <a href="{{ route('topup.index') }}" class="{{ request()->routeIs('topup.*') ? 'active' : '' }}">Top Up</a>
-                        <a href="{{ route('marketplace.index') }}" class="{{ request()->routeIs('marketplace.*') && !request()->routeIs('marketplace.checkout*') && !request()->routeIs('marketplace.success') ? 'active' : '' }}">Marketplace</a>
-                        <a href="{{ route('cart.index') }}" class="nav-cart {{ request()->routeIs('cart.*') ? 'active' : '' }}" aria-label="Keranjang belanja">
+                        <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}" {!! aria_current(request()->routeIs('home')) !!}>Home</a>
+                        <a href="{{ route('topup.index') }}" class="{{ request()->routeIs('topup.*') ? 'active' : '' }}" {!! aria_current(request()->routeIs('topup.*')) !!}>Top Up</a>
+                        <a href="{{ route('marketplace.index') }}" class="{{ request()->routeIs('marketplace.*') && !request()->routeIs('marketplace.checkout*') && !request()->routeIs('marketplace.success') ? 'active' : '' }}" {!! aria_current(request()->routeIs('marketplace.*') && !request()->routeIs('marketplace.checkout*') && !request()->routeIs('marketplace.success')) !!}>Marketplace</a>
+                        <a href="{{ route('cart.index') }}" class="nav-cart {{ request()->routeIs('cart.*') ? 'active' : '' }}" {!! aria_current(request()->routeIs('cart.*')) !!} aria-label="Keranjang belanja">
                             @include('partials.icon', ['name' => 'cart', 'size' => 19])
                             @if($cartCount > 0)<span class="cart-count">{{ $cartCount }}</span>@endif
                         </a>
@@ -102,9 +102,9 @@
                                     <strong>{{ $user->name }}</strong>
                                     <span>{{ $user->email }}</span>
                                 </div>
-                                <a href="{{ route('transactions.index') }}" class="{{ request()->routeIs('transactions.*') ? 'active' : '' }}">@include('partials.icon', ['name' => 'receipt', 'size' => 16]) Riwayat Transaksi</a>
-                                <a href="{{ route('orders.index') }}" class="{{ request()->routeIs('orders.*') ? 'active' : '' }}">@include('partials.icon', ['name' => 'cart', 'size' => 16]) Pesanan Saya</a>
-                                <a href="{{ route('profile') }}" class="{{ request()->routeIs('profile') ? 'active' : '' }}">@include('partials.icon', ['name' => 'user', 'size' => 16]) Profil &amp; Pengaturan</a>
+                                <a href="{{ route('transactions.index') }}" class="{{ request()->routeIs('transactions.*') ? 'active' : '' }}" {!! aria_current(request()->routeIs('transactions.*')) !!}>@include('partials.icon', ['name' => 'receipt', 'size' => 16]) Riwayat Transaksi</a>
+                                <a href="{{ route('orders.index') }}" class="{{ request()->routeIs('orders.*') ? 'active' : '' }}" {!! aria_current(request()->routeIs('orders.*')) !!}>@include('partials.icon', ['name' => 'cart', 'size' => 16]) Pesanan Saya</a>
+                                <a href="{{ route('profile') }}" class="{{ request()->routeIs('profile') ? 'active' : '' }}" {!! aria_current(request()->routeIs('profile')) !!}>@include('partials.icon', ['name' => 'user', 'size' => 16]) Profil &amp; Pengaturan</a>
                                 <div class="nav-menu-sep"></div>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
@@ -114,11 +114,11 @@
                         </div>
                     @endif
                 @else
-                    <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
-                    <a href="{{ route('topup.index') }}" class="{{ request()->routeIs('topup.*') ? 'active' : '' }}">Top Up</a>
-                    <a href="{{ route('marketplace.index') }}" class="{{ request()->routeIs('marketplace.*') ? 'active' : '' }}">Marketplace</a>
-                    <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active' : '' }}">Login</a>
-                    <a href="{{ route('register') }}" class="{{ request()->routeIs('register') ? 'active' : '' }}">
+                    <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}" {!! aria_current(request()->routeIs('home')) !!}>Home</a>
+                    <a href="{{ route('topup.index') }}" class="{{ request()->routeIs('topup.*') ? 'active' : '' }}" {!! aria_current(request()->routeIs('topup.*')) !!}>Top Up</a>
+                    <a href="{{ route('marketplace.index') }}" class="{{ request()->routeIs('marketplace.*') ? 'active' : '' }}" {!! aria_current(request()->routeIs('marketplace.*')) !!}>Marketplace</a>
+                    <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? 'active' : '' }}" {!! aria_current(request()->routeIs('login')) !!}>Login</a>
+                    <a href="{{ route('register') }}" class="{{ request()->routeIs('register') ? 'active' : '' }}" {!! aria_current(request()->routeIs('register')) !!}>
                         <span class="btn btn-primary btn-sm">Daftar</span>
                     </a>
                 @endif

@@ -21,10 +21,10 @@
             </form>
             <div class="chips">
                 <a href="{{ route('admin.products.index', $search ? ['q' => $search] : []) }}"
-                   class="chip {{ $gameId ? '' : 'active' }}">Semua Game</a>
+                   class="chip {{ $gameId ? '' : 'active' }}" {!! aria_current(! $gameId, 'true') !!}>Semua Game</a>
                 @foreach($games as $game)
                     <a href="{{ route('admin.products.index', array_filter(['q' => $search, 'game' => $game->id])) }}"
-                       class="chip {{ (string) $gameId === (string) $game->id ? 'active' : '' }}">{{ $game->name }}</a>
+                       class="chip {{ (string) $gameId === (string) $game->id ? 'active' : '' }}" {!! aria_current((string) $gameId === (string) $game->id, 'true') !!}>{{ $game->name }}</a>
                 @endforeach
             </div>
         </div>

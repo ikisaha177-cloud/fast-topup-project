@@ -20,11 +20,11 @@
         {{-- Pemilih tipe laporan --}}
         <div class="chips" style="margin-bottom:16px;">
             <a href="{{ route('admin.reports.index', ['periode' => 'harian', 'tahun' => $year, 'bulan' => $month, 'status' => $status]) }}"
-               class="chip {{ $type === 'harian' ? 'active' : '' }}">Harian</a>
+               class="chip {{ $type === 'harian' ? 'active' : '' }}" {!! aria_current($type === 'harian', 'true') !!}>Harian</a>
             <a href="{{ route('admin.reports.index', ['periode' => 'bulanan', 'tahun' => $year, 'status' => $status]) }}"
-               class="chip {{ $type === 'bulanan' ? 'active' : '' }}">Bulanan</a>
+               class="chip {{ $type === 'bulanan' ? 'active' : '' }}" {!! aria_current($type === 'bulanan', 'true') !!}>Bulanan</a>
             <a href="{{ route('admin.reports.index', ['periode' => 'tahunan', 'tahun' => $year, 'status' => $status]) }}"
-               class="chip {{ $type === 'tahunan' ? 'active' : '' }}">Tahunan</a>
+               class="chip {{ $type === 'tahunan' ? 'active' : '' }}" {!! aria_current($type === 'tahunan', 'true') !!}>Tahunan</a>
         </div>
 
         {{-- Filter periode & status --}}

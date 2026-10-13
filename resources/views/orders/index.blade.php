@@ -15,11 +15,11 @@
         @include('partials.account-tabs')
 
         <div class="chips" style="margin-bottom:20px;">
-            <a href="{{ route('orders.index') }}" class="chip {{ $status ? '' : 'active' }}">Semua</a>
-            <a href="{{ route('orders.index', ['status' => 'pending']) }}" class="chip {{ $status === 'pending' ? 'active' : '' }}">Menunggu Konfirmasi</a>
-            <a href="{{ route('orders.index', ['status' => 'success']) }}" class="chip {{ $status === 'success' ? 'active' : '' }}">Selesai</a>
-            <a href="{{ route('orders.index', ['status' => 'failed']) }}" class="chip {{ $status === 'failed' ? 'active' : '' }}">Gagal</a>
-            <a href="{{ route('orders.index', ['status' => 'cancelled']) }}" class="chip {{ $status === 'cancelled' ? 'active' : '' }}">Dibatalkan</a>
+            <a href="{{ route('orders.index') }}" class="chip {{ $status ? '' : 'active' }}" {!! aria_current(! $status, 'true') !!}>Semua</a>
+            <a href="{{ route('orders.index', ['status' => 'pending']) }}" class="chip {{ $status === 'pending' ? 'active' : '' }}" {!! aria_current($status === 'pending', 'true') !!}>Menunggu Konfirmasi</a>
+            <a href="{{ route('orders.index', ['status' => 'success']) }}" class="chip {{ $status === 'success' ? 'active' : '' }}" {!! aria_current($status === 'success', 'true') !!}>Selesai</a>
+            <a href="{{ route('orders.index', ['status' => 'failed']) }}" class="chip {{ $status === 'failed' ? 'active' : '' }}" {!! aria_current($status === 'failed', 'true') !!}>Gagal</a>
+            <a href="{{ route('orders.index', ['status' => 'cancelled']) }}" class="chip {{ $status === 'cancelled' ? 'active' : '' }}" {!! aria_current($status === 'cancelled', 'true') !!}>Dibatalkan</a>
         </div>
 
         @if($orders->isEmpty())

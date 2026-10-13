@@ -21,9 +21,9 @@
         @endphp
 
         <div class="chips" style="margin-bottom:20px;">
-            <a href="{{ route('transactions.index') }}" class="chip {{ $status ? '' : 'active' }}">Semua</a>
+            <a href="{{ route('transactions.index') }}" class="chip {{ $status ? '' : 'active' }}" {!! aria_current(! $status, 'true') !!}>Semua</a>
             @foreach($statusOptions as $value => $text)
-                <a href="{{ route('transactions.index', ['status' => $value]) }}" class="chip {{ $status === $value ? 'active' : '' }}">{{ $text }}</a>
+                <a href="{{ route('transactions.index', ['status' => $value]) }}" class="chip {{ $status === $value ? 'active' : '' }}" {!! aria_current($status === $value, 'true') !!}>{{ $text }}</a>
             @endforeach
         </div>
 

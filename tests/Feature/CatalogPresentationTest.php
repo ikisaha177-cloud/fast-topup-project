@@ -231,4 +231,23 @@ class CatalogPresentationTest extends TestCase
         $this->assertStringContainsString('<th scope="col">Kode</th>', $html);
         $this->assertStringContainsString('aria-label="Cari transaksi"', $html);
     }
+
+    /** Item navigasi/tab/chip yang aktif menandai dirinya untuk pembaca layar. */
+    public function test_active_navigation_items_expose_aria_current()
+    {
+        $admin = User::where('role', 'admin')->firstOrFail();
+
+        // Nav admin: halaman aktif ditandai aria-current="page".
+        $this->actingAs($admin)
+            ->get(route('admin.transactions.index'))
+            ->assertOk()
+            ->assertSee('aria-current="page"', false);
+
+        // Chip filter status: item aktif ditandai aria-current="true".
+        $buyer = $this->buyer();
+        $this->actingAs($buyer)
+            ->get(route('orders.index', ['status' => 'pending']))
+            ->assertOk()
+            ->assertSee('aria-current="true"', false);
+    }
 }

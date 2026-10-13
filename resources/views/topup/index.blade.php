@@ -34,10 +34,10 @@
             </form>
             <div class="chips">
                 <a href="{{ route('topup.index', $search ? ['q' => $search] : []) }}"
-                   class="chip {{ $category ? '' : 'active' }}">Semua</a>
+                   class="chip {{ $category ? '' : 'active' }}" {!! aria_current(! $category, 'true') !!}>Semua</a>
                 @foreach($categories as $cat)
                     <a href="{{ route('topup.index', array_filter(['q' => $search, 'kategori' => $cat])) }}"
-                       class="chip {{ $category === $cat ? 'active' : '' }}">{{ $cat }}</a>
+                       class="chip {{ $category === $cat ? 'active' : '' }}" {!! aria_current($category === $cat, 'true') !!}>{{ $cat }}</a>
                 @endforeach
             </div>
         </div>
