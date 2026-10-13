@@ -7,6 +7,7 @@
     <meta name="description" content="TopUpMarket — top up game dan marketplace voucher, skin, dan akun game dengan pembayaran QRIS, e-wallet, dan transfer bank.">
     <meta name="theme-color" content="#4f46e5">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     <link rel="apple-touch-icon" href="{{ asset('favicon.svg') }}">
     <title>@yield('title', 'TopUpMarket — Top Up Game & Marketplace')</title>
 
