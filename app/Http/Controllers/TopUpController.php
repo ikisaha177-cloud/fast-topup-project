@@ -107,7 +107,7 @@ class TopUpController extends Controller
         }
 
         if ($product->stock < 1) {
-            return back()->withErrors(['product_id' => 'Stock "' . $product->name . '" habis. Pilih nominal lain.']);
+            return back()->withErrors(['product_id' => 'Stok "' . $product->name . '" habis. Pilih nominal lain.']);
         }
 
         session()->put('topup_draft', [
@@ -145,7 +145,7 @@ class TopUpController extends Controller
     }
 
     /**
-     * STEP 3: buat transaksi berstatus pending + tahan (kurangi) stock.
+     * STEP 3: buat transaksi berstatus pending + tahan (kurangi) stok.
      */
     public function pay(PayRequest $request)
     {
@@ -161,7 +161,7 @@ class TopUpController extends Controller
         DB::beginTransaction();
 
         try {
-            // Kunci baris product agar dua pembeli tidak berebut stock terakhir.
+            // Kunci baris product agar dua pembeli tidak berebut stok terakhir.
             $product = Product::whereKey($draft['product_id'])->lockForUpdate()->first();
 
             if (! $product || ! $product->is_active) {
@@ -175,7 +175,7 @@ class TopUpController extends Controller
                 DB::rollBack();
 
                 return redirect()->route('topup.show', $draft['game_slug'])
-                    ->withErrors(['product_id' => 'Stock "' . $product->name . '" habis. Pilih nominal lain.']);
+                    ->withErrors(['product_id' => 'Stok "' . $product->name . '" habis. Pilih nominal lain.']);
             }
 
             $transaction = Transaction::create([
@@ -263,7 +263,7 @@ class TopUpController extends Controller
     }
 
     /**
-     * Batalkan pesanan pending, stock dikembalikan.
+     * Batalkan pesanan pending, stok dikembalikan.
      */
     public function cancelPayment($code)
     {
@@ -274,7 +274,7 @@ class TopUpController extends Controller
         }
 
         return redirect()->route('topup.success', $code)
-            ->with('success', 'Pesanan dibatalkan. Stock kembali tersedia.');
+            ->with('success', 'Pesanan dibatalkan. Stok kembali tersedia.');
     }
 
     /**

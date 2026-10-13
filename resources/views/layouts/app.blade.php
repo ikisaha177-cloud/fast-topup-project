@@ -5,14 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="TopUpMarket — top up game dan marketplace voucher, skin, dan akun game dengan pembayaran QRIS, e-wallet, dan transfer bank.">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.svg') }}">
     <title>@yield('title', 'TopUpMarket — Top Up Game & Marketplace')</title>
+
+    {{-- Open Graph / Twitter Card: tampilan rapi saat dibagikan. --}}
+    <meta property="og:site_name" content="TopUpMarket">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:title" content="@yield('og_title', 'TopUpMarket — Top Up Game & Marketplace')">
+    <meta property="og:description" content="@yield('og_description', 'Top up game dan marketplace voucher, skin, dan akun game. Bayar dengan QRIS, e-wallet, atau transfer bank.')">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="@yield('og_image', asset('images/placeholder-product.svg'))">
+    <meta name="twitter:card" content="summary_large_image">
+
+    @yield('meta')
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    @stack('styles')
     <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
+    <a href="#main" class="skip-link">Lewati ke konten utama</a>
     @php
         $cart = session('cart', []);
         $cartCount = 0;
@@ -108,7 +125,7 @@
         </div>
     </nav>
 
-    <main>
+    <main id="main">
         <div class="container" style="padding-top:20px;">
             @if(session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>

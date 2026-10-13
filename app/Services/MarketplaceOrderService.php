@@ -9,7 +9,7 @@ use App\Support\OrderStatus;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Perpindahan status pesanan marketplace + pengembalian stock + jejak
+ * Perpindahan status pesanan marketplace + pengembalian stok + jejak
  * verifikasi + notifikasi.
  *
  * Alur:

@@ -1,2 +1,14 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /marketplace/checkout
+Disallow: /top-up/checkout
+Disallow: /transactions
+Disallow: /orders
+Disallow: /profile
+Disallow: /login
+Disallow: /register
+Disallow: /password
+
+Allow: /

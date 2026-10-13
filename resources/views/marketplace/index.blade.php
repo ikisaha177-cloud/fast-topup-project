@@ -55,20 +55,7 @@
         @else
             <div class="grid grid-4">
                 @foreach($products as $index => $product)
-                    <div class="card card-hover product-card reveal d{{ ($index % 4) + 1 }}">
-                        @include('partials.marketplace-image', ['product' => $product])
-                        <div class="product-subrow">
-                            <span>{{ $product->category ?? 'Umum' }}</span>
-                            <span class="sold-line">Terjual {{ number_format($product->sold_count) }}</span>
-                        </div>
-                        <div class="product-name">{{ $product->name }}</div>
-                        @include('partials.marketplace-price', ['product' => $product])
-                        <div class="product-meta">
-                            <span class="seller-line">Stok: {{ $product->stock }}</span>
-                            <span class="muted">{{ $product->seller->name ?? '-' }}</span>
-                        </div>
-                        <a href="{{ route('marketplace.show', $product->slug) }}" class="btn btn-primary btn-block mt-16">Lihat Detail</a>
-                    </div>
+                    @include('partials.marketplace-card', ['product' => $product, 'index' => $index])
                 @endforeach
             </div>
 

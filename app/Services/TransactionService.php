@@ -49,7 +49,7 @@ class TransactionService
             return false;
         }
 
-        // Stock dikembalikan saat pesanan pending dibatalkan/digagal,
+        // Stok dikembalikan saat pesanan pending dibatalkan/digagal,
         // dan dikunci ULANG saat keputusan gagal/batal dibuka kembali.
         $shouldRestoreStock = in_array($status, [OrderStatus::FAILED, OrderStatus::CANCELLED], true)
             && $transaction->status === OrderStatus::PENDING;

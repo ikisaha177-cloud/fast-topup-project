@@ -177,4 +177,42 @@ class CatalogPresentationTest extends TestCase
             ->assertSee($transaction->confirmationLabel(), false)
             ->assertDontSee('Diverifikasi Admin');
     }
+
+    /** Halaman detail produk membawa meta share + data terstruktur (SEO). */
+    public function test_product_detail_exposes_open_graph_and_structured_data()
+    {
+        $product = MarketplaceProduct::where('is_active', true)->firstOrFail();
+
+        $html = $this->get(route('marketplace.show', $product->slug))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertStringContainsString('og:type" content="product"', $html);
+        $this->assertStringContainsString('twitter:card', $html);
+        $this->assertStringContainsString('"@type":"Product"', $html);
+        $this->assertStringContainsString('"priceCurrency":"IDR"', $html);
+        $this->assertStringContainsString('schema.org/InStock', $html);
+    }
+
+    /** Home membawa data terstruktur WebSite + tautan lompat aksesibilitas. */
+    public function test_home_exposes_website_structured_data_and_skip_link()
+    {
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $this->assertStringContainsString('"@type":"WebSite"', $html);
+        $this->assertStringContainsString('class="skip-link"', $html);
+        $this->assertStringContainsString('<main id="main"', $html);
+        $this->assertStringContainsString('favicon.svg', $html);
+    }
+
+    /** Kartu produk memakai partial bersama dan label jujur "Belum terjual". */
+    public function test_product_card_shows_honest_sold_label()
+    {
+        $product = MarketplaceProduct::where('is_active', true)->firstOrFail();
+
+        $this->get('/marketplace')
+            ->assertOk()
+            ->assertSee('product-subrow', false)
+            ->assertSee('Belum terjual');
+    }
 }

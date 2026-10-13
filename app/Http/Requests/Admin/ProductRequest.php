@@ -33,8 +33,8 @@ class ProductRequest extends FormRequest
             'price.required'         => 'Harga wajib diisi.',
             'price.integer'          => 'Harga harus berupa angka.',
             'price.max'              => 'Harga terlalu besar.',
-            'stock.required'         => 'Stock wajib diisi.',
-            'stock.max'              => 'Stock terlalu besar.',
+            'stock.required'         => 'Stok wajib diisi.',
+            'stock.max'              => 'Stok terlalu besar.',
         ];
     }
 

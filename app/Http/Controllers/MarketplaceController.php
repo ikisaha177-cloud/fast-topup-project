@@ -109,7 +109,7 @@ class MarketplaceController extends Controller
 
         if ($quantity > $product->stock) {
             return back()->withErrors([
-                'quantity' => 'Stock tidak mencukupi. Sisa stock: ' . $product->stock,
+                'quantity' => 'Stok tidak mencukupi. Sisa stok: ' . $product->stock,
             ]);
         }
 
@@ -119,7 +119,7 @@ class MarketplaceController extends Controller
 
         if ($newQty > $product->stock) {
             return back()->withErrors([
-                'quantity' => 'Jumlah di keranjang melebihi stock. Sisa stock: ' . $product->stock,
+                'quantity' => 'Jumlah di keranjang melebihi stok. Sisa stok: ' . $product->stock,
             ]);
         }
 
@@ -169,7 +169,7 @@ class MarketplaceController extends Controller
 
         if ($quantity > $cart[$id]['stock']) {
             return back()->withErrors([
-                'quantity_' . $id => 'Stock tidak mencukupi. Sisa stock: ' . $cart[$id]['stock'],
+                'quantity_' . $id => 'Stok tidak mencukupi. Sisa stok: ' . $cart[$id]['stock'],
             ]);
         }
 
@@ -213,7 +213,7 @@ class MarketplaceController extends Controller
     }
 
     /**
-     * Proses checkout: buat order, kurangi stock, kosongkan keranjang.
+     * Proses checkout: buat order, kurangi stok, kosongkan keranjang.
      */
     public function processCheckout(ProcessCheckoutRequest $request)
     {
@@ -228,7 +228,7 @@ class MarketplaceController extends Controller
         DB::beginTransaction();
 
         try {
-            // Kunci semua produk, cek ulang stock di server (jangan percaya input browser).
+            // Kunci semua produk, cek ulang stok di server (jangan percaya input browser).
             $locked = [];
 
             foreach ($cart as $item) {
@@ -246,7 +246,7 @@ class MarketplaceController extends Controller
                     DB::rollBack();
 
                     return back()->withErrors([
-                        'cart' => 'Stock "' . $product->name . '" tidak mencukupi.',
+                        'cart' => 'Stok "' . $product->name . '" tidak mencukupi.',
                     ]);
                 }
 
@@ -296,7 +296,7 @@ class MarketplaceController extends Controller
                     'subtotal'               => $subtotal,
                 ]);
 
-                // Tahan stock selama pesanan masih pending.
+                // Tahan stok selama pesanan masih pending.
                 $product->decrement('stock', $item['quantity']);
             }
 
@@ -334,7 +334,7 @@ class MarketplaceController extends Controller
     }
 
     /**
-     * Batalkan pesanan pending, stock dikembalikan ke penjual.
+     * Batalkan pesanan pending, stok dikembalikan ke penjual.
      */
     public function cancelPayment($code)
     {
@@ -345,7 +345,7 @@ class MarketplaceController extends Controller
         }
 
         return redirect()->route('marketplace.success', $code)
-            ->with('success', 'Pesanan dibatalkan. Stock dikembalikan ke penjual.');
+            ->with('success', 'Pesanan dibatalkan. Stok dikembalikan ke penjual.');
     }
 
     /**

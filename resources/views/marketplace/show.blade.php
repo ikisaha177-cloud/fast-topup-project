@@ -1,6 +1,46 @@
 @extends('layouts.app')
 
-@section('title', $product->name . ' - Marketplace')
+@section('title', $product->name . ' - Marketplace - TopUpMarket')
+
+@php
+    // Gambar produk untuk meta share: pakai berkas yang benar-benar ada.
+    $shareImage = null;
+    if ($product->image) {
+        if (file_exists(public_path($product->image))) {
+            $shareImage = asset($product->image);
+        } elseif (file_exists(storage_path('app/public/' . $product->image))) {
+            $shareImage = asset('storage/' . $product->image);
+        }
+    }
+    $shareImage = $shareImage ?: asset('images/placeholder-product.svg');
+@endphp
+
+@section('og_type', 'product')
+@section('og_title', $product->name . ' — TopUpMarket')
+@section('og_description', \Illuminate\Support\Str::limit($product->description ?: 'Item game berkualitas dengan pembayaran aman di TopUpMarket.', 150))
+@section('og_image', $shareImage)
+
+@section('meta')
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'Product',
+    'name' => $product->name,
+    'description' => $product->description ?: 'Item game di TopUpMarket.',
+    'image' => $shareImage,
+    'category' => $product->category ?: 'Item Game',
+    'offers' => [
+        '@type' => 'Offer',
+        'price' => (string) $product->price,
+        'priceCurrency' => 'IDR',
+        'availability' => $product->stock > 0
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+        'url' => url()->current(),
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endsection
 
 @section('content')
 <section class="section">
@@ -18,7 +58,13 @@
                 <div class="card">
                     <div class="product-subrow" style="margin-top:0;">
                         <span>{{ $product->category ?? 'Umum' }}</span>
-                        <span class="sold-line">Terjual {{ number_format($product->sold_count) }}</span>
+                        <span class="sold-line">
+                            @if($product->sold_count > 0)
+                                Terjual {{ number_format($product->sold_count) }}
+                            @else
+                                Belum terjual
+                            @endif
+                        </span>
                     </div>
                     <h1 style="font-size:26px; margin:8px 0;">{{ $product->name }}</h1>
                     @include('partials.marketplace-price', ['product' => $product, 'size' => 'lg'])
@@ -83,19 +129,12 @@
 
             <div class="grid grid-4">
                 @foreach($related as $index => $item)
-                    <div class="card card-hover product-card reveal d{{ ($index % 4) + 1 }}">
-                        @include('partials.marketplace-image', ['product' => $item])
-                        <div class="product-subrow">
-                            <span>{{ $item->category ?? 'Umum' }}</span>
-                            <span class="sold-line">Terjual {{ number_format($item->sold_count) }}</span>
-                        </div>
-                        <div class="product-name">{{ $item->name }}</div>
-                        @include('partials.marketplace-price', ['product' => $item])
-                        <div class="product-meta">
-                            <span class="seller-line">Stok: {{ $item->stock }}</span>
-                        </div>
-                        <a href="{{ route('marketplace.show', $item->slug) }}" class="btn btn-outline btn-block mt-16">Lihat Detail</a>
-                    </div>
+                    @include('partials.marketplace-card', [
+                        'product' => $item,
+                        'index' => $index,
+                        'showSeller' => false,
+                        'buttonVariant' => 'outline',
+                    ])
                 @endforeach
             </div>
         @endif

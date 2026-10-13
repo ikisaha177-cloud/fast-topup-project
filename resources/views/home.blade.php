@@ -1,6 +1,23 @@
 @extends('layouts.app')
 
-@section('title', 'TopUpMarket — Top Up Game Instan & Marketplace Item Game')
+@section('title', 'TopUpMarket — Top Up Game & Marketplace Item Game')
+
+@section('meta')
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'WebSite',
+    'name' => 'TopUpMarket',
+    'url' => url('/'),
+    'description' => 'Top up game dan marketplace voucher, skin, serta akun game dengan pembayaran QRIS, e-wallet, dan transfer bank.',
+    'potentialAction' => [
+        '@type' => 'SearchAction',
+        'target' => route('marketplace.index') . '?q={search_term_string}',
+        'query-input' => 'required name=search_term_string',
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endsection
 
 @section('content')
 
@@ -159,20 +176,7 @@
 
         <div class="grid grid-4">
             @forelse($marketplaceProducts as $index => $product)
-                <div class="card card-hover product-card reveal d{{ ($index % 4) + 1 }}">
-                    @include('partials.marketplace-image', ['product' => $product])
-                    <div class="product-subrow">
-                        <span>{{ $product->category ?? 'Umum' }}</span>
-                        <span class="sold-line">Terjual {{ number_format($product->sold_count) }}</span>
-                    </div>
-                    <div class="product-name">{{ $product->name }}</div>
-                    @include('partials.marketplace-price', ['product' => $product])
-                    <div class="product-meta">
-                        <span class="seller-line">Stok: {{ $product->stock }}</span>
-                        <span class="muted">{{ $product->seller->name ?? 'Penjual' }}</span>
-                    </div>
-                    <a href="{{ route('marketplace.show', $product->slug) }}" class="btn btn-primary btn-block mt-16">Lihat Detail</a>
-                </div>
+                @include('partials.marketplace-card', ['product' => $product, 'index' => $index])
             @empty
                 <div class="empty">Belum ada produk marketplace.</div>
             @endforelse
