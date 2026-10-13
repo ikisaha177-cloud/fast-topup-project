@@ -7,7 +7,6 @@
 :root {
     /* ---------- Permukaan ---------- */
     --bg: #f5f6fb;
-    --bg-2: #eef0f8;
     --surface: #ffffff;
     --surface-2: #f8f9fd;
     --surface-3: #eef0f8;
@@ -26,16 +25,10 @@
     /* ---------- Merek ---------- */
     --brand: #4f46e5;
     --brand-dark: #3f37c9;
-    --brand-2: #7c3aed;
     --brand-soft: #eef0ff;
     --brand-soft-2: #e3e7ff;
-    --blue: #2563eb;
-    --cyan: #0ea5e9;
-    --cyan-soft: #e6f6fe;
-    --violet: #7c3aed;
 
     /* ---------- Aksen (mengikuti nuansa rrqshop) ---------- */
-    --gold: #f6ac37;
     --gold-ink: #b45309;
     --gold-soft: #fff6e6;
     --pink: #ec4899;
@@ -66,7 +59,6 @@
     --grad-accent: linear-gradient(120deg, #4f46e5 0%, #7c3aed 48%, #0ea5e9 100%);
     --grad-warm: linear-gradient(135deg, #f6ac37 0%, #ff6135 100%);
     --grad-surface: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
-    --grad-glow: radial-gradient(60% 60% at 50% 0%, rgba(79, 70, 229, 0.1) 0%, rgba(79, 70, 229, 0) 100%);
 
     --font: "Plus Jakarta Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 
