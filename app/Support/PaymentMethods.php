@@ -13,6 +13,10 @@ class PaymentMethods
     public const GOPAY = 'GoPay';
     public const OVO = 'OVO';
     public const BANK_TRANSFER = 'Bank Transfer';
+    public const BANK_BCA = 'BCA Virtual Account';
+    public const BANK_MANDIRI = 'Mandiri Virtual Account';
+    public const ALFAMART = 'Alfamart';
+    public const INDOMARET = 'Indomaret';
 
     /**
      * Semua metode pembayaran.
@@ -27,6 +31,10 @@ class PaymentMethods
             self::GOPAY,
             self::OVO,
             self::BANK_TRANSFER,
+            self::BANK_BCA,
+            self::BANK_MANDIRI,
+            self::ALFAMART,
+            self::INDOMARET,
         ];
     }
 
@@ -43,6 +51,10 @@ class PaymentMethods
             self::GOPAY         => 'Bayar lewat aplikasi Gojek / GoPay.',
             self::OVO           => 'Bayar lewat aplikasi OVO.',
             self::BANK_TRANSFER => 'Transfer manual ke rekening virtual.',
+            self::BANK_BCA      => 'Virtual Account khusus BCA.',
+            self::BANK_MANDIRI  => 'Virtual Account khusus Mandiri.',
+            self::ALFAMART      => 'Bayar tunai di kasir Alfamart.',
+            self::INDOMARET     => 'Bayar tunai di kasir Indomaret.',
         ];
     }
 

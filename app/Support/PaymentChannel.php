@@ -3,12 +3,12 @@
 namespace App\Support;
 
 /**
- * Instruksi pembayaran per metode (QRIS, e-wallet, transfer bank) untuk
- * portal pembayaran simulasi.
+ * Instruksi pembayaran per metode (QRIS, e-wallet, transfer bank, VA per
+ * bank, dan retail Alfamart/Indomaret) untuk portal pembayaran simulasi.
  *
- * Nomor Virtual Account / nomor e-wallet diturunkan secara DETERMINISTIK dari
- * kode transaksi, jadi halaman yang sama selalu menampilkan angka yang sama —
- * tanpa panggilan jaringan, dan bisa diuji.
+ * Nomor Virtual Account / nomor e-wallet / kode pembayaran retail diturunkan
+ * secara DETERMINISTIK dari kode transaksi, jadi halaman yang sama selalu
+ * menampilkan angka yang sama — tanpa panggilan jaringan, dan bisa diuji.
  *
  * Semua angka di sini adalah SIMULASI (lihat config payment.driver =
  * "simulation"); tidak ada uang yang benar-benar berpindah.
@@ -18,6 +18,16 @@ class PaymentChannel
     public const TYPE_QR      = 'qr';
     public const TYPE_EWALLET = 'ewallet';
     public const TYPE_BANK    = 'bank';
+    public const TYPE_RETAIL  = 'retail';
+
+    /**
+     * Awalan nomor Virtual Account per metode (angka simulasi).
+     */
+    private const VA_PREFIX = [
+        PaymentMethods::BANK_TRANSFER => '8808',
+        PaymentMethods::BANK_BCA      => '3901',
+        PaymentMethods::BANK_MANDIRI  => '8890',
+    ];
 
     /**
      * Susun instruksi pembayaran untuk satu metode.
@@ -30,8 +40,12 @@ class PaymentChannel
             return self::qris($amount);
         }
 
-        if ($method === PaymentMethods::BANK_TRANSFER) {
-            return self::bank($code, $amount);
+        if ($method === PaymentMethods::ALFAMART || $method === PaymentMethods::INDOMARET) {
+            return self::retail($method, $code, $amount);
+        }
+
+        if (isset(self::VA_PREFIX[$method])) {
+            return self::bank($method, $code, $amount);
         }
 
         return self::ewallet($method, $code, $amount);
@@ -60,23 +74,50 @@ class PaymentChannel
     }
 
     /**
-     * Transfer bank: Virtual Account 12 digit.
-     *
-     * @return array<string, mixed>
+     * Transfer bank: Virtual Account (awalan nomor menyesuaikan metode).
      */
-    private static function bank(string $code, int $amount): array
+    private static function bank(string $method, string $code, int $amount): array
     {
+        $named = $method !== PaymentMethods::BANK_TRANSFER;
+        $bank = str_replace(' Virtual Account', '', $method);
+
         return [
             'type'          => self::TYPE_BANK,
-            'label'         => PaymentMethods::BANK_TRANSFER,
-            'headline'      => 'Transfer ke Virtual Account',
-            'note'          => 'Nomor Virtual Account ini khusus untuk pesananmu. Transfer dari m-banking mana pun.',
-            'account'       => self::virtualAccount($code),
+            'label'         => $method,
+            'headline'      => 'Transfer ke Virtual Account' . ($named ? ' ' . $bank : ''),
+            'note'          => $named
+                ? 'Nomor Virtual Account ' . $bank . ' ini khusus untuk pesananmu.'
+                : 'Nomor Virtual Account ini khusus untuk pesananmu. Transfer dari m-banking mana pun.',
+            'account'       => self::virtualAccount($code, self::VA_PREFIX[$method]),
             'account_label' => 'Nomor Virtual Account',
+            'steps'         => array_merge(
+                $named
+                    ? ['Buka m-banking ' . $bank . ', lalu pilih menu Transfer ke Virtual Account.']
+                    : ['Buka m-banking, lalu pilih menu Transfer ke Virtual Account.'],
+                [
+                    'Masukkan nomor Virtual Account di atas.',
+                    'Transfer tepat sebesar Rp ' . number_format($amount, 0, ',', '.') . ' agar pesanan otomatis terdeteksi.',
+                ]
+            ),
+        ];
+    }
+
+    /**
+     * Alfamart / Indomaret: kode pembayaran dibayar tunai di kasir.
+     */
+    private static function retail(string $method, string $code, int $amount): array
+    {
+        return [
+            'type'          => self::TYPE_RETAIL,
+            'label'         => $method,
+            'headline'      => 'Bayar tunai di ' . $method,
+            'note'          => 'Datang ke gerai ' . $method . ' terdekat, lalu sebutkan kode pembayaran ini ke kasir.',
+            'account'       => self::paymentCode($code),
+            'account_label' => 'Kode Pembayaran',
             'steps'         => [
-                'Buka m-banking, lalu pilih menu Transfer ke Virtual Account.',
-                'Masukkan nomor Virtual Account di atas.',
-                'Transfer tepat sebesar Rp ' . number_format($amount, 0, ',', '.') . ' agar pesanan otomatis terdeteksi.',
+                'Datang ke gerai ' . $method . ' terdekat yang sedang buka.',
+                'Minta kasir membayar kode pembayaran di atas (menu Bayar / Top Up).',
+                'Bayar tunai tepat Rp ' . number_format($amount, 0, ',', '.') . ' dan simpan struk dari kasir.',
             ],
         ];
     }
@@ -104,13 +145,23 @@ class PaymentChannel
     }
 
     /**
-     * Nomor Virtual Account simulasi (16 digit, berawalan 8808).
+     * Nomor Virtual Account simulasi (12 digit, awalan menyesuaikan metode).
      */
-    public static function virtualAccount(string $code): string
+    public static function virtualAccount(string $code, string $prefix = '8808'): string
     {
         $digits = str_pad((string) (self::seed($code) % 100000000), 8, '0', STR_PAD_LEFT);
 
-        return '8808 ' . substr($digits, 0, 4) . ' ' . substr($digits, 4, 4);
+        return $prefix . ' ' . substr($digits, 0, 4) . ' ' . substr($digits, 4, 4);
+    }
+
+    /**
+     * Kode pembayaran retail simulasi (12 digit) untuk Alfamart / Indomaret.
+     */
+    public static function paymentCode(string $code): string
+    {
+        $digits = str_pad((string) (self::seed($code) % 1000000000000), 12, '0', STR_PAD_LEFT);
+
+        return substr($digits, 0, 4) . ' ' . substr($digits, 4, 4) . ' ' . substr($digits, 8, 4);
     }
 
     /**
