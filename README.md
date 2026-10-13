@@ -11,11 +11,13 @@ Aplikasi web **top up game** dan **marketplace item game** berbasis Laravel 8. P
 - **Harga coret & badge diskon** pada produk marketplace (kolom `compare_at_price`), jadi diskon tampil sebagai potongan eksplisit, bukan sekadar angka.
 - Keranjang (session) dengan validasi stok di server.
 - **Alur konfirmasi pesanan**: pembeli memesan → menandai **"Saya Sudah Bayar"** → status **Menunggu Konfirmasi**; admin memverifikasi lalu menandai **Selesai** atau **Gagal** (stok otomatis dikembalikan). Pembeli juga bisa **membatalkan** pesanan selama masih menunggu konfirmasi. Untuk pembayaran digital, admin bisa lewat jalur otomatis — lihat *Alur Status Pesanan* di bawah.
+- **Unggah bukti pembayaran (opsional)**: saat menandai sudah bayar, pembeli boleh melampirkan gambar bukti transfer (jpg/png/webp, maks 2 MB). Bukti tampil di halaman status pembeli dan panel verifikasi admin, serta bisa disusulkan selama pesanan masih menunggu konfirmasi.
 - **Gateway pembayaran pluggable**: `simulation` (default, tanpa jaringan) atau **Midtrans Snap** — cukup ubah `PAYMENT_DRIVER` di `.env`.
 - **Webhook pembayaran** dengan verifikasi signature + **idempotency** (event duplikat dari gateway tidak diproses dua kali).
 - Halaman status pesanan dengan kode QR (simulasi), instruksi, dan tombol aksi yang menyesuaikan keadaan (belum bayar / menunggu verifikasi / selesai / gagal + alasan). Bila gateway mengembalikan URL pembayaran, tombol "Buka Halaman Pembayaran" muncul otomatis.
 - Area **Akun Saya** dengan sub-navigasi tab: Riwayat Top Up, Pesanan Saya, dan Profil.
 - Riwayat transaksi top up dan pesanan marketplace, lengkap dengan filter status.
+- **Detail transaksi/pesanan diperkaya**: timeline verifikasi vertikal yang menampilkan tiap tahap (pesanan dibuat → tandai bayar → unggah bukti → verifikasi admin/gateway → hasil akhir), termasuk jejak bila konfirmasi pernah dibatalkan admin.
 - Profil: ubah nama/password, statistik belanja.
 - **Notifikasi email** untuk status pembayaran (top up & marketplace) dan email selamat datang — dikirim lewat **antrean (queue)** agar tidak memblokir request.
 - **Lupa password**: reset password lewat email.
@@ -26,12 +28,16 @@ Status dijaga satu pintu di `App\Support\OrderStatus` + `TransactionService` / `
 
 ```
 pending ──(admin setujui)───────────▶ success    (pesanan selesai)
+   │                                    │
+   │                                    └──(admin batalkan konfirmasi)──▶ failed  (stok dikembalikan)
    │
    ├────(webhook gateway sukses)────▶ success    (pembayaran digital terverifikasi otomatis)
    │
    ├────(admin tolak)───────────────▶ failed     (gagal, stok dikembalikan)
    │
    └────(pembeli batal)─────────────▶ cancelled  (stok dikembalikan)
+
+failed / cancelled ──(admin buka kembali)──▶ pending  (salah klik diperbaiki; stok dikunci ulang)
 ```
 
 Ada **dua jalur menuju `success`**, dan mana yang dipakai dicatat jujur di kolom `confirmation_source`:
@@ -41,8 +47,8 @@ Ada **dua jalur menuju `success`**, dan mana yang dipakai dicatat jujur di kolom
 
 Dengan driver default `simulation`, tidak ada webhook yang datang sendiri, jadi seluruh pesanan melewati verifikasi admin. Saat `PAYMENT_DRIVER=midtrans`, pesanan yang pembayarannya sudah *settlement* langsung selesai tanpa perlu admin.
 
-- `success`, `failed`, dan `cancelled` bersifat **terminal** — tidak bisa diubah lagi lewat aksi biasa. Satu-satunya pengecualian adalah tombol **Buka Kembali** khusus admin (lihat *Admin* di bawah), yang hanya boleh dipakai pada `failed`/`cancelled` dan mengunci ulang stok.
-- Admin hanya punya dua keputusan di UI: **Konfirmasi** (success) dan **Gagal** (failed). Pembatalan adalah tindakan pembeli, sehingga validasi admin sengaja dibatasi ke dua nilai itu (`OrderStatus::adminDecisions()`).
+- `failed` dan `cancelled` bersifat **terminal** lewat aksi biasa. Admin punya dua jalur perbaikan salah klik: **Buka Kembali** (pada `failed`/`cancelled` → `pending`, mengunci ulang stok) dan **Batalkan Konfirmasi** (pada `success` → `failed`, mengembalikan stok). Keduanya mencatat jejak audit terpisah (`revoked_at`/`revoked_by`) sehingga informasi konfirmasi awal tetap utuh.
+- Admin hanya punya dua keputusan di UI saat memverifikasi: **Konfirmasi** (success) dan **Gagal** (failed). Pembatalan adalah tindakan pembeli, sehingga validasi admin sengaja dibatasi ke dua nilai itu (`OrderStatus::adminDecisions()`).
 
 ### Navigasi & Penempatan Fitur
 - Navbar pembeli ringkas: **Home · Top Up · Marketplace**, ikon **keranjang** dengan badge jumlah, dan **menu akun** (dropdown) berisi Riwayat Transaksi, Pesanan Saya, Profil, serta Keluar.
@@ -52,8 +58,8 @@ Dengan driver default `simulation`, tidak ada webhook yang datang sendiri, jadi 
 
 ### Admin
 - Dashboard: KPI, grafik pendapatan 7 hari, transaksi & pesanan terbaru, serta penanda **Perlu Diverifikasi**.
-- **Konfirmasi pesanan**: tombol **Konfirmasi** / **Gagal** (+ alasan opsional) langsung pada baris transaksi/pesanan yang masih menunggu; baris yang sudah ditandai "Sudah Bayar" disorot.
-- **Detail transaksi & pesanan** (`/admin/transactions/{id}`, `/admin/orders/{id}`): data pembeli, item, jejak verifikasi (tandai bayar / pembayaran diterima / diverifikasi), riwayat aktivitas per objek, dan panel verifikasi berisi tombol Konfirmasi/Gagal — termasuk **Buka Kembali** bila keputusan salah klik. Saat membuka kembali, status kembali `pending`, seluruh jejak verifikasi dibersihkan, dan stok dikunci ulang (dibatalkan bila stok sudah habis, supaya tidak pernah minus).
+- **Konfirmasi pesanan**: tombol **Konfirmasi** / **Gagal** (+ alasan opsional) langsung pada baris transaksi/pesanan yang masih menunggu; baris yang sudah ditandai "Sudah Bayar" disorot, dan baris dengan **bukti pembayaran** diberi badge "Bukti".
+- **Detail transaksi & pesanan** (`/admin/transactions/{id}`, `/admin/orders/{id}`): data pembeli, item, jejak verifikasi (tandai bayar / pembayaran diterima / diverifikasi / konfirmasi dibatalkan), pratinjau **bukti pembayaran**, riwayat aktivitas per objek, dan panel verifikasi berisi tombol Konfirmasi/Gagal — termasuk **Buka Kembali** (salah klik pada gagal/batal) dan **Batalkan Konfirmasi** (salah konfirmasi `success` → `failed`). Saat membuka kembali, status kembali `pending`, seluruh jejak verifikasi dibersihkan, dan stok dikunci ulang (dibatalkan bila stok sudah habis, supaya tidak pernah minus); saat membatalkan konfirmasi, stok dikembalikan dan jejak konfirmasi awal tetap utuh.
 - **Laporan harian / bulanan / tahunan**: ringkasan KPI, grafik pendapatan, tabel rincian per periode, sebaran status, game & produk terlaris (hanya pesanan selesai), breakdown metode pembayaran, filter status, dan **ekspor CSV**.
 - CRUD game (dengan upload icon) dan produk top up.
 - Kelola produk marketplace (upload gambar/edit/nonaktifkan/hapus), termasuk harga jual & harga coret.
@@ -68,7 +74,8 @@ Dengan driver default `simulation`, tidak ada webhook yang datang sendiri, jadi 
 - Thumbnail ringkas (`is-thumb`, 54×54) dan logo mini (`game-logo-xs`) dipakai konsisten di keranjang, checkout, riwayat pesanan, halaman sukses, serta tabel admin — jadi item selalu punya identitas visual.
 - **Konten jujur, tanpa social proof karangan**: tidak ada rating palsu, testimoni fiktif, klaim "100% penjual terverifikasi", atau estimasi durasi proses. Angka yang tampil diambil dari data nyata: jumlah produk & penjual aktif dari katalog, dan label **"Terjual N"** dihitung dari kuantitas item pada pesanan berstatus **Selesai** (`MarketplaceProduct::scopeWithSoldCount()` — anti N+1). Produk yang belum pernah terjual ditandai **"Belum terjual"**.
 - **Kartu produk tunggal** (`partials/marketplace-card`) dipakai di home, katalog, dan rekomendasi produk — satu sumber kebenaran untuk tata letak gambar, harga, dan label, sehingga tidak ada markup yang menyimpang antar halaman.
-- **SEO & aksesibilitas dasar**: meta Open Graph + Twitter Card, data terstruktur JSON-LD (`Product` di detail produk dengan harga/ketersediaan, `WebSite` di home), favicon SVG bertema brand, `robots.txt` yang menutup area privat, `theme-color`, **skip-link** ke konten utama, dan gaya fokus keyboard yang jelas (`:focus-visible`).
+- **SEO & aksesibilitas dasar**: meta Open Graph + Twitter Card, data terstruktur JSON-LD (`Product` di detail produk dengan harga/ketersediaan, `WebSite` di home), favicon SVG bertema brand, `robots.txt` yang menutup area privat, **`/sitemap.xml`** yang dihasilkan otomatis dari katalog aktif (game & produk marketplace, tanpa membocorkan halaman privat), `theme-color`, **skip-link** ke konten utama, dan gaya fokus keyboard yang jelas (`:focus-visible`).
+- **Halaman kebijakan & bantuan**: **Cara Order**, **Syarat & Ketentuan**, dan **Kebijakan Privasi** (route `/cara-order`, `/syarat-ketentuan`, `/kebijakan-privasi`) dengan navigasi tab bersama dan tautan di footer.
 - Animasi *reveal on scroll* sebagai progressive enhancement (halaman tetap tampil penuh bila JS mati).
 
 ### Keamanan
@@ -160,7 +167,7 @@ Akun ini hanya untuk pengembangan/testing — **tidak ditampilkan di UI** agar h
 php vendor/bin/phpunit
 ```
 
-Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **152 test / 600 assertion** hijau, mencakup alur checkout, konfirmasi pesanan oleh admin (berhasil/gagal + pengembalian stok + sumber konfirmasi), halaman detail pesanan admin & aksi buka kembali (re-lock stok), laporan harian/bulanan/tahunan & ekspor CSV, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), pencarian & filter katalog, serta **kualitas tampilan katalog & aksesibilitas** (gambar rasio tetap + atribut dimensi, tidak ada rating/testimoni karangan, `sold_count` hanya dari pesanan selesai, thumbnail di keranjang & riwayat pesanan, label sumber verifikasi, meta SEO, header tabel ber-`scope`, kolom pencarian ber-`aria-label`, penanda `aria-current` pada navigasi/tab/chip aktif, dan label langkah progres yang tidak menyesatkan).
+Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **181 test / 722 assertion** hijau, mencakup alur checkout, konfirmasi pesanan oleh admin (berhasil/gagal + pengembalian stok + sumber konfirmasi), **unggah bukti pembayaran** (dengan/tanpa bukti, lengkapi susulan, tolak non-gambar, buka ulang menghapus berkas), **pembatalan konfirmasi `success`** oleh admin (stok kembali + jejak audit tanpa menimpa konfirmasi awal), halaman detail pesanan admin & aksi buka kembali (re-lock stok), **timeline verifikasi vertikal** pada detail transaksi/pesanan, **halaman kebijakan & sitemap.xml** (render, silang tautan, valid XML, tanpa kebocoran halaman privat), laporan harian/bulanan/tahunan & ekspor CSV, reservasi & pengembalian stok, notifikasi & queue, reset password, CRUD + audit log admin, otorisasi policy, webhook pembayaran (signature & idempotency), pencarian & filter katalog, serta **kualitas tampilan katalog & aksesibilitas** (gambar rasio tetap + atribut dimensi, tidak ada rating/testimoni karangan, `sold_count` hanya dari pesanan selesai, thumbnail di keranjang & riwayat pesanan, label sumber verifikasi, meta SEO, header tabel ber-`scope`, kolom pencarian ber-`aria-label`, penanda `aria-current` pada navigasi/tab/chip aktif, dan label langkah progres yang tidak menyesatkan).
 
 ## CI
 
@@ -169,7 +176,7 @@ Workflow GitHub Actions (`.github/workflows/tests.yml`) menjalankan seluruh test
 ## Struktur Utama
 
 ```
-app/Http/Controllers/         # Logika pembeli
+app/Http/Controllers/         # Logika pembeli (termasuk halaman statis & sitemap)
 app/Http/Controllers/Admin/   # Logika admin
 app/Http/Requests/            # Validasi terpusat (FormRequest)
 app/Models/                   # Eloquent models
@@ -183,7 +190,8 @@ database/migrations/          # Skema database
 database/seeders/             # Data awal
 deploy/                       # Contoh konfigurasi Supervisor
 resources/views/              # Blade templates
-resources/views/partials/     # Komponen bersama (ikon, tab akun, gambar produk)
+resources/views/pages/        # Halaman statis (kebijakan) + sitemap
+resources/views/partials/     # Komponen bersama (ikon, tab akun, timeline, gambar produk)
 public/css/style.css          # Design system
 routes/web.php                # Route aplikasi
 routes/webhooks.php           # Route webhook (stateless)
