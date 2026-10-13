@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\TopUpController;
@@ -21,6 +22,14 @@ use Illuminate\Support\Facades\Route;
 
 /* ---------- Home ---------- */
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+/* ---------- Halaman statis: kebijakan & bantuan ---------- */
+Route::get('/cara-order', [PageController::class, 'howToOrder'])->name('page.how-to-order');
+Route::get('/syarat-ketentuan', [PageController::class, 'terms'])->name('page.terms');
+Route::get('/kebijakan-privasi', [PageController::class, 'privacy'])->name('page.privacy');
+
+/* ---------- Sitemap (untuk mesin pencari) ---------- */
+Route::get('/sitemap.xml', [PageController::class, 'sitemap'])->name('sitemap');
 
 /* ---------- Login & Register (hanya untuk yang belum login) ---------- */
 Route::middleware('guest')->group(function () {

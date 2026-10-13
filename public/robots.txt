@@ -12,3 +12,5 @@ Disallow: /register
 Disallow: /password
 
 Allow: /
+
+Sitemap: /sitemap.xml

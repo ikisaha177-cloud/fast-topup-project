@@ -193,9 +193,16 @@
 
                 <div class="footer-col">
                     <h4>Bantuan</h4>
-                    <a href="{{ route('home') }}#cara-kerja">Cara Top Up</a>
+                    <a href="{{ route('page.how-to-order') }}">Cara Order</a>
                     <a href="{{ route('home') }}#faq">Pertanyaan Umum</a>
                     <a href="mailto:support@topupmarket.test">Hubungi Kami</a>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Kebijakan</h4>
+                    <a href="{{ route('page.terms') }}">Syarat &amp; Ketentuan</a>
+                    <a href="{{ route('page.privacy') }}">Kebijakan Privasi</a>
+                    <a href="{{ route('sitemap') }}">Sitemap</a>
                 </div>
             </div>
 
