@@ -41,4 +41,15 @@ class Contact
     {
         return (string) config('store.email', 'support@gantinoid.test');
     }
+
+    /**
+     * Alamat pengirim/balasan email transaksional (verifikasi akun, notifikasi).
+     * Jatuh kembali ke email bantuan bila belum diatur agar tidak pernah kosong.
+     */
+    public static function supportEmail(): string
+    {
+        $email = trim((string) config('store.support_email', ''));
+
+        return $email !== '' ? $email : self::email();
+    }
 }

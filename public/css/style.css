@@ -1448,7 +1448,6 @@ section[id],
     width: 100%;
     aspect-ratio: 8 / 5;
     height: auto;
-    padding: 14px;
     border-radius: var(--radius-sm);
     background: linear-gradient(160deg, #ffffff 0%, #eceff7 100%);
     overflow: hidden;
@@ -1470,14 +1469,20 @@ section[id],
     .game-logo { height: 132px; }
 }
 
+/* Padding dipasang pada <img> (bukan kotak) supaya kotak gambar benar-benar
+   berasio 8:5 — sejalan dengan atribut width/height sehingga tidak ada CLS. */
 .game-logo img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
+    width: 100%;
+    height: 100%;
+    padding: 14px;
+    box-sizing: border-box;
     object-fit: contain;
     transition: transform 0.45s var(--ease);
 }
+
+.game-logo-sm img { padding: 9px; }
+.game-logo-lg img { padding: 12px; }
+.game-logo-xs img { padding: 5px; }
 
 .card-hover:hover .game-logo img {
     transform: scale(1.08);
@@ -4098,82 +4103,143 @@ select.form-control option,
 /* ---------- Latar bintang jatuh (hero) ---------- */
 .starfield {
     position: absolute;
-    inset: 0;
+    inset: -32px;
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
+    animation: sfDrift 46s ease-in-out infinite;
 }
 
-.starfield-dust,
+/* Versi ringkas untuk banner halaman dalam: lebih sedikit, lebih tenang. */
+.starfield-compact .sf-shoot::before { opacity: 0.85; }
+
+.starfield-layer,
 .starfield-shooting {
     position: absolute;
     inset: 0;
+}
+
+/* Parallax kedalaman: lapisan bergeser mengikuti kursor (--px/--py dari JS).
+   Tiap lapisan punya --depth sendiri sehingga terasa punya jarak berbeda. */
+.starfield-layer {
+    transform: translate3d(
+        calc(var(--px, 0) * var(--depth, 1) * 0.4px),
+        calc(var(--py, 0) * var(--depth, 1) * 0.4px),
+        0
+    );
+    transition: transform 0.5s var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+    will-change: transform;
+}
+
+/* Drift sangat halus supaya langit tidak pernah terasa beku. */
+@keyframes sfDrift {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50%      { transform: translate3d(-14px, 9px, 0); }
 }
 
 .sf-dust {
     position: absolute;
     border-radius: 50%;
     background: #fff;
-    opacity: 0.55;
+    opacity: 0.5;
     box-shadow: 0 0 6px rgba(255, 255, 255, 0.7);
     animation-name: sfTwinkle;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
 }
 
-@keyframes sfTwinkle {
-    0%, 100% { opacity: 0.18; transform: scale(0.8); }
-    50%      { opacity: 0.85; transform: scale(1.15); }
+/* Sesekali bintang bernuansa kuning neon khas brand. */
+.sf-dust.is-warm {
+    background: #ffe45c;
+    box-shadow: 0 0 8px rgba(255, 214, 10, 0.85);
 }
 
-/* Bintang jatuh: garis cahaya melesat diagonal ke kiri-bawah. */
+@keyframes sfTwinkle {
+    0%, 100% { opacity: 0.12; transform: scale(0.75); }
+    50%      { opacity: 0.9;  transform: scale(1.2); }
+}
+
+/* Bintang jatuh: pembungkus di-rotate sesuai sudut lintasan, lalu streak
+   bergerak lurus pada sumbu lokal. Hasilnya garis cahaya SELALU sejajar
+   dengan arah gerak dan kepala terang berada di depan. */
 .sf-shoot {
     position: absolute;
-    width: var(--shoot-len, 120px);
-    height: 2px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, rgba(255, 214, 10, 0) 0%, rgba(255, 214, 10, 0.9) 60%, #fff 100%);
-    filter: drop-shadow(0 0 6px rgba(255, 214, 10, 0.75));
+    width: 0;
+    height: 0;
+    transform: rotate(var(--angle, 145deg));
     opacity: 0;
-    transform: rotate(35deg);
     animation-name: sfShoot;
     animation-iteration-count: infinite;
-    animation-timing-function: ease-in;
+    animation-timing-function: cubic-bezier(0.33, 0.1, 0.34, 1);
+    will-change: transform, opacity;
+}
+
+/* Ekor: memanjang ke belakang (lokal -X) dengan gradien menuju kepala. */
+.sf-shoot::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: calc(-1 * var(--len, 140px));
+    width: var(--len, 140px);
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 214, 10, 0) 0%,
+        rgba(255, 214, 10, 0.35) 42%,
+        rgba(255, 226, 130, 0.9) 84%,
+        #fff 100%
+    );
+    filter: drop-shadow(0 0 6px rgba(255, 214, 10, 0.7));
+}
+
+/* Kepala: titik terang dengan glow lembut di ujung depan. */
+.sf-shoot::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 10px 3px rgba(255, 214, 10, 0.85);
 }
 
 @keyframes sfShoot {
-    0%   { opacity: 0; transform: translate3d(0, 0, 0) rotate(35deg) scaleX(0.4); }
-    6%   { opacity: 1; }
-    22%  { opacity: 1; }
-    32%  { opacity: 0; transform: translate3d(-280px, 200px, 0) rotate(35deg) scaleX(1); }
-    100% { opacity: 0; transform: translate3d(-280px, 200px, 0) rotate(35deg) scaleX(1); }
+    0%   { opacity: 0; transform: rotate(var(--angle, 145deg)) translate3d(0, 0, 0); }
+    5%   { opacity: 1; }
+    22%  { opacity: 1; transform: rotate(var(--angle, 145deg)) translate3d(var(--dist, 420px), 0, 0); }
+    30%  { opacity: 0; }
+    100% { opacity: 0; transform: rotate(var(--angle, 145deg)) translate3d(var(--dist, 420px), 0, 0); }
 }
-
-/* Kedalaman 3D halus: lapisan bintang bergeser saat hero di-hover. */
-.hero:hover .starfield-dust { transform: translate3d(0, -6px, 0); }
-.starfield-dust { transition: transform 0.6s var(--ease, ease); }
 
 /* ---------- Kartu tilt 3D ---------- */
 [data-tilt] {
     transform-style: preserve-3d;
-    will-change: transform;
-    transition: transform 0.35s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), box-shadow 0.35s ease;
+    transition: transform 0.4s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), box-shadow 0.4s ease;
 }
 
 [data-tilt].is-tilting {
-    transition: transform 0.08s linear, box-shadow 0.35s ease;
+    transition: transform 0.09s linear, box-shadow 0.4s ease;
+    will-change: transform;
     box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--brand-soft-2);
 }
 
-/* Lapisan kilau mengikuti kartu saat miring. */
+/* Kilau yang mengikuti posisi kursor (--mx/--my di-set dari JS). */
 [data-tilt]::after {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(120deg, rgba(255, 255, 255, 0.14), transparent 42%);
+    background: radial-gradient(
+        240px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(255, 255, 255, 0.16),
+        rgba(255, 255, 255, 0.04) 38%,
+        transparent 62%
+    );
     opacity: 0;
-    transition: opacity 0.35s ease;
+    transition: opacity 0.4s ease;
     pointer-events: none;
 }
 
@@ -4182,9 +4248,10 @@ select.form-control option,
 @media (prefers-reduced-motion: reduce) {
     [data-tilt] { transform: none !important; }
     [data-tilt]::after { display: none; }
-    .sf-dust, .sf-shoot { animation: none !important; opacity: 0.4; }
-    .sf-shoot { opacity: 0; }
-    .hero:hover .starfield-dust { transform: none; }
+    .starfield { animation: none !important; }
+    .starfield-layer { transform: none !important; transition: none; }
+    .sf-dust { animation: none !important; opacity: 0.45; }
+    .sf-shoot { animation: none !important; opacity: 0; }
 }
 
 /* ---------- Halaman invoice: aturan cetak ---------- */

@@ -6,6 +6,8 @@
 
 @section('content')
 <section class="page-banner">
+    @include('partials.starfield', ['compact' => true])
+
     <div class="container">
         <span class="eyebrow">Kebijakan</span>
         <h1>Syarat &amp; Ketentuan</h1>

@@ -292,33 +292,60 @@
 
             if (!prefersReduced && finePointer) {
                 var tiltEls = document.querySelectorAll('[data-tilt]');
-                var MAX_TILT = 8;
+                var MAX_TILT = 9;
+                var LIFT = 1.02;
 
                 tiltEls.forEach(function (el) {
-                    var raf = null;
                     var rx = 0;
                     var ry = 0;
+                    var mx = 50;
+                    var my = 50;
 
                     function apply() {
-                        raf = null;
                         el.style.transform =
-                            'perspective(900px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' +
-                            ry.toFixed(2) + 'deg) translateY(-6px)';
+                            'perspective(950px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' +
+                            ry.toFixed(2) + 'deg) translate3d(0, -6px, 0) scale(' + LIFT + ')';
+                        el.style.setProperty('--mx', mx.toFixed(1) + '%');
+                        el.style.setProperty('--my', my.toFixed(1) + '%');
                     }
 
                     el.addEventListener('pointermove', function (e) {
                         var rect = el.getBoundingClientRect();
-                        var px = (e.clientX - rect.left) / rect.width - 0.5;
-                        var py = (e.clientY - rect.top) / rect.height - 0.5;
-                        rx = (-py * MAX_TILT).toFixed(2);
-                        ry = (px * MAX_TILT).toFixed(2);
+                        var px = (e.clientX - rect.left) / rect.width;
+                        var py = (e.clientY - rect.top) / rect.height;
+
+                        rx = -(py - 0.5) * MAX_TILT;
+                        ry = (px - 0.5) * MAX_TILT;
+                        mx = px * 100;
+                        my = py * 100;
+
                         el.classList.add('is-tilting');
-                        if (!raf) raf = window.requestAnimationFrame(apply);
+                        apply();
                     });
 
                     el.addEventListener('pointerleave', function () {
                         el.classList.remove('is-tilting');
                         el.style.transform = '';
+                    });
+                });
+
+                // ---- Parallax bintang mengikuti kursor (kedalaman 3D) ----
+                document.querySelectorAll('.starfield').forEach(function (field) {
+                    var host = field.parentElement;
+                    if (!host) return;
+
+                    host.addEventListener('pointermove', function (e) {
+                        var rect = host.getBoundingClientRect();
+                        var nx = ((e.clientX - rect.left) / rect.width - 0.5) * 18;
+                        var ny = ((e.clientY - rect.top) / rect.height - 0.5) * 18;
+
+                        field.style.setProperty('--px', nx.toFixed(2));
+                        field.style.setProperty('--py', ny.toFixed(2));
+                    });
+
+                    host.addEventListener('pointerleave', function () {
+                        field.style.setProperty('--px', '0');
+                        field.style.setProperty('--py', '0');
                     });
                 });
             }

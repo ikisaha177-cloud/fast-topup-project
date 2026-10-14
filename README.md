@@ -232,7 +232,9 @@ Dibuat oleh `PromoCodeSeeder` (ikut `php artisan migrate --seed`). Kelola di `/a
 php vendor/bin/phpunit
 ```
 
-Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **335 test / 1343 assertion** hijau.
+Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **344 test / 1379 assertion** hijau.
+
+**Efek visual & penyempurnaan** (9 test): latar "bintang jatuh" dirender dengan tiga lapisan kedalaman + streak yang sudut lintasannya **selalu sejajar dengan garis cahayanya** (bukan nyerong), banner halaman dalam memakai versi ringkas, elemen dekoratif ditandai `aria-hidden`, kartu katalog memakai penanda `data-tilt`, logo game memakai dimensi intrinsik sesuai kotaknya (anti CLS), alamat email pengirim transaksional tidak pernah kosong (jatuh kembali ke email bantuan), notifikasi memakai alamat pengirim dari config, dan nilai desimal tidak bocor ke gaya animasi.
 
 **Pengerasan produksi** (13 test): header keamanan terkirim di halaman toko & portal (CSP, `X-Frame-Options`, `nosniff`, referrer), health check `/up` membalas 200, invoice ber-`noindex`, stylesheet memakai cache busting `?v=`, canonical URL tersedia, command terjadwal `payments:expire` membatalkan pesanan kedaluwarsa tanpa pengunjung (dan membiarkan yang masih berlaku), login dibatasi (429), halaman error 429/503 ada, serta alur verifikasi email (tautan bertanda tangan menandai terverifikasi, tautan tanpa tanda tangan ditolak 403, halaman kirim ulang tampil).
 

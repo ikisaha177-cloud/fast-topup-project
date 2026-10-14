@@ -15,9 +15,19 @@
     } else {
         $iconUrl = asset('images/games/placeholder-game.svg');
     }
+
+    // Dimensi intrinsik yang cocok dengan kotak tampilannya, supaya browser bisa
+    // memesan ruang lebih dulu (mencegah pergeseran layout / CLS).
+    $dims = [
+        'banner' => [480, 300],
+        'lg'     => [122, 122],
+        'sm'     => [76, 76],
+        'xs'     => [38, 38],
+    ];
+    [$width, $height] = $dims[$size] ?? $dims['banner'];
 @endphp
 
 <div class="game-logo game-logo-{{ $size }}">
     <img src="{{ $iconUrl }}" alt="Logo {{ $label }}"
-         width="480" height="300" loading="lazy" decoding="async">
+         width="{{ $width }}" height="{{ $height }}" loading="lazy" decoding="async">
 </div>

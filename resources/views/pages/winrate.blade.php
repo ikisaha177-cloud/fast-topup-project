@@ -7,6 +7,8 @@
 
 @section('content')
 <section class="page-banner">
+    @include('partials.starfield', ['compact' => true])
+
     <div class="container">
         <span class="eyebrow">Tools Gratis</span>
         <h1>Kalkulator Winrate MLBB</h1>

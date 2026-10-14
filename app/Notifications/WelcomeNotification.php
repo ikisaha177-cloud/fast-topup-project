@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Support\Contact;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -19,6 +20,7 @@ class WelcomeNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage())
+            ->from(Contact::supportEmail(), 'GantinoID Store')
             ->subject('Selamat datang di GantinoID Store')
             ->greeting('Halo ' . ($notifiable->name ?? 'Pengguna') . '!')
             ->line('Akun kamu berhasil dibuat. Sekarang kamu bisa top up game dan belanja di marketplace.')

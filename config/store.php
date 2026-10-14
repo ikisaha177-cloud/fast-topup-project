@@ -20,5 +20,5 @@ return [
     | Alamat email pengirim transaksional (verifikasi akun, notifikasi status).
     | Boleh berbeda dari email bantuan yang tampil di footer.
     */
-    'support_email' => env('STORE_SUPPORT_EMAIL', env('STORE_EMAIL', 'support@gantinoid.test')),
+    'support_email' => env('STORE_SUPPORT_EMAIL') ?: env('STORE_EMAIL', 'support@gantinoid.test'),
 ];

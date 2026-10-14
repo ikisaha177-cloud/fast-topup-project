@@ -4,6 +4,8 @@
 
 @section('content')
 <section class="page-banner">
+    @include('partials.starfield', ['compact' => true])
+
     <div class="container">
         <span class="eyebrow">Marketplace</span>
         <h1>Marketplace Item Game</h1>

@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Transaction;
+use App\Support\Contact;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -34,6 +35,7 @@ class TransactionStatusChanged extends Notification implements ShouldQueue
         $transaction = $this->transaction;
 
         return (new MailMessage())
+            ->from(Contact::supportEmail(), 'GantinoID Store')
             ->subject('GantinoID Store - ' . $this->headline . ' (' . $transaction->transaction_code . ')')
             ->greeting('Halo ' . ($notifiable->name ?? 'Pengguna') . '!')
             ->line($this->headline . '.')

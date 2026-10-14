@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\MarketplaceOrder;
+use App\Support\Contact;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -37,6 +38,7 @@ class OrderStatusChanged extends Notification implements ShouldQueue
         })->implode("\n");
 
         return (new MailMessage())
+            ->from(Contact::supportEmail(), 'GantinoID Store')
             ->subject('GantinoID Store - ' . $this->headline . ' (' . $order->order_code . ')')
             ->greeting('Halo ' . ($notifiable->name ?? 'Pengguna') . '!')
             ->line($this->headline . '.')
