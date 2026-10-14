@@ -1,0 +1,39 @@
+{
+  "brand": "FastTop-up Store",
+  "tagline": "Top up cepat, langsung main",
+  "brief": "Toko top-up game dan voucher digital untuk pemain Indonesia. Butuh identitas yang terasa cepat, modern, minimalis, sedikit gaming dan futuristik — tanpa klise petir, gamepad atau roket — dan harus tetap terbaca di favicon 16 px, di latar gelap, serta dalam satu warna.",
+  "adjectives": ["modern", "minimalis", "gaming", "futuristik"],
+  "criteria": "Success: simbol berdiri sendiri sebagai app icon, lolos uji 16 px, bekerja satu warna dan di latar gelap, dan tidak terlihat seperti logo esports generik.",
+  "mockups": ["app-icon", "website", "favicon-tab", "social", "payment-card", "sticker"],
+  "nav": ["Games", "Voucher", "Cara Top Up", "Bantuan"],
+  "brand_color": "#FFD60A",
+  "tile_color": "#0B0A10",
+  "greyscale": false,
+  "final": true,
+  "round": 2,
+  "designer": "FastTop-up brand work",
+  "concepts": [
+    {
+      "name": "Boost Bars",
+      "symbol": "kit/fasttopup-symbol.svg",
+      "lockup": "kit/fasttopup-horizontal.svg",
+      "stacked": "kit/fasttopup-stacked.svg",
+      "avatar": "export/fasttopup-symbol-square.svg",
+      "symbol_on_tile": "kit/fasttopup-symbol-two-tone.svg",
+      "lockup_on_dark": "kit/fasttopup-horizontal-dark.svg",
+      "idea": "Tiga batang naik yang puncaknya melebar jadi panah 60 derajat — progres, kredit, dan top-up dalam satu bentuk.",
+      "rationale": [
+        "Bentuk batang persegi tajam meniru geometri lockup dan huruf — satu bahasa sudut 0/45/60/90.",
+        "Simbol tanpa huruf: app icon, avatar, dan favicon tidak pernah kehilangan makna.",
+        "Varian two-tone dan small-size-cut sudah disiapkan untuk latar gelap dan 16 px.",
+        "Wordmark diambil dari outline Plus Jakarta Sans ExtraBold (OFL) — bukan teks hidup, bukan font berbayar."
+      ]
+    }
+  ],
+  "recommendation": "Boost Bars — satu-satunya arah yang bisa berdiri sendiri sebagai ikon, paling jelas terbaca di 16 px, dan warna kuning neon-nya sudah selaras dengan produk web yang ada.",
+  "next_steps": [
+    "Setujui lockup dan tinggi huruf wordmark",
+    "Pasang favicon + app icon dari paket export/",
+    "Tambahkan panduan singkat ke guidelines.md"
+  ]
+}
