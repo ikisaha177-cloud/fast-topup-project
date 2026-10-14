@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Kalkulator Winrate MLBB Gratis - GantinoID Store')
+@section('canonical', route('page.winrate'))
 @section('og_title', 'Kalkulator Winrate MLBB Gratis')
 @section('og_description', 'Hitung winrate Mobile Legends kamu secara instan: masukkan jumlah menang dan kalah untuk tahu persentase winrate beserta ringkasan total pertandingan. Gratis, tanpa login.')
 

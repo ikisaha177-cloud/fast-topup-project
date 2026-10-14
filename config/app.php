@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Versi Aset (cache busting)
+    |--------------------------------------------------------------------------
+    |
+    | Dipakai sebagai query string pada CSS/JS (mis. style.css?v=3) supaya
+    | pembeli tidak tertahan versi lama dari cache browser setiap kali
+    | aset diperbarui. Naikkan nilainya setiap kali deploy aset baru.
+    |
+    */
+
+    'asset_version' => env('ASSET_VERSION', '1'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

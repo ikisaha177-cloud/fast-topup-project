@@ -100,6 +100,11 @@ Dengan driver default `simulation` dan mode default `hybrid`, pesanan tanpa bukt
 - **Policy-based authorization** (`TransactionPolicy`, `MarketplaceOrderPolicy`) + Gate `manage-catalog` untuk area admin.
 - Middleware `admin` / `not-admin` memisahkan area pembeli dan admin.
 - Validasi terpusat lewat FormRequest; webhook diverifikasi dengan signature.
+- **Header keamanan global** (`SecurityHeaders`): CSP, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, dan HSTS saat HTTPS — melindungi tombol pembayaran dari clickjacking.
+- **Rate limit** pada aksi sensitif: login/register/reset password, checkout, klaim pembayaran, kode promo, dan ulasan.
+- **`TrustProxies`** mempercayai `X-Forwarded-*` agar IP asli klien terdeteksi di belakang CDN/proxy (rate limit & log akurat).
+- **Verifikasi email** opsional via tautan bertanda tangan (`/email/verify`), plus tombol kirim ulang.
+- Invoice & portal pembayaran memakai `noindex` supaya data transaksi tidak masuk mesin pencari.
 
 ## Teknologi
 - PHP 8 / Laravel 8
@@ -125,7 +130,7 @@ php artisan serve
 > Jika `storage:link` gagal di Windows/OneDrive (`Access is denied`), buat junction manual:
 > `cmd /c "mklink /J public\storage storage\app\public"`.
 >
-> File `db_topup_market.sql` di root hanya **snapshot** lama. Sumber kebenaran skema adalah `database/migrations/` — selalu pakai `php artisan migrate --seed`.
+> File `db_topup_market.sql` di root hanya **snapshot** lama dan **tidak di-track git** (lihat `.gitignore`). Sumber kebenaran skema adalah `database/migrations/` — selalu pakai `php artisan migrate --seed`.
 
 ### Queue worker (email)
 
@@ -227,7 +232,9 @@ Dibuat oleh `PromoCodeSeeder` (ikut `php artisan migrate --seed`). Kelola di `/a
 php vendor/bin/phpunit
 ```
 
-Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **322 test / 1303 assertion** hijau.
+Test memakai SQLite in-memory (`phpunit.xml`), jadi tidak butuh MySQL berjalan. Saat ini **335 test / 1343 assertion** hijau.
+
+**Pengerasan produksi** (13 test): header keamanan terkirim di halaman toko & portal (CSP, `X-Frame-Options`, `nosniff`, referrer), health check `/up` membalas 200, invoice ber-`noindex`, stylesheet memakai cache busting `?v=`, canonical URL tersedia, command terjadwal `payments:expire` membatalkan pesanan kedaluwarsa tanpa pengunjung (dan membiarkan yang masih berlaku), login dibatasi (429), halaman error 429/503 ada, serta alur verifikasi email (tautan bertanda tangan menandai terverifikasi, tautan tanpa tanda tangan ditolak 403, halaman kirim ulang tampil).
 
 **Ulasan terverifikasi** (24 test): ulasan hanya bisa dibuat oleh pembeli pesanan **Selesai** yang produknya memang ada di pesanan itu (guest, pembeli lain, admin, produk di luar pesanan, serta status pending/gagal/dibatalkan ditolak), rating wajib 1–5, komentar opsional dan maksimal 1000 karakter, kiriman kedua **memperbarui** (bukan menggandakan), agregat dihitung dari pembeli berbeda, produk tanpa ulasan menampilkan **"Belum ada ulasan"** tanpa `ratingValue` di JSON-LD / tanpa bintang terisi / tanpa "0,0", halaman produk menampilkan komentar + nama penyamaran ("Budi S.") + badge pembelian terverifikasi, komentar `<script>` di-escape, `aggregateRating` baru muncul setelah ada ulasan, formulir hanya tampil bagi pembeli yang berhak (dan terisi ulang setelah mengulas), pintu masuk di halaman detail pesanan muncul/hilang sesuai status, pembatalan konfirmasi **menghapus ulasan pesanan itu** saja (ulasan pesanan lain utuh), nama penulis disamarkan, dan aktivitas `review.create`/`review.update` tercatat.
 
@@ -249,11 +256,26 @@ Mencakup alur checkout, konfirmasi pesanan oleh admin (berhasil/gagal + pengemba
 
 Workflow GitHub Actions (`.github/workflows/tests.yml`) menjalankan seluruh test di setiap push / pull request.
 
+## Deployment (produksi)
+
+Panduan lengkap ada di [`docs/deployment.md`](docs/deployment.md) — ringkasnya:
+
+```bash
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan config:cache && php artisan route:cache && php artisan view:cache
+```
+
+Wajib di server: `.env` dengan `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://…`, `SESSION_SECURE_COOKIE=true`; queue worker (Supervisor) untuk email; dan cron `schedule:run` tiap menit untuk pembatalan pesanan kedaluwarsa. Naikkan `ASSET_VERSION` setiap deploy aset baru.
+
 ## Struktur Utama
 
 ```
+app/Console/Commands/         # Command terjadwal (mis. payments:expire)
 app/Http/Controllers/         # Logika pembeli (termasuk halaman statis & sitemap)
 app/Http/Controllers/Admin/   # Logika admin
+app/Http/Controllers/Auth/    # Login, register, reset password, verifikasi email
+app/Http/Middleware/          # Termasuk SecurityHeaders (CSP & header keamanan)
 app/Http/Requests/            # Validasi terpusat (FormRequest)
 app/Models/                   # Eloquent models
 app/Notifications/            # Email notifikasi (queue)
@@ -265,7 +287,9 @@ config/payment.php            # Konfigurasi gateway pembayaran + jendela pembaya
 database/migrations/          # Skema database
 database/seeders/             # Data awal
 deploy/                       # Contoh konfigurasi Supervisor
+docs/deployment.md            # Panduan deploy produksi (Nginx, cron, cache)
 resources/views/              # Blade templates
+resources/views/errors/       # Halaman error (403/404/419/429/500/503)
 resources/views/pages/        # Halaman statis (kebijakan) + sitemap
 resources/views/partials/     # Komponen bersama (ikon, tab akun, timeline, gambar produk)
 resources/views/payment/      # Portal pembayaran (instruksi bayar + struk)

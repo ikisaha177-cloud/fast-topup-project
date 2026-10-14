@@ -11,6 +11,11 @@
     <link rel="apple-touch-icon" href="{{ asset('images/apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ asset('site.webmanifest') }}">
     <title>@yield('title', 'GantinoID Store — Digital Top-Up & Marketplace')</title>
+    @hasSection('canonical')
+        <link rel="canonical" href="@yield('canonical')">
+    @else
+        <link rel="canonical" href="{{ url()->current() }}">
+    @endif
 
     {{-- Open Graph / Twitter Card: tampilan rapi saat dibagikan. --}}
     <meta property="og:site_name" content="GantinoID Store">
@@ -35,7 +40,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ config('app.asset_version') }}">
     @stack('styles')
     <script>document.documentElement.classList.add('js');</script>
 </head>
@@ -144,7 +149,7 @@
             @if(session('error'))
                 <div class="alert alert-error">{{ session('error') }}</div>
             @endif
-            @if($errors->any())
+            @if(isset($errors) && $errors->any())
                 <div class="alert alert-error">
                     <strong>Periksa kembali isian Anda:</strong>
                     <ul>
@@ -337,6 +342,20 @@
             }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
             revealEls.forEach(function (el) { observer.observe(el); });
+
+            // ---- Cegah klik ganda pada form pembayaran ----
+            // Setelah dikirim, tombol dinonaktifkan & diberi teks "Memproses…"
+            // supaya pembeli tidak membuat dua pesanan tanpa sengaja.
+            document.querySelectorAll('form[data-submit-once]').forEach(function (form) {
+                form.addEventListener('submit', function () {
+                    var btn = form.querySelector('button[type="submit"]');
+                    if (!btn || btn.disabled) return;
+                    btn.disabled = true;
+                    btn.setAttribute('aria-busy', 'true');
+                    btn.dataset.label = btn.textContent;
+                    btn.textContent = 'Memproses…';
+                });
+            });
         })();
     </script>
 

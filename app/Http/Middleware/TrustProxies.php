@@ -10,9 +10,13 @@ class TrustProxies extends Middleware
     /**
      * The trusted proxies for this application.
      *
+     * '*' = percayai proxy di depan aplikasi (Cloudflare/Nginx/load balancer).
+     * Tanpa ini, $request->ip() selalu menunjuk IP proxy sehingga rate limit
+     * login dan log audit webhook memakai IP yang salah.
+     *
      * @var array<int, string>|string|null
      */
-    protected $proxies;
+    protected $proxies = '*';
 
     /**
      * The headers that should be used to detect proxies.

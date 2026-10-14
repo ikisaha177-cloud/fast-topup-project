@@ -9,6 +9,10 @@
 @endphp
 
 @section('title', 'Invoice ' . $doc['number'] . ' - GantinoID Store')
+@section('meta')
+    {{-- Invoice berisi kode & nominal pribadi: jangan pernah diindeks. --}}
+    <meta name="robots" content="noindex, nofollow">
+@endsection
 
 @push('styles')
 <style>

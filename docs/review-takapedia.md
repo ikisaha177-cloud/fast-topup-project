@@ -350,6 +350,31 @@ Catatan implementasi #3 (dengan alasan):
 9. **Leaderboard** bulanan.
 10. Kategori **jasa** (joki/sewa) sebagai jenis produk baru.
 
+### Audit lanjutan — pengerasan produksi (bukan bagian roadmap Takapedia)
+
+Setelah roadmap P0–P1 tuntas, dilakukan audit "kesiapan produksi". Temuan &
+tindak lanjut:
+
+| # | Temuan | Status |
+|---|--------|--------|
+| A1 | Aset tanpa cache busting (`style.css`) | ✅ `?v=ASSET_VERSION` |
+| A2 | Tanpa HTTPS enforcement / cookie `secure` | ✅ `URL::forceScheme` di produksi + dokumentasi `.env` |
+| A3 | Tanpa header keamanan (clickjacking, CSP) | ✅ middleware `SecurityHeaders` (CSP, X-Frame-Options, HSTS, dll) |
+| A4 | `TrustProxies` kosong → IP asli hilang di belakang proxy | ✅ `$proxies = '*'` |
+| A5 | Dump DB (`db_topup_market.sql`) ikut ter-commit | ✅ dihapus dari tracking + `.gitignore` |
+| A6 | Invoice/portal bisa terindeks mesin pencari | ✅ `noindex` pada invoice (+ portal sudah) |
+| A7 | Kedaluwarsa pesanan hanya "lazy" (stok nyangkut bila sepi) | ✅ command `payments:expire` + jadwal tiap 5 menit |
+| A8 | `lastmod` sitemap selalu `now()` (diabaikan Google) | ✅ tanggal rilis tetap |
+| B9 | Halaman error 429 & 503 belum ada | ✅ ditambahkan |
+| B12 | Verifikasi email belum ada meski `MustVerifyEmail` diimpor | ✅ route + controller + halaman |
+| B13 | Rate limit tipis (ulasan, promo, klaim bayar, checkout) | ✅ limiter `reviews`/`promo`/`payments`/`checkout` |
+| B15 | Tombol bayar rawan klik ganda | ✅ `data-submit-once` (disable + "Memproses…") |
+| B11/B16 | Canonical URL & health check | ✅ `<link rel="canonical">` + `GET /up` |
+| — | Dokumentasi deploy | ✅ `docs/deployment.md` (Nginx, cron, cache) |
+
+Sisa (opsional/belum): analytics + verifikasi Search Console, IP allowlist webhook,
+structured data `Product`/`BreadcrumbList` lebih luas, dan item P2 di atas.
+
 ---
 
 ## 12. Catatan Metodologi & Keterbatasan

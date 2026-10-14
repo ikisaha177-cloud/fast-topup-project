@@ -15,7 +15,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        /*
+         * Pulihkan stok & kirim notifikasi batal untuk transaksi/pesanan yang
+         * lewat batas waktu pembayaran, tanpa menunggu halaman dibuka.
+         * Butuh cron: * * * * * php /path/artisan schedule:run
+         */
+        $schedule->command('payments:expire')->everyFiveMinutes()->withoutOverlapping();
     }
 
     /**

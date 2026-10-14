@@ -76,6 +76,13 @@ class PageController extends Controller
     {
         $urls = [];
 
+        /*
+         * lastmod untuk halaman statis memakai tanggal rilis kode, bukan
+         * now(). Tanggal yang selalu berubah membuat mesin pencari mengabaikan
+         * sinyal lastmod sepenuhnya.
+         */
+        $contentUpdatedAt = '2026-10-14T00:00:00+07:00';
+
         $static = [
             [route('home'), '1.0', 'daily'],
             [route('topup.index'), '0.9', 'daily'],
@@ -91,7 +98,7 @@ class PageController extends Controller
         foreach ($static as [$loc, $priority, $freq]) {
             $urls[] = [
                 'loc'        => $loc,
-                'lastmod'    => now()->toAtomString(),
+                'lastmod'    => $contentUpdatedAt,
                 'changefreq' => $freq,
                 'priority'   => $priority,
             ];

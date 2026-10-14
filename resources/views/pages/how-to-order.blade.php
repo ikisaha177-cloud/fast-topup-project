@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Cara Order - GantinoID Store')
+@section('canonical', route('page.how-to-order'))
 @section('og_title', 'Cara Order di GantinoID Store')
 @section('og_description', 'Panduan langkah demi langkah top up game dan belanja marketplace: pilih produk, bayar, unggah bukti, lalu tunggu verifikasi admin.')
 

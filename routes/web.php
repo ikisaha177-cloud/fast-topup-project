@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\LoginController;
@@ -35,6 +36,11 @@ Route::get('/kebijakan-privasi', [PageController::class, 'privacy'])->name('page
 /* ---------- Sitemap (untuk mesin pencari) ---------- */
 Route::get('/sitemap.xml', [PageController::class, 'sitemap'])->name('sitemap');
 
+/* ---------- Health check (monitoring uptime) ---------- */
+Route::get('/up', function () {
+    return response('OK', 200)->header('Content-Type', 'text/plain');
+})->name('health');
+
 /* ---------- Login & Register (hanya untuk yang belum login) ---------- */
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -57,16 +63,25 @@ Route::post('/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
+/* ---------- Verifikasi email (butuh login) ---------- */
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', [VerificationController::class, 'notice'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+        ->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+    Route::post('/email/verification-notification', [VerificationController::class, 'resend'])
+        ->middleware('throttle:6,1')->name('verification.resend');
+});
+
 /* ---------- Top Up Game (khusus pembeli, admin diblokir) ---------- */
 Route::middleware('not-admin')->group(function () {
     Route::get('/top-up', [TopUpController::class, 'index'])->name('topup.index');
     Route::get('/top-up/checkout', [TopUpController::class, 'checkout'])->name('topup.checkout');
-    Route::post('/top-up/checkout', [TopUpController::class, 'storeCheckout'])->name('topup.checkout.store');
-    Route::post('/top-up/checkout/promo', [TopUpController::class, 'applyPromo'])->name('topup.promo.apply');
-    Route::post('/top-up/checkout/pay', [TopUpController::class, 'pay'])->name('topup.pay');
+    Route::post('/top-up/checkout', [TopUpController::class, 'storeCheckout'])->middleware('throttle:checkout')->name('topup.checkout.store');
+    Route::post('/top-up/checkout/promo', [TopUpController::class, 'applyPromo'])->middleware('throttle:promo')->name('topup.promo.apply');
+    Route::post('/top-up/checkout/pay', [TopUpController::class, 'pay'])->middleware('throttle:payments')->name('topup.pay');
     Route::get('/top-up/success/{code}', [TopUpController::class, 'success'])->name('topup.success');
-    Route::post('/top-up/payment/{code}/claim', [TopUpController::class, 'claimPayment'])->name('topup.payment.claim');
-    Route::post('/top-up/payment/{code}/cancel', [TopUpController::class, 'cancelPayment'])->name('topup.payment.cancel');
+    Route::post('/top-up/payment/{code}/claim', [TopUpController::class, 'claimPayment'])->middleware('throttle:payments')->name('topup.payment.claim');
+    Route::post('/top-up/payment/{code}/cancel', [TopUpController::class, 'cancelPayment'])->middleware('throttle:payments')->name('topup.payment.cancel');
     Route::get('/top-up/{slug}', [TopUpController::class, 'show'])->name('topup.show');
 });
 
@@ -75,15 +90,15 @@ Route::get('/marketplace', [MarketplaceController::class, 'index'])->name('marke
 Route::get('/marketplace/checkout', [MarketplaceController::class, 'checkout'])
     ->middleware(['auth', 'not-admin'])->name('marketplace.checkout');
 Route::post('/marketplace/checkout', [MarketplaceController::class, 'processCheckout'])
-    ->middleware(['auth', 'not-admin'])->name('marketplace.checkout.process');
+    ->middleware(['auth', 'not-admin', 'throttle:checkout'])->name('marketplace.checkout.process');
 Route::post('/marketplace/checkout/promo', [MarketplaceController::class, 'applyPromo'])
-    ->middleware(['auth', 'not-admin'])->name('marketplace.promo.apply');
+    ->middleware(['auth', 'not-admin', 'throttle:promo'])->name('marketplace.promo.apply');
 Route::get('/marketplace/success/{code}', [MarketplaceController::class, 'success'])
     ->middleware(['auth', 'not-admin'])->name('marketplace.success');
 Route::post('/marketplace/payment/{code}/claim', [MarketplaceController::class, 'claimPayment'])
-    ->middleware(['auth', 'not-admin'])->name('marketplace.payment.claim');
+    ->middleware(['auth', 'not-admin', 'throttle:payments'])->name('marketplace.payment.claim');
 Route::post('/marketplace/payment/{code}/cancel', [MarketplaceController::class, 'cancelPayment'])
-    ->middleware(['auth', 'not-admin'])->name('marketplace.payment.cancel');
+    ->middleware(['auth', 'not-admin', 'throttle:payments'])->name('marketplace.payment.cancel');
 Route::get('/marketplace/{slug}', [MarketplaceController::class, 'show'])->name('marketplace.show');
 Route::post('/marketplace/{slug}/add', [MarketplaceController::class, 'addToCart'])
     ->middleware(['auth', 'not-admin'])->name('marketplace.add-to-cart');
@@ -92,7 +107,7 @@ Route::post('/marketplace/{slug}/add', [MarketplaceController::class, 'addToCart
    Otorisasi + bukti pembelian diperiksa di controller; akun admin diblokir
    karena admin tidak pernah membeli. */
 Route::post('/orders/{code}/review', [ReviewController::class, 'store'])
-    ->middleware(['auth', 'not-admin'])->name('reviews.store');
+    ->middleware(['auth', 'not-admin', 'throttle:reviews'])->name('reviews.store');
 
 /* ---------- Invoice pembayaran (top up & marketplace) ----------
    Otorisasi lewat policy masing-masing model, jadi guest yang tahu kode
@@ -107,7 +122,7 @@ Route::get('/invoice/{code}', [InvoiceController::class, 'show'])->name('invoice
    portal ini khusus sisi pembeli. */
 Route::middleware('not-admin')->group(function () {
     Route::get('/payment/{code}', [PaymentPortalController::class, 'show'])->name('payment.show');
-    Route::post('/payment/{code}/confirm', [PaymentPortalController::class, 'confirm'])->name('payment.confirm');
+    Route::post('/payment/{code}/confirm', [PaymentPortalController::class, 'confirm'])->middleware('throttle:payments')->name('payment.confirm');
 });
 
 /* ---------- Keranjang / Cart (session, admin diblokir) ---------- */

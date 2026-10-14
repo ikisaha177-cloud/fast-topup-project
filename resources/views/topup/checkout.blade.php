@@ -42,7 +42,7 @@
 
             <div class="card summary-card">
                 <h3>Metode Pembayaran</h3>
-                <form action="{{ route('topup.pay') }}" method="POST">
+                <form action="{{ route('topup.pay') }}" method="POST" data-submit-once>
                     @csrf
                     <div class="payment-list">
                         @foreach($paymentMethods as $method => $desc)

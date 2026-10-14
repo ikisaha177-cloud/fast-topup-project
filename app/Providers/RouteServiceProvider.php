@@ -64,5 +64,26 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
         });
+
+        /*
+         * Limit untuk aksi sensitif pembeli. Pembatas ini mencegah spam
+         * (mis. ulasan beruntun) dan brute-force kode promo, sekaligus tetap
+         * cukup longgar untuk pemakaian normal.
+         */
+        RateLimiter::for('reviews', function (Request $request) {
+            return Limit::perMinute(10)->by(optional($request->user())->id ?: $request->ip());
+        });
+
+        RateLimiter::for('promo', function (Request $request) {
+            return Limit::perMinute(20)->by(optional($request->user())->id ?: $request->ip());
+        });
+
+        RateLimiter::for('payments', function (Request $request) {
+            return Limit::perMinute(30)->by(optional($request->user())->id ?: $request->ip());
+        });
+
+        RateLimiter::for('checkout', function (Request $request) {
+            return Limit::perMinute(20)->by(optional($request->user())->id ?: $request->ip());
+        });
     }
 }
