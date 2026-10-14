@@ -1,8 +1,8 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Syarat & Ketentuan - GantinoID Store')
-@section('og_title', 'Syarat & Ketentuan GantinoID Store')
-@section('og_description', 'Aturan penggunaan layanan top up game dan marketplace GantinoID Store, termasuk hak dan kewajiban pengguna.')
+@section('title', 'Syarat & Ketentuan - FastTopup Store')
+@section('og_title', 'Syarat & Ketentuan FastTopup Store')
+@section('og_description', 'Aturan penggunaan layanan top up game dan marketplace FastTopup Store, termasuk hak dan kewajiban pengguna.')
 
 @section('content')
 <section class="page-banner">
@@ -11,7 +11,7 @@
     <div class="container">
         <span class="eyebrow">Kebijakan</span>
         <h1>Syarat &amp; Ketentuan</h1>
-        <p>Dengan menggunakan layanan GantinoID Store, kamu dianggap telah membaca dan menyetujui ketentuan berikut.</p>
+        <p>Dengan menggunakan layanan FastTopup Store, kamu dianggap telah membaca dan menyetujui ketentuan berikut.</p>
     </div>
 </section>
 
@@ -22,7 +22,7 @@
         <div class="detail-grid">
             <div class="card legal-body">
                 <h2>1. Ketentuan Umum</h2>
-                <p>GantinoID Store adalah layanan top up game dan marketplace item game. Layanan ditujukan untuk pengguna yang berusia minimal 13 tahun atau telah memperoleh izin dari orang tua/wali.</p>
+                <p>FastTopup Store adalah layanan top up game dan marketplace item game. Layanan ditujukan untuk pengguna yang berusia minimal 13 tahun atau telah memperoleh izin dari orang tua/wali.</p>
 
                 <h2>2. Akun Pengguna</h2>
                 <ul>
@@ -55,13 +55,13 @@
                 </ul>
 
                 <h2>6. Batasan Tanggung Jawab</h2>
-                <p>GantinoID Store berupaya menjaga layanan tetap tersedia dan akurat, namun tidak bertanggung jawab atas kerugian tidak langsung yang timbul dari gangguan layanan di luar kendali kami. Item game yang diperjualbelikan di marketplace disediakan oleh penjual pihak ketiga.</p>
+                <p>FastTopup Store berupaya menjaga layanan tetap tersedia dan akurat, namun tidak bertanggung jawab atas kerugian tidak langsung yang timbul dari gangguan layanan di luar kendali kami. Item game yang diperjualbelikan di marketplace disediakan oleh penjual pihak ketiga.</p>
 
                 <h2>7. Perubahan Ketentuan</h2>
                 <p>Ketentuan ini dapat diperbarui sewaktu-waktu. Versi terbaru akan selalu ditampilkan pada halaman ini.</p>
 
                 <h2>8. Kontak</h2>
-                <p>Pertanyaan mengenai ketentuan ini dapat dikirim ke <a href="mailto:support@gantinoid.test">support@gantinoid.test</a>.</p>
+                <p>Pertanyaan mengenai ketentuan ini dapat dikirim ke <a href="mailto:support@FastTopup.test">support@FastTopup.test</a>.</p>
             </div>
 
             <div class="card summary-card">
@@ -74,3 +74,4 @@
     </div>
 </section>
 @endsection
+

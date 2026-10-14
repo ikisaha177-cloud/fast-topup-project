@@ -1,8 +1,8 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Kebijakan Privasi - GantinoID Store')
-@section('og_title', 'Kebijakan Privasi GantinoID Store')
-@section('og_description', 'Bagaimana GantinoID Store mengumpulkan, menggunakan, dan melindungi data pribadi pengguna.')
+@section('title', 'Kebijakan Privasi - FastTopup Store')
+@section('og_title', 'Kebijakan Privasi FastTopup Store')
+@section('og_description', 'Bagaimana FastTopup Store mengumpulkan, menggunakan, dan melindungi data pribadi pengguna.')
 
 @section('content')
 <section class="page-banner">
@@ -54,7 +54,7 @@
                 <p>Kami menerapkan langkah teknis dan organisasi yang wajar untuk melindungi data, termasuk penyimpanan kata sandi terenkripsi dan pembatasan akses. Namun, tidak ada metode transmisi data yang sepenuhnya bebas risiko.</p>
 
                 <h2>7. Kontak</h2>
-                <p>Untuk pertanyaan atau permintaan terkait privasi, hubungi <a href="mailto:support@gantinoid.test">support@gantinoid.test</a>.</p>
+                <p>Untuk pertanyaan atau permintaan terkait privasi, hubungi <a href="mailto:support@FastTopup.test">support@FastTopup.test</a>.</p>
             </div>
 
             <div class="card summary-card">
@@ -68,3 +68,4 @@
     </div>
 </section>
 @endsection
+

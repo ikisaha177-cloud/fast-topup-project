@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Halaman Tidak Ditemukan - GantinoID Store')
+@section('title', 'Halaman Tidak Ditemukan - FastTopup Store')
 
 @section('content')
 <section class="section">
@@ -16,3 +16,4 @@
     </div>
 </section>
 @endsection
+

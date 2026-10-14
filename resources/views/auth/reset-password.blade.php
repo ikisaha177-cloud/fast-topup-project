@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Reset Password - GantinoID Store')
+@section('title', 'Reset Password - FastTopup Store')
 
 @section('content')
 <section class="section">
@@ -23,14 +23,14 @@
 
                 <div class="form-group">
                     <label class="form-label" for="password">Password Baru</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required>
                     <div class="form-hint">Minimal 8 karakter.</div>
                     @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="password_confirmation">Konfirmasi Password Baru</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" placeholder="••••••••" required>
+                    <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block btn-lg">Simpan Password Baru</button>
@@ -39,3 +39,4 @@
     </div>
 </section>
 @endsection
+

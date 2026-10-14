@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,7 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     <link rel="apple-touch-icon" href="{{ asset('images/apple-touch-icon.png') }}">
     <link rel="canonical" href="@yield('canonical', url()->current())">
-    <title>@yield('title', 'Portal Pembayaran - GantinoID Pay')</title>
+    <title>@yield('title', 'Portal Pembayaran - FastTopup Pay')</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +20,7 @@
 </head>
 <body class="gateway-body">
     @php
-        // Host yang menampung portal — ditampilkan sebagai identitas "situs
+        // Host yang menampung portal â€” ditampilkan sebagai identitas "situs
         // pembayaran" agar pembeli tahu ia sedang di luar toko.
         $gatewayHost = parse_url(config('app.url'), PHP_URL_HOST) ?: request()->getHost();
     @endphp
@@ -30,7 +30,7 @@
             <span class="gateway-brand">
                 <img class="brand-logo" src="{{ asset('images/logo-mark.svg') }}" alt="" width="34" height="34">
                 <span class="gateway-brand-text">
-                    <strong>GantinoID Pay</strong>
+                    <strong>FastTopup Pay</strong>
                     <span>Portal Pembayaran</span>
                 </span>
             </span>
@@ -58,7 +58,7 @@
         <div class="container">
             <p class="gateway-sim">
                 @include('partials.icon', ['name' => 'shield', 'size' => 14])
-                <span>Portal pembayaran <strong>simulasi</strong> — tidak ada uang yang benar-benar berpindah. Tidak ada data kartu yang diminta.</span>
+                <span>Portal pembayaran <strong>simulasi</strong> â€” tidak ada uang yang benar-benar berpindah. Tidak ada data kartu yang diminta.</span>
             </p>
             <p class="gateway-host">
                 <span class="mono">{{ $gatewayHost }}</span>
@@ -70,3 +70,4 @@
     @stack('scripts')
 </body>
 </html>
+

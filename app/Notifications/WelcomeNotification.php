@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Notifications;
 
@@ -20,11 +20,12 @@ class WelcomeNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage())
-            ->from(Contact::supportEmail(), 'GantinoID Store')
-            ->subject('Selamat datang di GantinoID Store')
+            ->from(Contact::supportEmail(), 'FastTopup Store')
+            ->subject('Selamat datang di FastTopup Store')
             ->greeting('Halo ' . ($notifiable->name ?? 'Pengguna') . '!')
             ->line('Akun kamu berhasil dibuat. Sekarang kamu bisa top up game dan belanja di marketplace.')
             ->action('Mulai Top Up', route('topup.index'))
-            ->line('Terima kasih telah bergabung dengan GantinoID Store.');
+            ->line('Terima kasih telah bergabung dengan FastTopup Store.');
     }
 }
+

@@ -1,7 +1,7 @@
-# Deployment GantinoID Store (Laravel 8)
+﻿# Deployment FastTopup Store (Laravel 8)
 
 Panduan singkat menaruh toko di server produksi (Linux + Nginx + PHP-FPM).
-Sesuaikan path `/var/www/gantinoid-store` dan domain `gantinoid.store`.
+Sesuaikan path `/var/www/FastTopup-store` dan domain `FastTopup.store`.
 
 ## 1. Persiapan
 
@@ -16,7 +16,7 @@ Isi `.env` produksi (lihat komentar di `.env.example`):
 ```
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://gantinoid.store
+APP_URL=https://FastTopup.store
 ASSET_VERSION=1            # naikkan tiap deploy aset
 SESSION_SECURE_COOKIE=true
 QUEUE_CONNECTION=database
@@ -44,10 +44,10 @@ sudo chmod -R 775 storage bootstrap/cache
 
 ## 4. Queue worker (email notifikasi)
 
-Pakai Supervisor — contoh ada di `deploy/supervisor-gantinoid.conf`:
+Pakai Supervisor â€” contoh ada di `deploy/supervisor-FastTopup.conf`:
 
 ```bash
-sudo cp deploy/supervisor-gantinoid.conf /etc/supervisor/conf.d/gantinoid.conf
+sudo cp deploy/supervisor-FastTopup.conf /etc/supervisor/conf.d/FastTopup.conf
 sudo supervisorctl reread && sudo supervisorctl update
 ```
 
@@ -58,7 +58,7 @@ tanpa menunggu halaman dibuka. Tambahkan satu baris cron:
 
 ```bash
 crontab -e
-# * * * * * cd /var/www/gantinoid-store && php artisan schedule:run >> /dev/null 2>&1
+# * * * * * cd /var/www/FastTopup-store && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 ## 6. Nginx
@@ -66,17 +66,17 @@ crontab -e
 ```nginx
 server {
     listen 80;
-    server_name gantinoid.store;
+    server_name FastTopup.store;
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name gantinoid.store;
-    root /var/www/gantinoid-store/public;
+    server_name FastTopup.store;
+    root /var/www/FastTopup-store/public;
 
-    ssl_certificate     /etc/letsencrypt/live/gantinoid.store/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/gantinoid.store/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/FastTopup.store/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/FastTopup.store/privkey.pem;
 
     index index.php;
     charset utf-8;
@@ -114,3 +114,4 @@ server {
 - Buka `/sitemap.xml` & `/robots.txt` memastikan URL benar.
 - Kirim satu pesanan uji, pastikan email notifikasi terkirim (queue jalan).
 - Cek `/invoice/{kode}` mengirim header `X-Robots-Tag`/`noindex`.
+

@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Terlalu Banyak Permintaan - GantinoID Store')
+@section('title', 'Terlalu Banyak Permintaan - FastTopup Store')
 @section('meta')
     <meta name="robots" content="noindex, nofollow">
 @endsection
@@ -19,3 +19,4 @@
     </div>
 </section>
 @endsection
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Support;
 
@@ -18,7 +18,7 @@ class Contact
 
     /**
      * Tautan wa.me dengan pesan pembuka. Mengembalikan null bila nomor
-     * belum diisi — tautan rusak tidak boleh ditampilkan ke pengunjung.
+     * belum diisi â€” tautan rusak tidak boleh ditampilkan ke pengunjung.
      */
     public static function whatsappUrl(string $context = ''): ?string
     {
@@ -28,7 +28,7 @@ class Contact
             return null;
         }
 
-        $message = trim('Halo GantinoID Store. ' . $context);
+        $message = trim('Halo FastTopup Store. ' . $context);
 
         return 'https://wa.me/' . $number
             . ($message !== '' ? '?text=' . rawurlencode($message) : '');
@@ -39,7 +39,7 @@ class Contact
      */
     public static function email(): string
     {
-        return (string) config('store.email', 'support@gantinoid.test');
+        return (string) config('store.email', 'support@FastTopup.test');
     }
 
     /**
@@ -53,3 +53,4 @@ class Contact
         return $email !== '' ? $email : self::email();
     }
 }
+

@@ -1,16 +1,16 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="GantinoID Store — digital top-up game dan marketplace voucher, skin, serta akun game dengan pembayaran QRIS, e-wallet, dan transfer bank.">
+    <meta name="description" content="FastTopup Store â€” digital top-up game dan marketplace voucher, skin, serta akun game dengan pembayaran QRIS, e-wallet, dan transfer bank.">
     <meta name="theme-color" content="#0b0a10">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     <link rel="apple-touch-icon" href="{{ asset('images/apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ asset('site.webmanifest') }}">
-    <title>@yield('title', 'GantinoID Store — Digital Top-Up & Marketplace')</title>
+    <title>@yield('title', 'FastTopup Store â€” Digital Top-Up & Marketplace')</title>
     @hasSection('canonical')
         <link rel="canonical" href="@yield('canonical')">
     @else
@@ -18,9 +18,9 @@
     @endif
 
     {{-- Open Graph / Twitter Card: tampilan rapi saat dibagikan. --}}
-    <meta property="og:site_name" content="GantinoID Store">
+    <meta property="og:site_name" content="FastTopup Store">
     <meta property="og:type" content="@yield('og_type', 'website')">
-    <meta property="og:title" content="@yield('og_title', 'GantinoID Store — Digital Top-Up & Marketplace')">
+    <meta property="og:title" content="@yield('og_title', 'FastTopup Store â€” Digital Top-Up & Marketplace')">
     <meta property="og:description" content="@yield('og_description', 'Digital top-up game dan marketplace voucher, skin, serta akun game. Bayar dengan QRIS, e-wallet, atau transfer bank.')">
     <meta property="og:url" content="{{ url()->current() }}">
     @hasSection('og_image')
@@ -31,7 +31,7 @@
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
     @endif
-    <meta property="og:image:alt" content="@yield('og_image_alt', 'GantinoID Store — Digital Top-Up & Marketplace')">
+    <meta property="og:image:alt" content="@yield('og_image_alt', 'FastTopup Store â€” Digital Top-Up & Marketplace')">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="@yield('og_image', asset('images/og-cover.png'))">
 
@@ -61,7 +61,7 @@
             <a href="{{ route('home') }}" class="brand">
                 <img class="brand-logo" src="{{ asset('images/logo-mark.svg') }}" alt="" width="38" height="38">
                 <span>
-                    GantinoID Store
+                    FastTopup Store
                     <span class="brand-sub">Digital Top-Up &amp; Marketplace</span>
                 </span>
             </a>
@@ -170,10 +170,10 @@
                 <div class="footer-col">
                     <div class="footer-brand">
                         <img class="brand-logo" src="{{ asset('images/logo-mark.svg') }}" alt="" width="34" height="34">
-                        <span class="footer-title">GantinoID Store</span>
+                        <span class="footer-title">FastTopup Store</span>
                     </div>
                     <p class="muted" style="margin:0 0 14px;">
-                        Digital top-up game, voucher, skin, dan akun game — cepat, aman, dan transparan.
+                        Digital top-up game, voucher, skin, dan akun game â€” cepat, aman, dan transparan.
                     </p>
                     <div class="pill-row" style="margin-top:0;">
                         <span class="pill">QRIS</span>
@@ -227,7 +227,7 @@
             </div>
 
             <div class="footer-bottom">
-                <span>&copy; {{ date('Y') }} GantinoID Store. Seluruh hak cipta dilindungi.</span>
+                <span>&copy; {{ date('Y') }} FastTopup Store. Seluruh hak cipta dilindungi.</span>
                 <span>Dibuat dengan <span style="color:var(--pink); display:inline-flex; vertical-align:-2px;">@include('partials.icon', ['name' => 'heart', 'size' => 13])</span> untuk para gamer Indonesia.</span>
             </div>
         </div>
@@ -371,7 +371,7 @@
             revealEls.forEach(function (el) { observer.observe(el); });
 
             // ---- Cegah klik ganda pada form pembayaran ----
-            // Setelah dikirim, tombol dinonaktifkan & diberi teks "Memproses…"
+            // Setelah dikirim, tombol dinonaktifkan & diberi teks "Memprosesâ€¦"
             // supaya pembeli tidak membuat dua pesanan tanpa sengaja.
             document.querySelectorAll('form[data-submit-once]').forEach(function (form) {
                 form.addEventListener('submit', function () {
@@ -380,7 +380,7 @@
                     btn.disabled = true;
                     btn.setAttribute('aria-busy', 'true');
                     btn.dataset.label = btn.textContent;
-                    btn.textContent = 'Memproses…';
+                    btn.textContent = 'Memprosesâ€¦';
                 });
             });
         })();
@@ -389,3 +389,4 @@
     @stack('scripts')
 </body>
 </html>
+

@@ -1,5 +1,5 @@
-{{-- Feed "Aktivitas Terbaru": ulasan & pembelian sukses terbaru dengan
-     nama pembeli disamarkan. Semua baris berasal dari data nyata —
+﻿{{-- Feed "Aktivitas Terbaru": ulasan & pembelian sukses terbaru dengan
+     nama pembeli disamarkan. Semua baris berasal dari data nyata â€”
      tidak ada aktivitas yang dikarang, dan kosong = tidak ditampilkan. --}}
 @php
     $feedItems = \App\Support\ActivityFeed::items();
@@ -9,7 +9,7 @@
     <div class="activity-feed">
         <div class="activity-feed-head">
             <span class="eyebrow">Aktivitas Terbaru</span>
-            <p class="muted">Pembelian & ulasan terbaru dari pembeli GantinoID — nama disamarkan.</p>
+            <p class="muted">Pembelian & ulasan terbaru dari pembeli FastTopup â€” nama disamarkan.</p>
         </div>
 
         <ul class="activity-feed-list">
@@ -29,3 +29,4 @@
         </ul>
     </div>
 @endif
+

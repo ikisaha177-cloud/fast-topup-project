@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Top Up ' . $game->name . ' - GantinoID Store')
+@section('title', 'Top Up ' . $game->name . ' - FastTopup Store')
 
 @section('content')
 <section class="section">
@@ -85,7 +85,7 @@
                         @endforeach
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-lg mt-24">Lanjut ke Pembayaran →</button>
+                    <button type="submit" class="btn btn-primary btn-lg mt-24">Lanjut ke Pembayaran â†’</button>
                 </div>
             </form>
         @endif
@@ -116,3 +116,4 @@
     </div>
 </section>
 @endsection
+

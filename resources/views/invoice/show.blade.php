@@ -1,14 +1,14 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @php
     /**
-     * Halaman invoice — satu dokumen untuk transaksi top up & pesanan
+     * Halaman invoice â€” satu dokumen untuk transaksi top up & pesanan
      * marketplace. $doc disusun oleh InvoiceController.
      */
     $isPaid = ! empty($doc['paid']);
 @endphp
 
-@section('title', 'Invoice ' . $doc['number'] . ' - GantinoID Store')
+@section('title', 'Invoice ' . $doc['number'] . ' - FastTopup Store')
 @section('meta')
     {{-- Invoice berisi kode & nominal pribadi: jangan pernah diindeks. --}}
     <meta name="robots" content="noindex, nofollow">
@@ -17,7 +17,7 @@
 @push('styles')
 <style>
     /* Invoice dicetak/di-screenshot di atas kertas putih agar hasilnya rapi
-       dan kontras — terlepas dari tema gelap aplikasi. */
+       dan kontras â€” terlepas dari tema gelap aplikasi. */
     .invoice-wrap { max-width: 820px; margin: 0 auto; }
 
     .invoice-actions {
@@ -307,7 +307,7 @@
                     <div class="invoice-brand">
                         <img class="invoice-brand-mark" src="{{ asset('images/logo-mark.svg') }}" alt="" width="44" height="44">
                         <span>
-                            <span class="invoice-brand-name">GantinoID Store</span><br>
+                            <span class="invoice-brand-name">FastTopup Store</span><br>
                             <span class="invoice-brand-sub">Digital Top-Up &amp; Marketplace</span>
                         </span>
                     </div>
@@ -383,7 +383,7 @@
                 @if(($doc['discount'] ?? 0) > 0)
                     <div class="invoice-discount">
                         <span>Potongan promo <span class="mono">{{ $doc['promo_code'] }}</span></span>
-                        <span class="invoice-discount-value">− Rp {{ number_format($doc['discount'], 0, ',', '.') }}</span>
+                        <span class="invoice-discount-value">âˆ’ Rp {{ number_format($doc['discount'], 0, ',', '.') }}</span>
                     </div>
                 @endif
 
@@ -418,7 +418,7 @@
                 </div>
 
                 <div class="invoice-foot">
-                    Invoice ini dibuat otomatis oleh sistem GantinoID Store dan sah tanpa tanda tangan.
+                    Invoice ini dibuat otomatis oleh sistem FastTopup Store dan sah tanpa tanda tangan.
                     Simpan sebagai bukti pembayaran. Pertanyaan? Hubungi tim dukungan kami.
                 </div>
             </article>
@@ -426,3 +426,4 @@
     </div>
 </section>
 @endsection
+

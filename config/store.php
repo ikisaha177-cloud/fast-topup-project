@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
 
@@ -14,11 +14,12 @@ return [
 
     'whatsapp' => env('STORE_WHATSAPP', '6281234567890'),
 
-    'email' => env('STORE_EMAIL', 'support@gantinoid.test'),
+    'email' => env('STORE_EMAIL', 'support@FastTopup.test'),
 
     /*
     | Alamat email pengirim transaksional (verifikasi akun, notifikasi status).
     | Boleh berbeda dari email bantuan yang tampil di footer.
     */
-    'support_email' => env('STORE_SUPPORT_EMAIL') ?: env('STORE_EMAIL', 'support@gantinoid.test'),
+    'support_email' => env('STORE_SUPPORT_EMAIL') ?: env('STORE_EMAIL', 'support@FastTopup.test'),
 ];
+

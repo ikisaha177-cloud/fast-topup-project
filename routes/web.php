@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - GantinoID Store
+| Web Routes - FastTopup Store
 |--------------------------------------------------------------------------
 */
 
@@ -117,7 +117,7 @@ Route::get('/invoice/{code}', [InvoiceController::class, 'show'])->name('invoice
 /* ---------- Portal pembayaran (halaman terpisah, khas "hosted checkout") ----------
    Tempat pembeli diarahkan untuk membayar lewat QRIS / e-wallet / transfer bank,
    lalu menerima STRUK yang bisa di-screenshot dan diunggah sebagai bukti.
-   Otorisasi tetap lewat policy model — sama seperti invoice — jadi guest yang
+   Otorisasi tetap lewat policy model â€” sama seperti invoice â€” jadi guest yang
    tahu kode transaksi top up boleh membukanya; akun admin diblokir karena
    portal ini khusus sisi pembeli. */
 Route::middleware('not-admin')->group(function () {
@@ -197,3 +197,4 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     /* Log Aktivitas */
     Route::get('/activity', [Admin\ActivityLogController::class, 'index'])->name('activity.index');
 });
+

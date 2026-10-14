@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Marketplace - GantinoID Store')
+@section('title', 'Marketplace - FastTopup Store')
 
 @section('content')
 <section class="page-banner">
@@ -32,7 +32,7 @@
     <div class="container">
         <div class="toolbar">
             <form method="GET" action="{{ route('marketplace.index') }}" class="searchbar">
-                <input type="text" name="q" aria-label="Cari produk marketplace" value="{{ $search }}" placeholder="Cari produk, skin, voucher…">
+                <input type="text" name="q" aria-label="Cari produk marketplace" value="{{ $search }}" placeholder="Cari produk, skin, voucherâ€¦">
             </form>
             <div class="chips">
                 <a href="{{ route('marketplace.index', $search ? ['q' => $search] : []) }}"
@@ -68,3 +68,4 @@
     </div>
 </section>
 @endsection
+

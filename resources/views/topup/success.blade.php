@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @php
     $status      = $transaction->status;
@@ -10,7 +10,7 @@
     $badge       = [$transaction->statusBadge(), $transaction->statusLabel()];
 @endphp
 
-@section('title', ($isSuccess ? 'Pesanan Selesai' : 'Status Pesanan') . ' - GantinoID Store')
+@section('title', ($isSuccess ? 'Pesanan Selesai' : 'Status Pesanan') . ' - FastTopup Store')
 
 @section('content')
 <section class="section">
@@ -202,3 +202,4 @@
     </div>
 </section>
 @endsection
+

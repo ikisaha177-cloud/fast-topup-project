@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', $product->name . ' - Marketplace - GantinoID Store')
+@section('title', $product->name . ' - Marketplace - FastTopup Store')
 
 @php
     // Gambar produk untuk meta share: pakai berkas yang benar-benar ada.
@@ -16,21 +16,21 @@
 @endphp
 
 @section('og_type', 'product')
-@section('og_title', $product->name . ' — GantinoID Store')
-@section('og_description', \Illuminate\Support\Str::limit($product->description ?: 'Item game berkualitas dengan pembayaran aman di GantinoID Store.', 150))
+@section('og_title', $product->name . ' â€” FastTopup Store')
+@section('og_description', \Illuminate\Support\Str::limit($product->description ?: 'Item game berkualitas dengan pembayaran aman di FastTopup Store.', 150))
 @section('og_image', $shareImage)
-@section('og_image_alt', $product->name . ' — GantinoID Store')
+@section('og_image_alt', $product->name . ' â€” FastTopup Store')
 
 @section('meta')
 @php
-    // aggregateRating hanya dikirim bila benar-benar ada ulasan nyata —
+    // aggregateRating hanya dikirim bila benar-benar ada ulasan nyata â€”
     // data terstruktur tidak boleh memuat rating karangan.
     $ratingSummary = $product->ratingSummary();
     $structuredData = [
         '@context' => 'https://schema.org',
         '@type' => 'Product',
         'name' => $product->name,
-        'description' => $product->description ?: 'Item game di GantinoID Store.',
+        'description' => $product->description ?: 'Item game di FastTopup Store.',
         'image' => $shareImage,
         'category' => $product->category ?: 'Item Game',
         'offers' => [
@@ -117,7 +117,7 @@
 
                     <div class="mt-16" style="display:flex; flex-direction:column; gap:8px;">
                         <div class="summary-row" style="padding:8px 0;">
-                            <span>Pembayaran</span><span>QRIS · E-Wallet · Transfer Bank</span>
+                            <span>Pembayaran</span><span>QRIS Â· E-Wallet Â· Transfer Bank</span>
                         </div>
                         <div class="summary-row" style="padding:8px 0; border-bottom:none;">
                             <span>Pengiriman item</span><span>Setelah pembayaran diverifikasi</span>
@@ -179,3 +179,4 @@
     </div>
 </section>
 @endsection
+

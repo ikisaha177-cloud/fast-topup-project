@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\Admin;
 
@@ -84,7 +84,7 @@ class ReportController extends Controller
             // BOM agar Excel membaca UTF-8 dengan benar.
             fwrite($handle, "\xEF\xBB\xBF");
 
-            fputcsv($handle, ['Laporan Penjualan GantinoID Store']);
+            fputcsv($handle, ['Laporan Penjualan FastTopup Store']);
             fputcsv($handle, ['Periode', $label]);
             fputcsv($handle, ['Filter Status', $status === 'semua' ? 'Semua' : OrderStatus::label($status)]);
             fputcsv($handle, []);
@@ -137,3 +137,4 @@ class ReportController extends Controller
         return [$type, $year, $month, $status];
     }
 }
+

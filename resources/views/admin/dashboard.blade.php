@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Dashboard Admin - GantinoID Store')
+@section('title', 'Dashboard Admin - FastTopup Store')
 
 @section('content')
 <section class="section">
@@ -66,7 +66,7 @@
                     @foreach($revenueSeries as $day)
                         <div class="chart-col">
                             <span class="chart-value">
-                                {{ $day['revenue'] > 0 ? 'Rp ' . number_format($day['revenue'] / 1000, 0, ',', '.') . 'k' : '—' }}
+                                {{ $day['revenue'] > 0 ? 'Rp ' . number_format($day['revenue'] / 1000, 0, ',', '.') . 'k' : 'â€”' }}
                             </span>
                             <div class="chart-bar" style="height:{{ max(4, round($day['revenue'] / $revenuePeak * 100)) }}%;"
                                  title="Rp {{ number_format($day['revenue'], 0, ',', '.') }}"></div>
@@ -139,3 +139,4 @@
     </div>
 </section>
 @endsection
+

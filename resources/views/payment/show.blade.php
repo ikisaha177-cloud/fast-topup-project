@@ -1,14 +1,14 @@
-@extends('layouts.gateway')
+﻿@extends('layouts.gateway')
 
 @php
     /**
-     * Portal pembayaran — satu halaman untuk tiga keadaan:
+     * Portal pembayaran â€” satu halaman untuk tiga keadaan:
      *   1. "payable" : instruksi pembayaran (QRIS / e-wallet / transfer bank)
      *                  + tombol "Saya Sudah Bayar".
      *   2. "receipt" : struk pembayaran yang bisa di-screenshot pembeli
      *                  sebagai bukti (muncul setelah menandai sudah bayar,
      *                  atau setelah pesanan selesai).
-     *   3. "closed"  : pesanan gagal/dibatalkan — tidak ada yang bisa dibayar.
+     *   3. "closed"  : pesanan gagal/dibatalkan â€” tidak ada yang bisa dibayar.
      *
      * Data $doc & $channel disusun oleh PaymentPortalController.
      */
@@ -18,7 +18,7 @@
     $stampAt = $doc['confirmed_at'] ?: $doc['created_at'];
 @endphp
 
-@section('title', ($state === 'receipt' ? 'Struk Pembayaran ' : 'Pembayaran ') . $doc['code'] . ' - GantinoID Pay')
+@section('title', ($state === 'receipt' ? 'Struk Pembayaran ' : 'Pembayaran ') . $doc['code'] . ' - FastTopup Pay')
 
 @section('gateway_back')
     <a href="{{ $backUrl }}" class="gateway-back">&larr; Kembali ke halaman pesanan</a>
@@ -71,8 +71,8 @@
             <div class="struk-head">
                 <img class="struk-logo" src="{{ asset('images/logo-mark.svg') }}" alt="" width="42" height="42">
                 <span>
-                    <span class="struk-brand">GantinoID Store</span><br>
-                    <span class="struk-brand-sub">Struk Pembayaran &middot; GantinoID Pay</span>
+                    <span class="struk-brand">FastTopup Store</span><br>
+                    <span class="struk-brand-sub">Struk Pembayaran &middot; FastTopup Pay</span>
                 </span>
             </div>
 
@@ -116,7 +116,7 @@
                             Potongan Promo
                             <small class="mono">{{ $doc['promo_code'] }}</small>
                         </span>
-                        <span class="mono discount-amount">− Rp {{ number_format($doc['discount'], 0, ',', '.') }}</span>
+                        <span class="mono discount-amount">âˆ’ Rp {{ number_format($doc['discount'], 0, ',', '.') }}</span>
                     </div>
                 @endif
             </div>
@@ -137,7 +137,7 @@
                 @endif
             </p>
             <p class="struk-sim">
-                Dokumen ini dihasilkan oleh portal pembayaran <strong>simulasi</strong> GantinoID —
+                Dokumen ini dihasilkan oleh portal pembayaran <strong>simulasi</strong> FastTopup â€”
                 tidak ada uang yang benar-benar berpindah.
             </p>
         </article>
@@ -231,3 +231,4 @@
     });
 </script>
 @endpush
+

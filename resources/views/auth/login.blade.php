@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Masuk - GantinoID Store')
+@section('title', 'Masuk - FastTopup Store')
 
 @section('content')
 <section class="section">
@@ -34,7 +34,7 @@
 
                         <div class="form-group">
                             <label class="form-label" for="password">Password</label>
-                            <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required>
                             @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
@@ -58,3 +58,4 @@
     </div>
 </section>
 @endsection
+

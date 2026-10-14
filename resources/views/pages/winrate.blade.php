@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Kalkulator Winrate MLBB Gratis - GantinoID Store')
+@section('title', 'Kalkulator Winrate MLBB Gratis - FastTopup Store')
 @section('canonical', route('page.winrate'))
 @section('og_title', 'Kalkulator Winrate MLBB Gratis')
 @section('og_description', 'Hitung winrate Mobile Legends kamu secara instan: masukkan jumlah menang dan kalah untuk tahu persentase winrate beserta ringkasan total pertandingan. Gratis, tanpa login.')
@@ -52,7 +52,7 @@
                     </div>
                 @else
                     <div class="winrate-hint">
-                        Hasil hitungan akan tampil di sini. Contoh: menang 120, kalah 80 → winrate 60%.
+                        Hasil hitungan akan tampil di sini. Contoh: menang 120, kalah 80 â†’ winrate 60%.
                     </div>
                 @endif
             </div>
@@ -64,13 +64,13 @@
                 <p>Contohnya bila kamu menang 120 kali dan kalah 80 kali: 120 &divide; 200 &times; 100% = <strong>60%</strong>. Angka yang sama persis bisa kamu dapatkan dari kalkulator di samping tanpa menghitung sendiri.</p>
 
                 <h2>Kenapa Winrate Penting?</h2>
-                <p>Winrate yang sehat menunjukkan konsistensi permainan, bukan cuma jumlah pertandingan. Umumnya winrate di atas 50% berarti kamu lebih sering menang daripada kalah, sedangkan 60% ke atas tergolong kuat untuk satu musim. Winrate bukan satu-satunya penentu rank — hero power dan poin bintang ikut menghitung — tapi angka ini gambaran paling cepat dari performamu.</p>
+                <p>Winrate yang sehat menunjukkan konsistensi permainan, bukan cuma jumlah pertandingan. Umumnya winrate di atas 50% berarti kamu lebih sering menang daripada kalah, sedangkan 60% ke atas tergolong kuat untuk satu musim. Winrate bukan satu-satunya penentu rank â€” hero power dan poin bintang ikut menghitung â€” tapi angka ini gambaran paling cepat dari performamu.</p>
 
                 <h2>Tips Menaikkan Winrate</h2>
                 <ul class="legal-steps">
                     <li>Mainkan role dan hero yang benar-benar kamu kuasai, bukan ikut-ikutan meta.</li>
                     <li>Push rank di jam bermain yang tenang dan hindari rentetan kekalahan beruntun.</li>
-                    <li>Perhatikan draft — komposisi tim yang seimbang menang lebih sering di early game.</li>
+                    <li>Perhatikan draft â€” komposisi tim yang seimbang menang lebih sering di early game.</li>
                     <li>Evaluasimu setelah tiap pertandingan kalah: objektif apa yang hilang, bukan cuma KDA.</li>
                 </ul>
 
@@ -84,3 +84,4 @@
     </div>
 </section>
 @endsection
+

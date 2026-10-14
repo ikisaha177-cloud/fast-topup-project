@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace Tests\Feature;
 
@@ -139,7 +139,7 @@ class VisualPolishTest extends TestCase
         $user = User::factory()->create();
 
         $welcome = (new WelcomeNotification())->toMail($user);
-        $this->assertSame(['noreply@example.test', 'GantinoID Store'], $welcome->from);
+        $this->assertSame(['noreply@example.test', 'FastTopup Store'], $welcome->from);
 
         $transaction = $this->makeTransaction($user);
         $notif = (new TransactionStatusChanged($transaction, 'Pembayaran diterima'))->toMail($user);
@@ -198,3 +198,4 @@ class VisualPolishTest extends TestCase
         ]);
     }
 }
+

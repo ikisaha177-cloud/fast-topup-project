@@ -1,8 +1,8 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Cara Order - GantinoID Store')
+@section('title', 'Cara Order - FastTopup Store')
 @section('canonical', route('page.how-to-order'))
-@section('og_title', 'Cara Order di GantinoID Store')
+@section('og_title', 'Cara Order di FastTopup Store')
 @section('og_description', 'Panduan langkah demi langkah top up game dan belanja marketplace: pilih produk, bayar, unggah bukti, lalu tunggu verifikasi admin.')
 
 @section('content')
@@ -12,7 +12,7 @@
     <div class="container">
         <span class="eyebrow">Bantuan</span>
         <h1>Cara Order</h1>
-        <p>Panduan singkat dari memilih produk sampai pesanan selesai — untuk top up game maupun marketplace.</p>
+        <p>Panduan singkat dari memilih produk sampai pesanan selesai â€” untuk top up game maupun marketplace.</p>
     </div>
 </section>
 
@@ -30,7 +30,7 @@
                     </li>
                     <li>
                         <strong>Isi data & pilih nominal.</strong> Masukkan User ID (dan Server ID bila diminta),
-                        lalu pilih nominal produk. Pastikan data sudah benar — pesanan yang sudah diproses
+                        lalu pilih nominal produk. Pastikan data sudah benar â€” pesanan yang sudah diproses
                         tidak dapat dibatalkan.
                     </li>
                     <li>
@@ -87,7 +87,7 @@
             <div class="card summary-card">
                 <h3>Butuh bantuan?</h3>
                 <p class="muted">Tim kami siap membantu pada hari kerja.</p>
-                <a href="mailto:support@gantinoid.test" class="btn btn-outline btn-block">Email Support</a>
+                <a href="mailto:support@FastTopup.test" class="btn btn-outline btn-block">Email Support</a>
                 <a href="{{ route('home') }}#faq" class="btn btn-ghost btn-block mt-8">Pertanyaan Umum</a>
                 <p class="muted mt-16 mb-0" style="font-size:12.5px;">Terakhir diperbarui: {{ \Carbon\Carbon::parse($updatedAt)->translatedFormat('d F Y') }}</p>
             </div>
@@ -95,3 +95,4 @@
     </div>
 </section>
 @endsection
+

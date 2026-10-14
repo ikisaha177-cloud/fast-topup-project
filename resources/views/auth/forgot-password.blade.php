@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
-@section('title', 'Lupa Password - GantinoID Store')
+@section('title', 'Lupa Password - FastTopup Store')
 
 @section('content')
 <section class="section">
@@ -29,3 +29,4 @@
     </div>
 </section>
 @endsection
+
