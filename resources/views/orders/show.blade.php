@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Detail Pesanan ' . $order->order_code . ' - FastTopup Store')
 

@@ -11,7 +11,7 @@
         <div class="promo-input">
             <input type="text" id="promo_code" name="code" class="form-control"
                    value="{{ old('promo_code', $code ?? '') }}"
-                   placeholder="Contoh: GANTINO10"
+                   placeholder="Contoh: FASTTOPUP10"
                    maxlength="40" autocomplete="off" spellcheck="false"
                    {{ $code ? 'readonly' : '' }}>
             @if($code)

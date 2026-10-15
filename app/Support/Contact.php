@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace App\Support;
 
@@ -18,7 +18,7 @@ class Contact
 
     /**
      * Tautan wa.me dengan pesan pembuka. Mengembalikan null bila nomor
-     * belum diisi â€” tautan rusak tidak boleh ditampilkan ke pengunjung.
+     * belum diisi — tautan rusak tidak boleh ditampilkan ke pengunjung.
      */
     public static function whatsappUrl(string $context = ''): ?string
     {

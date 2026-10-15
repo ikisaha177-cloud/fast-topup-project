@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -20,7 +20,7 @@
 </head>
 <body class="gateway-body">
     @php
-        // Host yang menampung portal â€” ditampilkan sebagai identitas "situs
+        // Host yang menampung portal — ditampilkan sebagai identitas "situs
         // pembayaran" agar pembeli tahu ia sedang di luar toko.
         $gatewayHost = parse_url(config('app.url'), PHP_URL_HOST) ?: request()->getHost();
     @endphp
@@ -58,7 +58,7 @@
         <div class="container">
             <p class="gateway-sim">
                 @include('partials.icon', ['name' => 'shield', 'size' => 14])
-                <span>Portal pembayaran <strong>simulasi</strong> â€” tidak ada uang yang benar-benar berpindah. Tidak ada data kartu yang diminta.</span>
+                <span>Portal pembayaran <strong>simulasi</strong> — tidak ada uang yang benar-benar berpindah. Tidak ada data kartu yang diminta.</span>
             </p>
             <p class="gateway-host">
                 <span class="mono">{{ $gatewayHost }}</span>

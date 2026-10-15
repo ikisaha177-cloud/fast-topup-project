@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Final three concepts for FastTop-up Store (Phase 4/5: build in SVG, black first).
+Final three concepts for FastTopup Store (Phase 4/5: build in SVG, black first).
 
 Three different mark types:
   A  letterform    - "Fast-F": geometric F whose arms end in 45 deg cuts (speed)

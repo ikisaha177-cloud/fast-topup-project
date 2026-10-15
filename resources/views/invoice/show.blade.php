@@ -1,8 +1,8 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @php
     /**
-     * Halaman invoice â€” satu dokumen untuk transaksi top up & pesanan
+     * Halaman invoice — satu dokumen untuk transaksi top up & pesanan
      * marketplace. $doc disusun oleh InvoiceController.
      */
     $isPaid = ! empty($doc['paid']);
@@ -17,7 +17,7 @@
 @push('styles')
 <style>
     /* Invoice dicetak/di-screenshot di atas kertas putih agar hasilnya rapi
-       dan kontras â€” terlepas dari tema gelap aplikasi. */
+       dan kontras — terlepas dari tema gelap aplikasi. */
     .invoice-wrap { max-width: 820px; margin: 0 auto; }
 
     .invoice-actions {
@@ -383,7 +383,7 @@
                 @if(($doc['discount'] ?? 0) > 0)
                     <div class="invoice-discount">
                         <span>Potongan promo <span class="mono">{{ $doc['promo_code'] }}</span></span>
-                        <span class="invoice-discount-value">âˆ’ Rp {{ number_format($doc['discount'], 0, ',', '.') }}</span>
+                        <span class="invoice-discount-value">− Rp {{ number_format($doc['discount'], 0, ',', '.') }}</span>
                     </div>
                 @endif
 

@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Terlalu Banyak Permintaan - FastTopup Store')
 @section('meta')

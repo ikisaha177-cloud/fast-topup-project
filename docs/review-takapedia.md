@@ -1,8 +1,8 @@
-﻿# Review System Takapedia & Gap Analysis vs FastTopup Store
+# Review System Takapedia & Gap Analysis vs FastTopup Store
 
 > **Tanggal review:** 13 Oktober 2026
 > **Reviewer:** internal (CodeBuddy)
-> **Metode:** arsip Wayback Machine (capture 2023â€“2026), CDX URL inventory, analisis DOM/asset,
+> **Metode:** arsip Wayback Machine (capture 2023–2026), CDX URL inventory, analisis DOM/asset,
 > dokumen invoice publik, dan hasil pencarian web. Situs live memblokir akses otomatis
 > (Cloudflare challenge), sehingga analisis bersandar pada snapshot arsip + bukti aset.
 > Semua temuan di bawah bisa diverifikasi ulang; yang berupa opini ditandai *(penilaian)*.
@@ -12,7 +12,7 @@
 ## 1. Ringkasan Eksekutif
 
 Takapedia adalah platform top up game asal Indonesia yang memposisikan diri sebagai
-*"Store Specialist Mobile Legends No.1 â€” Murah, Aman, Terpercaya, Legal 100%, Open 24 Jam"*.
+*"Store Specialist Mobile Legends No.1 — Murah, Aman, Terpercaya, Legal 100%, Open 24 Jam"*.
 
 **Tiga hal yang paling penting untuk kita ambil:**
 
@@ -43,7 +43,7 @@ Prioritas kita bukan meniru 190 game, tapi mengambil **mekanisme** yang terbukti
 | Kanal dukungan | WhatsApp, Instagram, Discord, TikTok, YouTube, email |
 | Konten | Subdomain blog terpisah (`news.takapedia.com`) |
 
-**Catatan penting:** Takapedia juga menjual **jasa**, bukan hanya barang digital â€”
+**Catatan penting:** Takapedia juga menjual **jasa**, bukan hanya barang digital —
 joki rank, joki MCL, video montage, sewa squad verified, room tournament, bahkan kelas
 "Belajar Bareng". Ini kategori produk yang kita belum sentuh sama sekali.
 
@@ -51,14 +51,14 @@ joki rank, joki MCL, video montage, sewa squad verified, room tournament, bahkan
 
 ## 3. Arsitektur & Tech Stack
 
-### 3.1 Evolusi besar: Laravel â†’ Next.js
+### 3.1 Evolusi besar: Laravel → Next.js
 
 Ini temuan paling struktural dari arsip:
 
 | Era | Stack | Bukti |
 |---|---|---|
-| 2021â€“2023 | **Laravel + Bootstrap 4 + jQuery 3.5.1** | `assets/js/jquery-3.5.1.min.js`, `assets/vendor/bootstrap/*`, `assets/vendor/DataTables/1.10.22`, `assets/vendor/fontawesome`, `assets/vendor/alertifyjs`, `assets/scss/app.css`, `assets/admin/*` |
-| 2024â€“sekarang | **Next.js (React, pages router)** | `_next/static/chunks/pages/_app-*.js`, `_buildManifest.js`, `_ssgManifest.js`, `/_next/image?url=â€¦&w=&q=` |
+| 2021–2023 | **Laravel + Bootstrap 4 + jQuery 3.5.1** | `assets/js/jquery-3.5.1.min.js`, `assets/vendor/bootstrap/*`, `assets/vendor/DataTables/1.10.22`, `assets/vendor/fontawesome`, `assets/vendor/alertifyjs`, `assets/scss/app.css`, `assets/admin/*` |
+| 2024–sekarang | **Next.js (React, pages router)** | `_next/static/chunks/pages/_app-*.js`, `_buildManifest.js`, `_ssgManifest.js`, `/_next/image?url=…&w=&q=` |
 
 Bukti lain era Next.js: font di-host sendiri (`_next/static/media/*.woff2`, pola `next/font`),
 flag negara dari `react-circle-flags.pages.dev`, dan i18n berbasis path.
@@ -71,19 +71,19 @@ flag negara dari `react-circle-flags.pages.dev`, dan i18n berbasis path.
 - **Ketergantungan pihak ketiga:** sebagian aset dilayani dari `cdn.bangjeff.com` dan
   `client-cdn.bangjeff.com`, dan footer menautkan `venderpedia.com`.
   *(penilaian: mengindikasikan sebagian platform/inventaris berbagi infrastruktur dengan
-  penyedia top-up lain â€” bukan dibangun 100% dari nol.)*
+  penyedia top-up lain — bukan dibangun 100% dari nol.)*
 - **API pencarian:** endpoint `api/search` (terarsip sebagai 403 untuk crawler).
-- **Blog terpisah:** `news.takapedia.com` â€” pemisahan konten marketing dari aplikasi transaksi.
+- **Blog terpisah:** `news.takapedia.com` — pemisahan konten marketing dari aplikasi transaksi.
 
 ### 3.3 Isu higiene yang terlihat di arsip
 
 - Slug produk rusak/tidak konsisten: `snowbreak-:-containment-zone` (mengandung `:` di URL),
   `netfilx` (salah ketik Netflix), `goddes-of-victory-nikke` (seharusnya "Goddess"),
   `play-station-gc`.
-- Aset vendor 404 di era lama: `assets/vendor/fontawesome/webfonts/*.ttf` dan `*.woff2` â†’ **404**.
+- Aset vendor 404 di era lama: `assets/vendor/fontawesome/webfonts/*.ttf` dan `*.woff2` → **404**.
 - Migrasi Next.js meninggalkan URL lama mati (`/order/{slug}`, `/status`, `/hitungwr`,
-  `/hitungpointmw`) â€” menandakan churn SEO dan potensi kehilangan backlink.
-- Redirect aneh dari bot/probe: `/%0A`, `/\n\nâ™ ` â†’ 301/404.
+  `/hitungpointmw`) — menandakan churn SEO dan potensi kehilangan backlink.
+- Redirect aneh dari bot/probe: `/%0A`, `/\n\n♠` → 301/404.
 
 ---
 
@@ -119,27 +119,27 @@ flag negara dari `react-circle-flags.pages.dev`, dan i18n berbasis path.
 
 Dari halaman produk (snapshot Jan 2026), alurnya **6 langkah dalam satu halaman**:
 
-1. **Masukkan Data Akun** â€” ID, Server
+1. **Masukkan Data Akun** — ID, Server
 2. **Pilih Nominal**
 3. **Masukkan Jumlah Pembelian**
-4. **Kode Promo** â€” dengan tombol "Gunakan" + "Pakai Promo Yang Tersedia"
+4. **Kode Promo** — dengan tombol "Gunakan" + "Pakai Promo Yang Tersedia"
 5. **Pilih Pembayaran**
-6. **Detail Kontak** â€” No. WhatsApp wajib, dengan peringatan eksplisit:
+6. **Detail Kontak** — No. WhatsApp wajib, dengan peringatan eksplisit:
    *"Nomor ini akan dihubungi jika terjadi masalah"* dan *"Tulis tanpa angka 0 di depan"*
 
-Lalu tombol **"Pesan Sekarang!"** â†’ halaman invoice.
+Lalu tombol **"Pesan Sekarang!"** → halaman invoice.
 
 **Kedaluwarsa pembayaran:** dokumen invoice publik menunjukkan hitungan mundur
 **2 jam 59 menit 22 detik** sebelum pesanan kedaluwarsa.
 
-**Guest checkout diizinkan** â€” tidak wajib punya akun (sama seperti kita).
+**Guest checkout diizinkan** — tidak wajib punya akun (sama seperti kita).
 
 **Elemen kepercayaan di halaman produk:** badge animasi *Proses Cepat*, *Layanan Chat 24/7*,
 *Pembayaran Aman*, plus panel "Jaminan Layanan": 24 Jam, Pembayaran Aman & Terpercaya,
 Proses Cepat & Otomatis.
 
-**Struktur halaman produk:** galeri/banner â†’ panel order â†’ **Deskripsi panjang** â†’
-**Ulasan & rating** â†’ **FAQ akordeon** (9 pertanyaan) â†’ "Butuh Bantuan?" â†’ footer raksasa.
+**Struktur halaman produk:** galeri/banner → panel order → **Deskripsi panjang** →
+**Ulasan & rating** → **FAQ akordeon** (9 pertanyaan) → "Butuh Bantuan?" → footer raksasa.
 
 ---
 
@@ -151,31 +151,31 @@ Dibuktikan dari nama berkas logo di arsip:
 |---|---|
 | **VA Bank** (11) | BCA, BNI, BRI (BRIVA), Mandiri, CIMB, Permata, Maybank, Danamon, Sinarmas, BNC |
 | **E-wallet** (5) | DANA, GoPay, OVO, ShopeePay, LinkAja |
-| **QRIS** | QRIS â€” logo bertanda **`qris-ipaymu.png`** â†’ gateway **iPaymu** |
+| **QRIS** | QRIS — logo bertanda **`qris-ipaymu.png`** → gateway **iPaymu** |
 | **Retail** (2) | Alfamart, Indomaret |
 | **Voucher/GC** | Google Play, Steam, PlayStation, Roblox, Point Blank, Vidio, Fortnite V-Bucks, dll. |
 
-**Pembanding kita:** `QRIS`, `Bank Transfer`, `DANA`, `GoPay`, `OVO` â€” dan semuanya masih
+**Pembanding kita:** `QRIS`, `Bank Transfer`, `DANA`, `GoPay`, `OVO` — dan semuanya masih
 **simulasi** (nomor VA/e-wallet deterministik dari kode transaksi, tanpa jaringan).
 Kita belum punya kanal **retail** (Alfamart/Indomaret) yang justru penting untuk
 segmen yang tidak punya m-banking.
 
 ---
 
-## 7. Trust & Social Proof â€” dan yang Rusak
+## 7. Trust & Social Proof — dan yang Rusak
 
 ### Yang mereka lakukan dengan benar
 - **Feed transaksi nyata** di `/invoices`: tabel `Tanggal | Nomor Invoice | No. Handphone | Harga | Status`.
 - **Ulasan dari pembeli nyata** di beranda, dengan identitas disamarkan
-  (`081*****453`, `yuk*****@â€¦`). Contoh nyata yang terarsip:
-  *"mnatab lery cepat sekali langanan top up dimari"* â€” bahasa asli pengguna, bukan copywriter.
+  (`081*****453`, `yuk*****@…`). Contoh nyata yang terarsip:
+  *"mnatab lery cepat sekali langanan top up dimari"* — bahasa asli pengguna, bukan copywriter.
 - **Rating hanya dari pembeli** (di halaman produk muncul *"Berdasarkan total 0 rating"*).
 
 ### Yang rusak *(temuan penting)*
 - Halaman **`/id-id/reviews` kosong**: hanya tulisan *"Tidak Ada Lagi yang Dapat Dimuat"* (capture Okt 2025).
-- Widget rating produk menampilkan **"0.0 / 5.0 â€” Dari 0 ulasan"** (capture Jan 2026),
+- Widget rating produk menampilkan **"0.0 / 5.0 — Dari 0 ulasan"** (capture Jan 2026),
   padahal copy-nya berbunyi *"Pelanggan merasa puas dengan produk ini."*
-  â†’ **klaim kepuasan tanpa satu pun ulasan.** Ini persis jenis klaim kosong yang kita hindari.
+  → **klaim kepuasan tanpa satu pun ulasan.** Ini persis jenis klaim kosong yang kita hindari.
 - Footer **keyword-stuffed**: satu paragraf ~1.000 karakter mengulang
   "Termurah / Aman / Terpercaya / Legal 100% / Open 24 Jam / Sahabat Para Gamers".
   Terlihat seperti spam SEO, dan dibaca manusia jadi melelahkan.
@@ -184,13 +184,13 @@ segmen yang tidak punya m-banking.
 
 ## 8. Kelebihan Takapedia
 
-1. **Luas katalog** â€” ~190 produk, mencakup game mobile, PC, konsol, voucher, pulsa/data, token PLN.
-2. **Lebar kanal bayar** â€” retail + VA lengkap menjangkau pengguna tanpa rekening bank.
-3. **Mekanisme komersial matang** â€” kode promo, saldo, afiliasi, leaderboard.
-4. **Konten & SEO** â€” blog terpisah, kalkulator gratis, deskripsi panjang per produk, FAQ per produk.
-5. **Dukungan multi-kanal** â€” WhatsApp sebagai kanal utama (sangat relevan untuk pasar Indonesia).
-6. **Social proof berbasis data nyata** (feed transaksi & ulasan asli) â€” arahnya benar.
-7. **Halaman produk satu-halaman** â€” mengurangi friksi: pilih nominal, promo, bayar, isi kontak
+1. **Luas katalog** — ~190 produk, mencakup game mobile, PC, konsol, voucher, pulsa/data, token PLN.
+2. **Lebar kanal bayar** — retail + VA lengkap menjangkau pengguna tanpa rekening bank.
+3. **Mekanisme komersial matang** — kode promo, saldo, afiliasi, leaderboard.
+4. **Konten & SEO** — blog terpisah, kalkulator gratis, deskripsi panjang per produk, FAQ per produk.
+5. **Dukungan multi-kanal** — WhatsApp sebagai kanal utama (sangat relevan untuk pasar Indonesia).
+6. **Social proof berbasis data nyata** (feed transaksi & ulasan asli) — arahnya benar.
+7. **Halaman produk satu-halaman** — mengurangi friksi: pilih nominal, promo, bayar, isi kontak
    tanpa pindah halaman.
 
 ---
@@ -202,7 +202,7 @@ segmen yang tidak punya m-banking.
 | 1 | Ulasan & rating praktis tidak berfungsi | `/reviews` kosong; produk "0 ulasan" tapi copy mengklaim kepuasan |
 | 2 | Higiene data buruk | Slug `netfilx`, `goddes-of-victory-nikke`, `snowbreak-:-containment-zone` |
 | 3 | Aksesibilitas lemah | Tautan ikon tanpa label: teks alt bocor sebagai `Iconly/Two-tone/Add UserDaftar` |
-| 4 | Aset rusak | `assets/vendor/fontawesome/webfonts/*.ttf` â†’ 404 |
+| 4 | Aset rusak | `assets/vendor/fontawesome/webfonts/*.ttf` → 404 |
 | 5 | Churn URL saat migrasi | URL lama `/order/{slug}`, `/status`, `/hitungwr` mati setelah pindah ke Next.js |
 | 6 | Blokir crawler agresif | Cloudflare challenge menghalangi crawler & pengguna sah |
 | 7 | Footer spam kata kunci | ~1.000 karakter pengulangan klaim |
@@ -258,7 +258,7 @@ dan kejujuran data*. Strategi paling masuk akal: **adopsi mekanisme komersial me
 
 ## 11. Roadmap Prioritas
 
-### P0 â€” berdampak tinggi, sejalan dengan prinsip kita
+### P0 — berdampak tinggi, sejalan dengan prinsip kita
 
 1. **Kode promo / voucher**
    - Tabel `promo_codes` (tipe `percent`/`fixed`, `min_spend`, `max_discount`, kuota,
@@ -269,12 +269,12 @@ dan kejujuran data*. Strategi paling masuk akal: **adopsi mekanisme komersial me
 2. **Kedaluwarsa pembayaran + auto-batal (lazy expiry)**
    - Kolom `expires_at`; pesanan `pending` yang lewat batas dibatalkan otomatis
      **saat diakses** (tanpa cron), stok dikembalikan lewat jalur service yang sudah ada.
-   - Hitungan mundur di portal & halaman sukses â€” jujur, karena benar-benar berlaku.
+   - Hitungan mundur di portal & halaman sukses — jujur, karena benar-benar berlaku.
 
 3. **Ulasan & rating dari pembelian terverifikasi**
    - Hanya pembeli dengan pesanan **Selesai** yang boleh mengulas (1 ulasan per pesanan).
    - Rating agregat dihitung dari ulasan nyata; **produk tanpa ulasan jujur menampilkan
-     "Belum ada ulasan"** â€” bukan "0.0" palsu.
+     "Belum ada ulasan"** — bukan "0.0" palsu.
 
 4. **Kanal dukungan WhatsApp + FAQ per produk**
    - Tombol WA dari konfigurasi (tanpa hardcode), FAQ akordeon per game (data terstruktur).
@@ -283,31 +283,31 @@ dan kejujuran data*. Strategi paling masuk akal: **adopsi mekanisme komersial me
 
 | # | Item | Status | Bukti |
 |---|------|--------|-------|
-| 1 | Kode promo / voucher | âœ… **selesai** | `promo_codes` + `PromoService` + admin CRUD + 30 test (`tests/Feature/PromoCodeTest.php`) |
-| 2 | Kedaluwarsa pembayaran + auto-batal | âœ… **selesai** | kolom `expires_at`, `PaymentWindow`, `expireIfDue()`/`expireOverdue()`, jejak `confirmation_source=expiry`, hitungan mundur di halaman sukses & portal, 23 test (`tests/Feature/PaymentExpiryTest.php`) |
-| 3 | Ulasan terverifikasi | âœ… **selesai** | tabel `reviews` (unik per pembeli+produk), `ReviewController@store`, bagian ulasan di halaman produk + kartu katalog, 24 test (`tests/Feature/ReviewTest.php`) |
-| 4 | WhatsApp CS + FAQ per produk | âœ… **selesai** | `config/store.php` + `App\Support\Contact`, kolom JSON `game_titles.faqs`, FAQ akordeon per game di halaman top up, tombol WA di header/FAQ/footer, 7 test (`tests/Feature/StoreHelpTest.php`) |
+| 1 | Kode promo / voucher | ✅ **selesai** | `promo_codes` + `PromoService` + admin CRUD + 30 test (`tests/Feature/PromoCodeTest.php`) |
+| 2 | Kedaluwarsa pembayaran + auto-batal | ✅ **selesai** | kolom `expires_at`, `PaymentWindow`, `expireIfDue()`/`expireOverdue()`, jejak `confirmation_source=expiry`, hitungan mundur di halaman sukses & portal, 23 test (`tests/Feature/PaymentExpiryTest.php`) |
+| 3 | Ulasan terverifikasi | ✅ **selesai** | tabel `reviews` (unik per pembeli+produk), `ReviewController@store`, bagian ulasan di halaman produk + kartu katalog, 24 test (`tests/Feature/ReviewTest.php`) |
+| 4 | WhatsApp CS + FAQ per produk | ✅ **selesai** | `config/store.php` + `App\Support\Contact`, kolom JSON `game_titles.faqs`, FAQ akordeon per game di halaman top up, tombol WA di header/FAQ/footer, 7 test (`tests/Feature/StoreHelpTest.php`) |
 
 Catatan implementasi #4 (dengan alasan):
 - **Nomor WA dibaca dari `config/store.php`** (`STORE_WHATSAPP` di `.env`), bukan hardcode di view.
-  `Contact::whatsappUrl()` mengembalikan `null` bila nomor kosong â€” tautan rusak tidak pernah
+  `Contact::whatsappUrl()` mengembalikan `null` bila nomor kosong — tautan rusak tidak pernah
   ditampilkan (tombol hilang otomatis, diuji tes).
 - **FAQ per game disimpan sebagai JSON terstruktur** (`question`/`answer`) di kolom
   `game_titles.faqs`, bukan teks HTML mentah. `GameTitle::faqItems()` membuang entri korup
   (bentuk salah, kosong, tag HTML) sebelum dirender; output tetap aman lewat escape Blade `{{ }}`.
-- **Akordeon memakai `<details>` native + kelas `.faq-item` yang sudah ada** â€” tanpa JavaScript,
+- **Akordeon memakai `<details>` native + kelas `.faq-item` yang sudah ada** — tanpa JavaScript,
   tanpa CSS baru.
 - **FAQ hanya di halaman top up per game** (bukan per produk marketplace): pertanyaan pembeli
   top up bersifat per-game (region, User ID, durasi), sementara halaman produk marketplace tidak
-  punya padanan FAQ-nya â€” batas scope yang disengaja, bukan kelalaian.
+  punya padanan FAQ-nya — batas scope yang disengaja, bukan kelalaian.
 
 Catatan implementasi #2 (menyimpang dari rencana awal, dengan alasan):
 - Pembatalan otomatis ditandai lewat **`confirmation_source = expiry`** (konstanta baru
   `OrderStatus::SOURCE_EXPIRY`) plus `failure_reason`, bukan kolom `expired_at` terpisah. Satu kolom
   yang sudah ada sudah cukup untuk membedakan "dibatalkan pembeli" (kolom kosong) dari "dibatalkan
-  sistem" (kolom terisi) â€” tanpa menambah kolom yang hanya dipakai sekali baca.
+  sistem" (kolom terisi) — tanpa menambah kolom yang hanya dipakai sekali baca.
 - Pesanan yang pembelinya **sudah menandai "sudah bayar" dikecualikan** dari auto-batal. Rencana
-  awal menyebut semua `pending`; mengetatkan ini lebih jujur karena uang mungkin sudah berpindah â€”
+  awal menyebut semua `pending`; mengetatkan ini lebih jujur karena uang mungkin sudah berpindah —
   keputusannya milik admin, bukan jam.
 - **Buka ulang oleh admin memulai jendela bayar baru.** Tanpa ini, pesanan yang dibuka kembali akan
   langsung kedaluwarsa lagi pada halaman berikutnya.
@@ -317,60 +317,60 @@ Catatan implementasi #2 (menyimpang dari rencana awal, dengan alasan):
 Catatan implementasi #3 (dengan alasan):
 - **Skema: ulasan hanya untuk produk marketplace**, tanpa tabel polimorfik. Alasannya jujur: halaman
   `topup/show` adalah halaman per-**Game** (grid radio nominal), jadi `Product` (nominal top up) tidak
-  punya halaman detail sama sekali â€” ulasan top up tidak punya tempat tampil. Ini **batas scope yang
+  punya halaman detail sama sekali — ulasan top up tidak punya tempat tampil. Ini **batas scope yang
   disengaja**, bukan kelalaian: kalau suatu saat tiap nominal punya halaman sendiri, migrasinya lewat
   kolom `reviewable_type`/`reviewable_id` + memindahkan URL detail.
 - **Kunci unik `(user_id, marketplace_product_id)`**, lebih ketat dari rencana awal "1 ulasan per
-  pesanan". Konsekuensinya: pembelian berulang tidak menaikkan rata-rata rating lewat suara ganda â€”
+  pesanan". Konsekuensinya: pembelian berulang tidak menaikkan rata-rata rating lewat suara ganda —
   rata-rata selalu dihitung dari jumlah pembeli yang berbeda, bukan jumlah pesanan. Kiriman ulang
   berfungsi sebagai **perbarui** (`updateOrCreate`).
 - **Bukti pembelian tersimpan di kolom `marketplace_order_id`**, bukan cuma disimpulkan dari status.
-  Karena itu saat admin **membatalkan konfirmasi** (`success â†’ failed`), `MarketplaceOrderService`
-  menghapus ulasan `WHERE marketplace_order_id = order.id` saja â€” dasar klaim "Pembelian terverifikasi"
+  Karena itu saat admin **membatalkan konfirmasi** (`success → failed`), `MarketplaceOrderService`
+  menghapus ulasan `WHERE marketplace_order_id = order.id` saja — dasar klaim "Pembelian terverifikasi"
   hilang bersama pesanannya, sementara ulasan dari pesanan lain milik pembeli yang sama tetap utuh.
 - **Tidak ada badge rating di kartu katalog sebelum ada ulasan** (dan tidak pernah ada angka palsu).
   Semua angka datang dari `withCount('reviews')->withAvg('reviews','rating')`; tanpa baris di tabel
   hasilnya `null`, lalu halaman menampilkan **"Belum ada ulasan"**, bukan "0.0".
-- **Nama penulis disamarkan** ("Budi Santoso" â†’ "Budi S.") karena halaman produk bisa dibuka siapa
+- **Nama penulis disamarkan** ("Budi Santoso" → "Budi S.") karena halaman produk bisa dibuka siapa
   saja tanpa login. Formulir ulasan hanya muncul di halaman produk ketika pengunjung benar-benar punya
-  pesanan **Selesai** atas produk itu (`$myOrder` di `MarketplaceController::show`) â€” jadi tidak ada
+  pesanan **Selesai** atas produk itu (`$myOrder` di `MarketplaceController::show`) — jadi tidak ada
   tombol yang menyesatkan.
 - **Batas scope yang ditunda ke P1:** moderasi/admin approve, notifikasi ke penjual, dan ulasan untuk
   produk top up. Ketiganya sengaja tidak dikerjakan sekarang, bukan terlewat.
 
-### P1 â€” nilai jelas, biaya sedang
+### P1 — nilai jelas, biaya sedang
 
-5. Perluas kanal bayar di portal: **Alfamart/Indomaret** + tambahan VA bank (tetap simulasi, dilabeli jujur) â€” âœ… **selesai**: 9 metode (QRIS, 3 e-wallet, Bank Transfer, BCA VA, Mandiri VA, Alfamart, Indomaret).
-6. Feed **"aktivitas terbaru"** publik dengan penyamaran identitas â€” âœ… **selesai**: `ActivityFeed` di halaman marketplace (ulasan + pesanan sukses, nama disamarkan, waktu relatif Indonesia).
-7. **Kalkulator** gratis (winrate MLBB) sebagai mesin trafik organik â€” âœ… **selesai**: `/kalkulator-winrate-mlbb` (`PageController::winrate`), hasil lewat query string (bisa dibagikan), validasi server, tautan footer + sitemap.
+5. Perluas kanal bayar di portal: **Alfamart/Indomaret** + tambahan VA bank (tetap simulasi, dilabeli jujur) — ✅ **selesai**: 9 metode (QRIS, 3 e-wallet, Bank Transfer, BCA VA, Mandiri VA, Alfamart, Indomaret).
+6. Feed **"aktivitas terbaru"** publik dengan penyamaran identitas — ✅ **selesai**: `ActivityFeed` di halaman marketplace (ulasan + pesanan sukses, nama disamarkan, waktu relatif Indonesia).
+7. **Kalkulator** gratis (winrate MLBB) sebagai mesin trafik organik — ✅ **selesai**: `/kalkulator-winrate-mlbb` (`PageController::winrate`), hasil lewat query string (bisa dibagikan), validasi server, tautan footer + sitemap.
 
-### P2 â€” ekspansi
+### P2 — ekspansi
 
 8. Sistem **saldo** (mutasi + isi ulang) dan **program afiliasi**.
 9. **Leaderboard** bulanan.
 10. Kategori **jasa** (joki/sewa) sebagai jenis produk baru.
 
-### Audit lanjutan â€” pengerasan produksi (bukan bagian roadmap Takapedia)
+### Audit lanjutan — pengerasan produksi (bukan bagian roadmap Takapedia)
 
-Setelah roadmap P0â€“P1 tuntas, dilakukan audit "kesiapan produksi". Temuan &
+Setelah roadmap P0–P1 tuntas, dilakukan audit "kesiapan produksi". Temuan &
 tindak lanjut:
 
 | # | Temuan | Status |
 |---|--------|--------|
-| A1 | Aset tanpa cache busting (`style.css`) | âœ… `?v=ASSET_VERSION` |
-| A2 | Tanpa HTTPS enforcement / cookie `secure` | âœ… `URL::forceScheme` di produksi + dokumentasi `.env` |
-| A3 | Tanpa header keamanan (clickjacking, CSP) | âœ… middleware `SecurityHeaders` (CSP, X-Frame-Options, HSTS, dll) |
-| A4 | `TrustProxies` kosong â†’ IP asli hilang di belakang proxy | âœ… `$proxies = '*'` |
-| A5 | Dump DB (`db_topup_market.sql`) ikut ter-commit | âœ… dihapus dari tracking + `.gitignore` |
-| A6 | Invoice/portal bisa terindeks mesin pencari | âœ… `noindex` pada invoice (+ portal sudah) |
-| A7 | Kedaluwarsa pesanan hanya "lazy" (stok nyangkut bila sepi) | âœ… command `payments:expire` + jadwal tiap 5 menit |
-| A8 | `lastmod` sitemap selalu `now()` (diabaikan Google) | âœ… tanggal rilis tetap |
-| B9 | Halaman error 429 & 503 belum ada | âœ… ditambahkan |
-| B12 | Verifikasi email belum ada meski `MustVerifyEmail` diimpor | âœ… route + controller + halaman |
-| B13 | Rate limit tipis (ulasan, promo, klaim bayar, checkout) | âœ… limiter `reviews`/`promo`/`payments`/`checkout` |
-| B15 | Tombol bayar rawan klik ganda | âœ… `data-submit-once` (disable + "Memprosesâ€¦") |
-| B11/B16 | Canonical URL & health check | âœ… `<link rel="canonical">` + `GET /up` |
-| â€” | Dokumentasi deploy | âœ… `docs/deployment.md` (Nginx, cron, cache) |
+| A1 | Aset tanpa cache busting (`style.css`) | ✅ `?v=ASSET_VERSION` |
+| A2 | Tanpa HTTPS enforcement / cookie `secure` | ✅ `URL::forceScheme` di produksi + dokumentasi `.env` |
+| A3 | Tanpa header keamanan (clickjacking, CSP) | ✅ middleware `SecurityHeaders` (CSP, X-Frame-Options, HSTS, dll) |
+| A4 | `TrustProxies` kosong → IP asli hilang di belakang proxy | ✅ `$proxies = '*'` |
+| A5 | Dump DB (`db_topup_market.sql`) ikut ter-commit | ✅ dihapus dari tracking + `.gitignore` |
+| A6 | Invoice/portal bisa terindeks mesin pencari | ✅ `noindex` pada invoice (+ portal sudah) |
+| A7 | Kedaluwarsa pesanan hanya "lazy" (stok nyangkut bila sepi) | ✅ command `payments:expire` + jadwal tiap 5 menit |
+| A8 | `lastmod` sitemap selalu `now()` (diabaikan Google) | ✅ tanggal rilis tetap |
+| B9 | Halaman error 429 & 503 belum ada | ✅ ditambahkan |
+| B12 | Verifikasi email belum ada meski `MustVerifyEmail` diimpor | ✅ route + controller + halaman |
+| B13 | Rate limit tipis (ulasan, promo, klaim bayar, checkout) | ✅ limiter `reviews`/`promo`/`payments`/`checkout` |
+| B15 | Tombol bayar rawan klik ganda | ✅ `data-submit-once` (disable + "Memproses…") |
+| B11/B16 | Canonical URL & health check | ✅ `<link rel="canonical">` + `GET /up` |
+| — | Dokumentasi deploy | ✅ `docs/deployment.md` (Nginx, cron, cache) |
 
 Sisa (opsional/belum): analytics + verifikasi Search Console, IP allowlist webhook,
 structured data `Product`/`BreadcrumbList` lebih luas, dan item P2 di atas.
@@ -379,7 +379,7 @@ structured data `Product`/`BreadcrumbList` lebih luas, dan item P2 di atas.
 
 ## 12. Catatan Metodologi & Keterbatasan
 
-- Situs live **memblokir akses otomatis** (Cloudflare challenge) â€” bahkan via browser
+- Situs live **memblokir akses otomatis** (Cloudflare challenge) — bahkan via browser
   sungguhan headless. Analisis memakai snapshot Wayback Machine (2023, 2025, 2026).
 - Karena snapshot bersifat titik-waktu, **fitur bisa sudah berubah** di situs live.
   Temuan yang rapuh (mis. ulasan kosong) sebaiknya diverifikasi manual sebelum dijadikan dasar keputusan.

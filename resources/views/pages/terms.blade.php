@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Syarat & Ketentuan - FastTopup Store')
 @section('og_title', 'Syarat & Ketentuan FastTopup Store')

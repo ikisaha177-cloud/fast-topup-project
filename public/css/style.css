@@ -1,6 +1,6 @@
-﻿/* =========================================================
-   FastTopup Store â€” Design System v4
-   Tema: GELAP ala Takapedia â€” latar obsidian keunguan, aksen
+/* =========================================================
+   FastTopup Store — Design System v4
+   Tema: GELAP ala Takapedia — latar obsidian keunguan, aksen
    kuning neon, nuansa gaming yang premium dan rapi.
    SEMUA nama class lama tetap dipertahankan agar view lama tetap jalan.
    ========================================================= */
@@ -111,7 +111,7 @@ a:hover {
     border-radius: 6px;
 }
 
-/* Tautan lompat ke konten utama â€” hanya tampil saat difokus keyboard. */
+/* Tautan lompat ke konten utama — hanya tampil saat difokus keyboard. */
 .skip-link {
     position: absolute;
     left: 12px;
@@ -1002,7 +1002,7 @@ section[id],
     color: var(--ink);
 }
 
-/* Total pada kartu pesanan melayang â€” ditekankan dengan warna merek. */
+/* Total pada kartu pesanan melayang — ditekankan dengan warna merek. */
 .float-row .float-total {
     font-weight: 800;
     color: var(--brand);
@@ -1300,7 +1300,7 @@ section[id],
 }
 
 /* Baris kecil di bawah gambar kartu produk (kategori + jumlah terjual).
-   Dulu inline style yang disalin di 3 view â€” kini satu class. */
+   Dulu inline style yang disalin di 3 view — kini satu class. */
 .product-subrow {
     display: flex;
     align-items: center;
@@ -1437,10 +1437,10 @@ section[id],
 }
 
 /* ---------- Game logo ---------- */
-/* Kotak rasio 8:5 â€” sama dengan kartu produk supaya grid-4 sejajar rapi.
+/* Kotak rasio 8:5 — sama dengan kartu produk supaya grid-4 sejajar rapi.
    Logo tetap `contain` (tidak pernah dipotong) meski rasio tiap logo beda.
    Plakat terang: logo game gelap (mis. Free Fire/PUBG) tetap terbaca jelas
-   di atas tema gelap â€” pola "logo card" yang lazim di toko top up. */
+   di atas tema gelap — pola "logo card" yang lazim di toko top up. */
 .game-logo {
     display: flex;
     align-items: center;
@@ -1470,7 +1470,7 @@ section[id],
 }
 
 /* Padding dipasang pada <img> (bukan kotak) supaya kotak gambar benar-benar
-   berasio 8:5 â€” sejalan dengan atribut width/height sehingga tidak ada CLS. */
+   berasio 8:5 — sejalan dengan atribut width/height sehingga tidak ada CLS. */
 .game-logo img {
     width: 100%;
     height: 100%;
@@ -1563,7 +1563,7 @@ section[id],
 }
 
 .nominal-item input:checked + .nominal-box::after {
-    content: "âœ“";
+    content: "✓";
     position: absolute;
     top: 8px;
     right: 10px;
@@ -2000,14 +2000,14 @@ table.table td.wrap {
 }
 
 .step.done::before {
-    content: "âœ“";
+    content: "✓";
     background: var(--green-soft);
     border-color: rgba(53, 208, 127, 0.6);
     color: #6ee7a8;
 }
 
 .step.current::before {
-    content: "â€¢";
+    content: "•";
     background: var(--brand-soft);
     border-color: var(--brand);
     color: var(--brand);
@@ -3273,7 +3273,7 @@ html.js .reveal.d4 { transition-delay: 0.32s; }
     box-shadow: 0 0 0 3px var(--brand-soft);
 }
 
-/* Baris yang butuh tindakan admin â€” sorot rata, tanpa pita per-sel */
+/* Baris yang butuh tindakan admin — sorot rata, tanpa pita per-sel */
 tr.row-highlight > td {
     background: rgba(255, 214, 10, 0.07);
 }
@@ -3700,7 +3700,7 @@ table.table tfoot th {
 }
 
 /* =========================================================
-   POLISH LAYER v4 â€” nuansa Takapedia: neon, glow, dan kedalaman.
+   POLISH LAYER v4 — nuansa Takapedia: neon, glow, dan kedalaman.
    Hanya menyempurnakan tampilan; tidak mengubah nama class apa pun.
    ========================================================= */
 
@@ -3742,7 +3742,7 @@ table.table tfoot th {
     background: linear-gradient(150deg, rgba(255, 214, 10, 0.85), transparent 50%);
 }
 
-/* Badge "Populer" (bukan hot) â€” kaca gelap yang rapi */
+/* Badge "Populer" (bukan hot) — kaca gelap yang rapi */
 .game-badge {
     background: rgba(11, 10, 16, 0.72);
     border-color: rgba(255, 255, 255, 0.14);
@@ -4048,7 +4048,7 @@ select.form-control option,
 }
 
 /* =========================================================
-   POLISH LAYER v5 â€” penyempurnaan akhir.
+   POLISH LAYER v5 — penyempurnaan akhir.
    Angka tampil dengan font display + lebar digit seragam,
    plus dukungan "prefers-reduced-motion".
    ========================================================= */
@@ -4095,7 +4095,7 @@ select.form-control option,
 }
 
 /* =========================================================
-   POLISH LAYER v6 â€” bintang jatuh 3D, kartu tilt, & invoice.
+   POLISH LAYER v6 — bintang jatuh 3D, kartu tilt, & invoice.
    Nuansa "Takapedia": latar bintang + interaksi kartu 3D.
    Semua efek di bawah tetap menghormati prefers-reduced-motion.
    ========================================================= */
@@ -4271,7 +4271,7 @@ select.form-control option,
 }
 
 /* =========================================================
-   POLISH LAYER v7 â€” Portal Pembayaran & Struk
+   POLISH LAYER v7 — Portal Pembayaran & Struk
    Kerangka halaman pembayaran berdiri sendiri (layout gateway) agar terasa
    seperti web lain, plus STRUK yang bisa di-screenshot pembeli sebagai bukti.
    ========================================================= */
@@ -4855,7 +4855,7 @@ select.form-control option,
 }
 
 /* ==========================================================================
-   POLISH LAYER v8 â€” Kode Promo (checkout, invoice, struk, panel admin)
+   POLISH LAYER v8 — Kode Promo (checkout, invoice, struk, panel admin)
    ========================================================================== */
 
 .promo-box {
@@ -4921,7 +4921,7 @@ select.form-control option,
 
 
 /* =====================================================================
-   POLISH LAYER v9 â€” hitungan mundur batas waktu pembayaran
+   POLISH LAYER v9 — hitungan mundur batas waktu pembayaran
    (fitur kedaluwarsa pesanan; lihat app/Support/PaymentWindow.php)
    ===================================================================== */
 
@@ -5217,7 +5217,7 @@ select.form-control option,
 
 /* Input bintang: radio tersembunyi + label bintang.
    Urutan visual dibalik (row-reverse) supaya "bintang ke-k dan
-   sebelumnya" menyala lewat selektor sibling â€” murni CSS, tanpa JS. */
+   sebelumnya" menyala lewat selektor sibling — murni CSS, tanpa JS. */
 .rating-input {
     position: relative;
     display: inline-flex;

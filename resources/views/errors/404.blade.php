@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Halaman Tidak Ditemukan - FastTopup Store')
 

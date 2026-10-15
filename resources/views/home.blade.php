@@ -1,6 +1,6 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
-@section('title', 'FastTopup Store â€” Digital Top-Up Game & Marketplace')
+@section('title', 'FastTopup Store — Digital Top-Up Game & Marketplace')
 
 @section('meta')
 <script type="application/ld+json">
@@ -43,14 +43,14 @@
             <h1>Top Up Game &amp; Belanja Item<br><span class="text-gradient">Tanpa Ribet, Tanpa Nunggu</span></h1>
             <p>
                 Pilih game favoritmu, masukkan User ID, lalu tentukan nominal. Bayar pakai QRIS, e-wallet,
-                atau transfer bank â€” pesanan diproses setelah pembayaran terverifikasi dan tercatat rapi di akunmu.
+                atau transfer bank — pesanan diproses setelah pembayaran terverifikasi dan tercatat rapi di akunmu.
             </p>
 
             <div class="hero-cta">
                 @if($isAdmin)
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-primary btn-lg">Buka Dashboard Admin</a>
                 @else
-                    <a href="{{ route('topup.index') }}" class="btn btn-primary btn-lg">Top Up Sekarang â†’</a>
+                    <a href="{{ route('topup.index') }}" class="btn btn-primary btn-lg">Top Up Sekarang →</a>
                     <a href="{{ route('marketplace.index') }}" class="btn btn-outline btn-lg">Jelajahi Marketplace</a>
                 @endif
             </div>
@@ -87,7 +87,7 @@
             <div class="float-card">
                 <div class="float-card-head">
                     <strong>{{ $heroCard['title'] }}</strong>
-                    <span class="{{ $heroCard['chip']['class'] }}">â— {{ $heroCard['chip']['text'] }}</span>
+                    <span class="{{ $heroCard['chip']['class'] }}">● {{ $heroCard['chip']['text'] }}</span>
                 </div>
                 @foreach($heroCard['rows'] as $row)
                     <div class="float-row"><span>{{ $row['label'] }}</span><span>{{ $row['value'] }}</span></div>
@@ -127,7 +127,7 @@
                 <p class="section-subtitle mb-0">Semua game populer dengan harga resmi dan proses terverifikasi.</p>
             </div>
             @if(! $isAdmin)
-                <a href="{{ route('topup.index') }}" class="btn btn-ghost">Lihat Semua Game â†’</a>
+                <a href="{{ route('topup.index') }}" class="btn btn-ghost">Lihat Semua Game →</a>
             @endif
         </div>
 
@@ -166,7 +166,7 @@
                 <h2 class="section-title">Item Game Terbaru</h2>
                 <p class="section-subtitle mb-0">Voucher, skin, akun, dan koin dari penjual yang terdaftar.</p>
             </div>
-            <a href="{{ route('marketplace.index') }}" class="btn btn-ghost">Lihat Semua Item â†’</a>
+            <a href="{{ route('marketplace.index') }}" class="btn btn-ghost">Lihat Semua Item →</a>
         </div>
 
         <div class="grid grid-4">
@@ -209,7 +209,7 @@
         <div class="text-center reveal" style="margin-bottom:30px;">
             <span class="eyebrow" style="justify-content:center;">Kenapa FastTopup Store</span>
             <h2 class="section-title">Dibuat Biar Top Up Gak Bikin Pusing</h2>
-            <p class="section-subtitle mb-0">Cepat, aman, dan transparan â€” dari pembayaran sampai pesanan selesai.</p>
+            <p class="section-subtitle mb-0">Cepat, aman, dan transparan — dari pembayaran sampai pesanan selesai.</p>
         </div>
 
         <div class="trust-strip">

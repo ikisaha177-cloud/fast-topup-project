@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Verifikasi Email - FastTopup Store')
 @section('meta')

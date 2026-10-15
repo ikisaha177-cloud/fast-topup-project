@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Round 2 candidates for FastTop-up Store. Black on white, pure geometry."""
+"""Round 2 candidates for FastTopup Store. Black on white, pure geometry."""
 import os
 
 ROOT = os.path.dirname(os.path.abspath(__file__))

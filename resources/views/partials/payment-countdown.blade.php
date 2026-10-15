@@ -30,7 +30,7 @@
         (function () {
             // Beberapa halaman memuat partial ini sekali; penjaga ini membuat
             // penjadwalannya tetap tunggal walau partial-nya dipanggil berkali-kali.
-            if (window.__gantinoDeadlineTimer) {
+            if (window.__fasttopupDeadlineTimer) {
                 return;
             }
 
@@ -85,7 +85,7 @@
             }
 
             if (render()) {
-                window.__gantinoDeadlineTimer = setInterval(render, 1000);
+                window.__fasttopupDeadlineTimer = setInterval(render, 1000);
             }
         })();
     </script>

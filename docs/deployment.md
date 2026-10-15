@@ -1,4 +1,4 @@
-﻿# Deployment FastTopup Store (Laravel 8)
+# Deployment FastTopup Store (Laravel 8)
 
 Panduan singkat menaruh toko di server produksi (Linux + Nginx + PHP-FPM).
 Sesuaikan path `/var/www/FastTopup-store` dan domain `FastTopup.store`.
@@ -44,7 +44,7 @@ sudo chmod -R 775 storage bootstrap/cache
 
 ## 4. Queue worker (email notifikasi)
 
-Pakai Supervisor â€” contoh ada di `deploy/supervisor-FastTopup.conf`:
+Pakai Supervisor — contoh ada di `deploy/supervisor-FastTopup.conf`:
 
 ```bash
 sudo cp deploy/supervisor-FastTopup.conf /etc/supervisor/conf.d/FastTopup.conf

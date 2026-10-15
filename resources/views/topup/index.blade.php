@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Top Up Game - FastTopup Store')
 
@@ -32,7 +32,7 @@
     <div class="container">
         <div class="toolbar">
             <form method="GET" action="{{ route('topup.index') }}" class="searchbar">
-                <input type="text" name="q" aria-label="Cari game" value="{{ $search }}" placeholder="Cari game favoritmuâ€¦">
+                <input type="text" name="q" aria-label="Cari game" value="{{ $search }}" placeholder="Cari game favoritmu…">
             </form>
             <div class="chips">
                 <a href="{{ route('topup.index', $search ? ['q' => $search] : []) }}"

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-FastTop-up Store - brand kit builder (Phase 7, direction B "Boost Bars").
+FastTopup Store - brand kit builder (Phase 7, direction B "Boost Bars").
 
 Everything is pure vector outline (no <text>, no filters, no rasters):
   symbol, two-tone hero, small-size cut, wordmark extracted from a real OFL
@@ -29,7 +29,7 @@ def write(name, body, vb, sub=""):
     _, _, w, h = vb.split()
     vb = "0 0 %d %d" % (math.ceil(float(w)), math.ceil(float(h)))
     svg = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="%s" width="%s" height="%s" '
-           'role="img" aria-labelledby="t"><title id="t">FastTop-up Store %s</title>%s</svg>') % (
+           'role="img" aria-labelledby="t"><title id="t">FastTopup Store %s</title>%s</svg>') % (
         vb, vb.split()[2], vb.split()[3], sub, body)
     with open(os.path.join(KIT, name + ".svg"), "w", encoding="utf-8") as f:
         f.write(svg)
@@ -101,7 +101,7 @@ SYM_H_S = SYM_H * SYM_SCALE                  # 150.075
 
 def horizontal(fill, sub_fill):
     cap1, cap2 = 62.0, 26.0
-    w1, wm1 = wordmark("FASTTOP-UP", cap1, fill, FINAL_TRACK)
+    w1, wm1 = wordmark("FASTTOPUP", cap1, fill, FINAL_TRACK)
     w2, wm2 = wordmark("STORE", cap2, sub_fill, SUB_TRACK)
     bx = SYM_W_S + 40.0
     block_h = cap1 + 22.0 + cap2
@@ -115,7 +115,7 @@ def horizontal(fill, sub_fill):
 
 def stacked(fill, sub_fill):
     cap1, cap2 = 52.0, 24.0
-    w1, wm1 = wordmark("FASTTOP-UP", cap1, fill, FINAL_TRACK)
+    w1, wm1 = wordmark("FASTTOPUP", cap1, fill, FINAL_TRACK)
     w2, wm2 = wordmark("STORE", cap2, sub_fill, SUB_TRACK)
     W = max(SYM_W_S, wm1, wm2)
     content = symbol_group(fill, SYM_SCALE, (W - SYM_W_S) / 2.0, 0.0)
@@ -135,7 +135,7 @@ finalize("fasttopup-stacked", cs, ws, hs, 16.0, "stacked lockup")
 cg, wg, hg = horizontal(BRAND, BRAND)
 finalize("fasttopup-horizontal-dark", cg, wg, hg, 14.0, "horizontal lockup (on dark)")
 
-gw, ww = wordmark("FASTTOP-UP", 100.0, INK, FINAL_TRACK)
+gw, ww = wordmark("FASTTOPUP", 100.0, INK, FINAL_TRACK)
 finalize("fasttopup-wordmark", '<g transform="translate(0,100)">%s</g>' % gw, ww, 100.0, 10.0, "wordmark")
 
 print("kit written ->", KIT)

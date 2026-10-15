@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Checkout Marketplace - FastTopup Store')
 
@@ -24,7 +24,7 @@
                                 'product' => (object) ['image' => $item['image'] ?? null, 'name' => $item['name']],
                                 'variant' => 'is-thumb',
                             ])
-                            <span>{{ $item['name'] }} Ã— {{ $item['quantity'] }}</span>
+                            <span>{{ $item['name'] }} × {{ $item['quantity'] }}</span>
                         </div>
                         <span>Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</span>
                     </div>

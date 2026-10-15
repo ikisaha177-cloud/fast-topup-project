@@ -7,7 +7,7 @@
 <div class="form-group">
     <label class="form-label" for="code">Kode Promo</label>
     <input type="text" id="code" name="code" class="form-control" style="text-transform:uppercase;"
-           value="{{ old('code', $promo->code ?? '') }}" placeholder="Contoh: GANTINO10"
+           value="{{ old('code', $promo->code ?? '') }}" placeholder="Contoh: FASTTOPUP10"
            minlength="3" maxlength="40" required autocomplete="off" spellcheck="false">
     @error('code') <div class="invalid-feedback">{{ $message }}</div> @enderror
     <div class="form-hint">Huruf, angka, tanda minus, atau garis bawah. 3–40 karakter.</div>

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace Tests\Feature;
 
@@ -347,7 +347,7 @@ class CatalogPresentationTest extends TestCase
             ->assertSee('aria-current="true"', false);
     }
 
-    /** Guest tidak boleh melihat klaim "Pesanan Kamu" â€” cukup pratinjau katalog. */
+    /** Guest tidak boleh melihat klaim "Pesanan Kamu" — cukup pratinjau katalog. */
     public function test_home_hero_shows_preview_for_guest_not_a_fake_order()
     {
         $html = $this->get('/')->assertOk()->getContent();
@@ -385,7 +385,7 @@ class CatalogPresentationTest extends TestCase
             ->assertDontSee('Pesanan Terakhir');
     }
 
-    /** Pengguna dengan pesanan nyata melihat pesanannya â€” dengan status yang jujur. */
+    /** Pengguna dengan pesanan nyata melihat pesanannya — dengan status yang jujur. */
     public function test_home_hero_shows_real_order_with_truthful_status()
     {
         $buyer = $this->buyer();

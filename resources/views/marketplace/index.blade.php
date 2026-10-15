@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Marketplace - FastTopup Store')
 
@@ -32,7 +32,7 @@
     <div class="container">
         <div class="toolbar">
             <form method="GET" action="{{ route('marketplace.index') }}" class="searchbar">
-                <input type="text" name="q" aria-label="Cari produk marketplace" value="{{ $search }}" placeholder="Cari produk, skin, voucherâ€¦">
+                <input type="text" name="q" aria-label="Cari produk marketplace" value="{{ $search }}" placeholder="Cari produk, skin, voucher…">
             </form>
             <div class="chips">
                 <a href="{{ route('marketplace.index', $search ? ['q' => $search] : []) }}"

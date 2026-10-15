@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Logo concept generator - FastTop-up Store.
+Logo concept generator - FastTopup Store.
 Phase 4 (build in SVG, black on white). Pure geometry, no <text>, no filters.
 
 Canvas 256x256, symbol-only (lockups come later, only after the direction is picked).

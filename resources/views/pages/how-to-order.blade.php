@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Cara Order - FastTopup Store')
 @section('canonical', route('page.how-to-order'))
@@ -12,7 +12,7 @@
     <div class="container">
         <span class="eyebrow">Bantuan</span>
         <h1>Cara Order</h1>
-        <p>Panduan singkat dari memilih produk sampai pesanan selesai â€” untuk top up game maupun marketplace.</p>
+        <p>Panduan singkat dari memilih produk sampai pesanan selesai — untuk top up game maupun marketplace.</p>
     </div>
 </section>
 
@@ -30,7 +30,7 @@
                     </li>
                     <li>
                         <strong>Isi data & pilih nominal.</strong> Masukkan User ID (dan Server ID bila diminta),
-                        lalu pilih nominal produk. Pastikan data sudah benar â€” pesanan yang sudah diproses
+                        lalu pilih nominal produk. Pastikan data sudah benar — pesanan yang sudah diproses
                         tidak dapat dibatalkan.
                     </li>
                     <li>

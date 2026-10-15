@@ -1,12 +1,13 @@
-# FastTop-up Store â€” Logo Guidelines (compact)
+# FastTopup Store — Logo Guidelines (compact)
 
 > Untuk non-desainer. Lebih banyak "do" daripada "don't".
 
 ## 1. The logo
 
-- **Idea**: tiga batang naik yang puncaknya melebar jadi panah 60Â° â€” progres, kredit, dan top-up dalam satu bentuk. Simbol berdiri sendiri tanpa huruf, jadi app icon, avatar, dan favicon tidak pernah kehilangan makna.
-- **Versions**: primary (horizontal) Â· stacked Â· symbol-only Â· wordmark-only
-- **Files**: `kit/*.svg` (master vektor) Â· `export/*` (varian one-colour, square, favicon, app icon, PNG) Â· `renders/kit/*.png` (pratinjau) Â· `slides/` (papan presentasi)
+- **Idea**: tiga batang naik yang puncaknya melebar jadi panah 60° — progres, kredit, dan top-up dalam satu bentuk. Simbol berdiri sendiri tanpa huruf, jadi app icon, avatar, dan favicon tidak pernah kehilangan makna.
+- **Nama**: brand resmi ditulis **"FastTopup Store"** — tanpa tanda hubung. Wordmark digambar sebagai `FASTTOPUP` (huruf kapital, tanpa tanda hubung) supaya identik dengan nama resmi; tanda hubung hanya boleh muncul di istilah umum seperti frasa produk "Digital Top-Up", bukan di dalam wordmark.
+- **Versions**: primary (horizontal) · stacked · symbol-only · wordmark-only
+- **Files**: `kit/*.svg` (master vektor) · `export/*` (varian one-colour, square, favicon, app icon, PNG) · `renders/kit/*.png` (pratinjau) · `slides/` (papan presentasi)
 
 | File | Untuk apa |
 |---|---|
@@ -23,7 +24,7 @@
 
 ## 2. Clear space
 
-Sisakan ruang kosong minimal **1 Ã— lebar satu batang simbol** di keempat sisi logo. Ruang ini ikut mengecil bersama logo â€” jangan pernah pakai jarak tetap dalam piksel.
+Sisakan ruang kosong minimal **1 × lebar satu batang simbol** di keempat sisi logo. Ruang ini ikut mengecil bersama logo — jangan pernah pakai jarak tetap dalam piksel.
 
 ## 3. Minimum size
 
@@ -34,36 +35,36 @@ Sisakan ruang kosong minimal **1 Ã— lebar satu batang simbol** di keempat sis
 | Symbol | 16 px (pakai file `-small` / `favicon`) | 6 mm |
 | Wordmark | 100 px lebar | 25 mm |
 
-Di bawah 32 px selalu pakai `fasttopup-symbol-small` (2 batang) â€” counter huruf `O` pada subline "STORE" menutup di bawah itu.
+Di bawah 32 px selalu pakai `fasttopup-symbol-small` (2 batang) — counter huruf `O` pada subline "STORE" menutup di bawah itu.
 
 ## 4. Colour
 
 | Name | HEX | RGB | CMYK | Pantone |
 |---|---|---|---|---|
-| Brand Yellow | `#FFD60A` | 255, 214, 10 | 0 / 16 / 96 / 0 | â‰ˆ 109 C (cek dengan swatch fisik) |
-| Ink | `#0B0A10` | 11, 10, 16 | 31 / 37 / 0 / 94 | â‰ˆ Black 6 C |
-| Paper | `#FFFFFF` | 255, 255, 255 | 0 / 0 / 0 / 0 | â€” |
+| Brand Yellow | `#FFD60A` | 255, 214, 10 | 0 / 16 / 96 / 0 | ≈ 109 C (cek dengan swatch fisik) |
+| Ink | `#0B0A10` | 11, 10, 16 | 31 / 37 / 0 / 94 | ≈ Black 6 C |
+| Paper | `#FFFFFF` | 255, 255, 255 | 0 / 0 / 0 / 0 | — |
 
 **Rasio kontras (WCAG):**
 
-- Brand Yellow di atas Ink â†’ **14,0 : 1** (AAA)
-- Ink di atas Brand Yellow â†’ **14,0 : 1** (AAA)
-- Ink di atas Paper â†’ **19,7 : 1** (AAA)
-- Brand Yellow di atas Paper â†’ **1,4 : 1** â€” **jangan dipakai.** Kuning neon tidak terbaca di putih.
+- Brand Yellow di atas Ink → **14,0 : 1** (AAA)
+- Ink di atas Brand Yellow → **14,0 : 1** (AAA)
+- Ink di atas Paper → **19,7 : 1** (AAA)
+- Brand Yellow di atas Paper → **1,4 : 1** — **jangan dipakai.** Kuning neon tidak terbaca di putih.
 
-**Approved logo/background pairs**: full colour (Ink) di atas putih Â· Brand Yellow di atas Ink atau hitam Â· putih di atas Ink Â· hitam di atas putih.
+**Approved logo/background pairs**: full colour (Ink) di atas putih · Brand Yellow di atas Ink atau hitam · putih di atas Ink · hitam di atas putih.
 Di atas foto: pakai versi putih atau hitam pada area yang tenang, atau taruh di dalam kontainer berwarna solid.
 
 ## 5. Typography
 
-- **Wordmark**: Plus Jakarta Sans **ExtraBold**, tracking 4,9% tinggi huruf (subline "STORE" 11,8%), di-outline-kan jadi vektor â€” bukan `<text>`, jadi tidak bergantung pada font terpasang.
-- **Headline web**: Sora Â· **Body web**: Plus Jakarta Sans (sudah dipakai di produk `topup-market`).
+- **Wordmark**: Plus Jakarta Sans **ExtraBold**, tracking 4,9% tinggi huruf (subline "STORE" 11,8%), di-outline-kan jadi vektor — bukan `<text>`, jadi tidak bergantung pada font terpasang.
+- **Headline web**: Sora · **Body web**: Plus Jakarta Sans (sudah dipakai di produk `topup-market`).
 - **Fallback web**: `system-ui, -apple-system, "Segoe UI", sans-serif`.
 - **Lisensi**: Plus Jakarta Sans dan Sora keduanya **SIL Open Font License 1.1**. OFL mengizinkan penggunaan bentuk huruf untuk logo. Jika folder `fonts/` ikut dibagikan, sertakan teks lisensi OFL bersamanya.
 
 ## 6. Don'ts
 
-Jangan diregangkan atau dipipihkan Â· jangan mengganti warna di luar palet Â· jangan diputar Â· jangan ditambah bayangan, outline, gradien, atau efek Â· jangan mengubah jarak atau ukuran bagian lockup Â· jangan ditaruh di atas latar ramai tanpa kontainer Â· jangan mengetik ulang wordmark memakai font â€” selalu pakai file SVG-nya.
+Jangan diregangkan atau dipipihkan · jangan mengganti warna di luar palet · jangan diputar · jangan ditambah bayangan, outline, gradien, atau efek · jangan mengubah jarak atau ukuran bagian lockup · jangan ditaruh di atas latar ramai tanpa kontainer · jangan mengetik ulang wordmark memakai font — selalu pakai file SVG-nya.
 
 ## 7. Contact / master
 
@@ -81,32 +82,35 @@ Pertanyaan penggunaan: pemilik brand.
 | `fasttopup-symbol.svg` | 99/100 | INFO: simbol optik sedikit di atas pusat (sengaja) |
 | `fasttopup-symbol-small.svg` | 100/100 | bersih |
 | `fasttopup-symbol-two-tone.svg` | 99/100 | INFO: sama seperti di atas |
-| `fasttopup-horizontal.svg` | 99/100 | INFO: 312 anchor (tipikal outline font) |
-| `fasttopup-horizontal-dark.svg` | 99/100 | idem |
-| `fasttopup-stacked.svg` | 83/100 | WARN: sudut 72,1Â° pada diagonal `A` Â· WARN: counter `O` subline |
-| `fasttopup-wordmark.svg` | 90/100 | WARN: sudut 72,1Â° pada diagonal `A` |
+| `fasttopup-horizontal.svg` | 91/100 | WARN: sudut 72,1° pada diagonal `A` · INFO: 307 anchor (tipikal outline font) |
+| `fasttopup-horizontal-dark.svg` | 91/100 | idem |
+| `fasttopup-stacked.svg` | 83/100 | WARN: sudut 72,1° pada diagonal `A` · WARN: counter `O` subline |
+| `fasttopup-wordmark.svg` | 90/100 | WARN: sudut 72,1° pada diagonal `A` |
 
-Kedua WARN sisa bukan cacat konstruksi:
+WARN yang tersisa bukan cacat konstruksi:
 
-- **72,1Â°** itu diagonal huruf `A` bawaan Plus Jakarta Sans â€” geometri typeface, bukan garis yang kita gambar. Menyetelnya ke 75Â° akan mendistorsi huruf.
-- **Counter `O` di "STORE"** hanya muncul di lockup bertingkat karena kanvasnya lebih tinggi (ambang `1/32 tinggi`). Ukuran minimum di Â§3 sudah menanganinya; di bawah 32 px gunakan varian `-small`.
+- **72,1°** itu diagonal huruf `A` bawaan Plus Jakarta Sans — geometri typeface, bukan garis yang kita gambar. Menyetelnya ke 75° akan mendistorsi huruf.
+- **Counter `O` di "STORE"** hanya muncul di lockup bertingkat karena kanvasnya lebih tinggi (ambang `1/32 tinggi`). Ukuran minimum di §3 sudah menanganinya; di bawah 32 px gunakan varian `-small`.
 
 ## Hasil pengujian
 
-- **Uji 16/24/32/64 px** â€” simbol `-small` tetap terbaca; batang tidak menyatu.
-- **Uji satu warna** â€” `export/*-black`, `*-white`, `*-mono-ffd60a` semuanya utuh (tidak ada "fake knockout" yang jadi blob, karena semua lubang kontur asli pakai `fill-rule="nonzero"`).
-- **Uji latar gelap** â€” `fasttopup-horizontal-dark` dan `fasttopup-symbol-two-tone` kontras 14:1 terhadap Ink.
-- **Letter test** â€” `FASTTOP-UP` terbaca benar termasuk silang `TT` (tracking 4,9% cap) dan tanda hubung.
+- **Uji 16/24/32/64 px** — simbol `-small` tetap terbaca; batang tidak menyatu.
+- **Uji satu warna** — `export/*-black`, `*-white`, `*-mono-ffd60a` semuanya utuh (tidak ada "fake knockout" yang jadi blob, karena semua lubang kontur asli pakai `fill-rule="nonzero"`).
+- **Uji latar gelap** — `fasttopup-horizontal-dark` dan `fasttopup-symbol-two-tone` kontras 14:1 terhadap Ink.
+- **Letter test** — `FASTTOPUP` terbaca benar termasuk silang `TT` (tracking 4,9% cap).
 
 ## Catatan teknis
 
-- Outline glyph diekstrak dari TTF lewat WPF `GlyphTypeface` (`extract_glyphs.ps1`) â†’ `glyphs/*.json` â†’ disusun `build_wordmark.py`.
-- `fill-rule="nonzero"` wajib: kontur TrueType sengaja saling tumpang-tindih. `evenodd` membatalkan tumpang-tindih itu jadi garis putih tipis di tengah batang huruf â€” bug ini sudah ditemukan dan diperbaiki.
+- Wordmark digambar dari **huruf kapital** (`FASTTOPUP`) karena set glyph yang diekstrak hanya berisi huruf kapital + tanda hubung; `build_kit.py` memanggil `wordmark("FASTTOPUP", …)`. Perhatikan: `build_wordmark.py` dan `build_kit.py` **case-sensitive** — jangan pernah menulis teks wordmark dalam huruf kecil, nanti `KeyError`.
+- Outline glyph diekstrak dari TTF lewat WPF `GlyphTypeface` (`extract_glyphs.ps1`) → `glyphs/*.json` → disusun `build_wordmark.py` → di-lockup `build_kit.py` → varian ekspor `build_export.py`.
+- Aset yang benar-benar disajikan web dibuat dari kit oleh `build_public_assets.py`: `public/images/logo-horizontal.svg` (lockup di pill gelap, dipakai README) dan `brand/og-cover.svg` → `public/images/og-cover.png` (1200×630, kartu share). Favicon (`public/favicon.svg`), ikon app (`public/images/apple-touch-icon.png`), dan simbol header (`public/images/logo-mark.svg`) memakai berkas kit langsung. Jalankan ulang script ini setelah kit berubah, lalu rasterkan OG dengan `render.ps1`.
+- Semua file teks repo memakai **UTF-8 tanpa BOM**. Saat mengganti nama/teks massal di Windows, hindari `-replace` PowerShell (case-insensitive + bisa menyisipkan BOM) — pakai script Python yang menulis `encoding="utf-8"` tanpa BOM.
+- `fill-rule="nonzero"` wajib: kontur TrueType sengaja saling tumpang-tindih. `evenodd` membatalkan tumpang-tindih itu jadi garis putih tipis di tengah batang huruf — bug ini sudah ditemukan dan diperbaiki.
 - Tidak ada `<text>`, gradien, filter, atau raster di file mana pun.
 
 ## Open items
 
-- Nilai Pantone masih perkiraan dari HEX â€” cocokkan dengan swatch fisik sebelum cetak.
+- Nilai Pantone masih perkiraan dari HEX — cocokkan dengan swatch fisik sebelum cetak.
 - Belum ada master PDF/AI/EPS (butuh tool tambahan); SVG sudah cukup untuk web dan sebagian besar printer.
 - Versi putih belum di-thin. Bentuk simbol adalah blok solid, jadi menyusutkannya butuh offset poligon sungguhan (bukan stroke) supaya tidak jadi fake knockout. Untuk sementara: di latar gelap utamakan `fasttopup-horizontal-dark` (kuning) atau `symbol-two-tone`; putih dipakai hanya untuk cetak satu warna, di mana tebal tambahannya tidak terasa.
 - `presentation.html` + `slides/*.png` untuk presentasi klien; `presentation-spec.json` bisa diedit lalu dijalankan ulang.

@@ -134,7 +134,7 @@ def previews():
     for fn in ["Sora-Bold", "PlusJakartaSans-ExtraBold"]:
         gl = get_glyphs(fn)
         for tr in (24.0, 36.0, 48.0):
-            wm1, w1 = wordmark(gl, "FASTTOP-UP", 110.0, tracking=tr)
+            wm1, w1 = wordmark(gl, "FASTTOPUP", 110.0, tracking=tr)
             wm2, w2 = wordmark(gl, "STORE", 30.0, tracking=tr * 2.4)
             maxw = max(maxw, w1, w2)
             rows.append('<rect x="%.1f" y="%.1f" width="%.1f" height="190" fill="%s"/>'

@@ -1,14 +1,14 @@
-﻿@extends('layouts.gateway')
+@extends('layouts.gateway')
 
 @php
     /**
-     * Portal pembayaran â€” satu halaman untuk tiga keadaan:
+     * Portal pembayaran — satu halaman untuk tiga keadaan:
      *   1. "payable" : instruksi pembayaran (QRIS / e-wallet / transfer bank)
      *                  + tombol "Saya Sudah Bayar".
      *   2. "receipt" : struk pembayaran yang bisa di-screenshot pembeli
      *                  sebagai bukti (muncul setelah menandai sudah bayar,
      *                  atau setelah pesanan selesai).
-     *   3. "closed"  : pesanan gagal/dibatalkan â€” tidak ada yang bisa dibayar.
+     *   3. "closed"  : pesanan gagal/dibatalkan — tidak ada yang bisa dibayar.
      *
      * Data $doc & $channel disusun oleh PaymentPortalController.
      */
@@ -116,7 +116,7 @@
                             Potongan Promo
                             <small class="mono">{{ $doc['promo_code'] }}</small>
                         </span>
-                        <span class="mono discount-amount">âˆ’ Rp {{ number_format($doc['discount'], 0, ',', '.') }}</span>
+                        <span class="mono discount-amount">− Rp {{ number_format($doc['discount'], 0, ',', '.') }}</span>
                     </div>
                 @endif
             </div>
@@ -137,7 +137,7 @@
                 @endif
             </p>
             <p class="struk-sim">
-                Dokumen ini dihasilkan oleh portal pembayaran <strong>simulasi</strong> FastTopup â€”
+                Dokumen ini dihasilkan oleh portal pembayaran <strong>simulasi</strong> FastTopup —
                 tidak ada uang yang benar-benar berpindah.
             </p>
         </article>

@@ -41,7 +41,7 @@ class PromoCodeTest extends TestCase
     private function promo(array $overrides = [])
     {
         return PromoCode::create(array_merge([
-            'code'      => 'GANTINO10',
+            'code'      => 'FASTTOPUP10',
             'type'      => 'percent',
             'value'     => 10,
             'scope'     => 'all',

@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Masuk - FastTopup Store')
 
@@ -34,7 +34,7 @@
 
                         <div class="form-group">
                             <label class="form-label" for="password">Password</label>
-                            <input type="password" id="password" name="password" class="form-control" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
                             @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
