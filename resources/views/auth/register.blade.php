@@ -8,7 +8,7 @@
         <div class="auth-shell">
             <aside class="auth-aside">
                 <span class="hero-badge"><span class="hero-dot"></span> Cepat &amp; aman</span>
-                <h2>Bikin akun,<br><span class="text-gradient">mulai top up</span></h2>
+                <h2>Bikin akun, <br><span class="text-gradient">mulai top up</span></h2
                 <p>Cukup 10 detik untuk mulai top up game dan belanja item favoritmu.</p>
 
                 <ul class="auth-list">

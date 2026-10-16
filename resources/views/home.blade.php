@@ -81,7 +81,7 @@
 
             <div class="float-mini m1">
                 <span class="mini-icon">@include('partials.icon', ['name' => 'bolt', 'size' => 16])</span>
-                <span>Bayar Kilat<small>QRIS &amp; e-wallet</small></span>
+                <span>Bayar Kilat <small>QRIS &amp; e-wallet</small></span
             </div>
 
             <div class="float-card">
@@ -97,7 +97,7 @@
 
             <div class="float-mini m2">
                 <span class="mini-icon">@include('partials.icon', ['name' => 'shield', 'size' => 16])</span>
-                <span>100% Aman<small>Transaksi terlacak</small></span>
+                <span>100% Aman <small>Transaksi terlacak</small></span
             </div>
         </div>
     </div>
