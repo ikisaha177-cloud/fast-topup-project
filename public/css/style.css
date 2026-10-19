@@ -5465,3 +5465,16 @@ select.form-control option,
     color: var(--brand);
 }
 
+
+
+/* FastTopup conversion polish: search-first discovery and readable checkout choices. */
+.hero-game-search,.catalog-search{display:flex;align-items:center;gap:10px;max-width:520px;margin:22px 0 4px;padding:8px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}
+.hero-game-search-label,.catalog-search-label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.hero-game-search input,.catalog-search input{flex:1;min-width:0;height:46px;padding:0 12px;border:0;outline:0;background:transparent;color:var(--ink);font:inherit}
+.hero-game-search input::placeholder,.catalog-search input::placeholder{color:var(--muted)}
+.hero-game-search .btn,.catalog-search .btn{flex:0 0 auto}
+.catalog-search{max-width:none;margin:0 0 24px}
+@media(max-width:600px){.hero-game-search,.catalog-search{align-items:stretch;flex-direction:column}.hero-game-search input,.catalog-search input{min-height:44px}.hero-game-search .btn,.catalog-search .btn{width:100%}}
+
+.checkout-status-note{max-width:720px;margin:-12px 0 24px;padding:12px 14px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);background:var(--surface);color:var(--muted);font-size:13px}
+.checkout-review-hint{margin:12px 0 0;color:var(--muted);font-size:12px;line-height:1.55}

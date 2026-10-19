@@ -12,7 +12,8 @@
         </div>
 
         <h1 class="section-title">Checkout Top Up</h1>
-        <p class="section-subtitle">Periksa pesananmu lalu pilih metode pembayaran.</p>
+        <p class="section-subtitle">Periksa ID game dan total pesanan, lalu pilih metode pembayaran.</p>
+        <p class="checkout-status-note" role="note">Setelah pembayaran, status pesanan diperbarui setelah pembayaran terdeteksi atau diverifikasi. Pantau statusnya melalui Riwayat Transaksi.</p>
 
         <div class="grid grid-2 grid-start">
             <div class="card">
@@ -38,6 +39,7 @@
                     <span>Total Bayar</span>
                     <span class="amount">Rp {{ number_format($draft['amount'] - $discount, 0, ',', '.') }}</span>
                 </div>
+                <p class="checkout-review-hint">Pastikan User ID dan Server ID sudah benar. Pesanan digital diproses untuk akun sesuai data ini.</p>
             </div>
 
             <div class="card summary-card">

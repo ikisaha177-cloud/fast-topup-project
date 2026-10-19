@@ -3,6 +3,30 @@
 @section('title', 'Top Up ' . $game->name . ' - FastTopup Store')
 
 @section('content')
+@push('styles')
+<style>
+.topup-id-guide{margin:0 0 24px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.topup-id-guide summary{display:flex;align-items:center;gap:12px;padding:16px 18px;cursor:pointer;list-style:none}
+.topup-id-guide summary::-webkit-details-marker{display:none}
+.topup-id-guide-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 auto;border-radius:10px;background:var(--brand-soft);color:var(--brand);font-weight:800}
+.topup-id-guide summary strong,.topup-id-guide summary small{display:block}
+.topup-id-guide summary small{margin-top:2px;color:var(--muted);font-size:12px}
+.topup-id-guide-toggle{margin-left:auto;color:var(--brand);font-size:22px;transition:transform .2s var(--ease)}
+.topup-id-guide[open] .topup-id-guide-toggle{transform:rotate(45deg)}
+.topup-id-guide-body{padding:0 18px 16px 64px;color:var(--text)}
+.topup-id-guide-body p{margin:0}
+.topup-id-guide-note{padding-top:10px;color:var(--muted);font-size:13px}
+.topup-submitbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:24px;padding:16px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--surface-2)}
+.topup-selection{display:grid;gap:2px;min-width:0}
+.topup-selection-label{color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.topup-selection strong{overflow:hidden;color:var(--ink);text-overflow:ellipsis;white-space:nowrap}
+.topup-selection [data-selection-price]{color:var(--brand);font-size:14px;font-weight:700}
+.topup-submitbar button{flex:0 0 auto}
+@media(max-width:600px){.topup-submitbar{position:sticky;bottom:10px;z-index:5;align-items:stretch;flex-direction:column;gap:12px;margin:16px -8px 0;padding:12px;background:rgba(22,20,29,.96);box-shadow:var(--shadow-lg);backdrop-filter:blur(14px)}.topup-submitbar button{width:100%}.topup-id-guide-body{padding-left:18px}}
+@media(prefers-reduced-motion:reduce){.topup-id-guide-toggle{transition:none}}
+</style>
+@endpush
+
 <section class="section">
     <div class="container">
         <p class="breadcrumb">
@@ -26,6 +50,25 @@
                 <span class="badge badge-success badge-plain">@include('partials.icon', ['name' => 'shield', 'size' => 13]) Aman</span>
             </div>
         </div>
+
+        @php
+            $idGuide = collect($game->faqItems())->first(function ($faq) {
+                $question = mb_strtolower($faq['question']);
+                return str_contains($question, 'di mana') || str_contains($question, 'melihat');
+            });
+        @endphp
+
+        <details class="topup-id-guide">
+            <summary>
+                <span class="topup-id-guide-icon" aria-hidden="true">?</span>
+                <span><strong>Di mana menemukan User ID?</strong><small>Panduan singkat untuk {{ $game->name }}</small></span>
+                <span class="topup-id-guide-toggle" aria-hidden="true">+</span>
+            </summary>
+            <div class="topup-id-guide-body">
+                <p>{{ $idGuide['answer'] ?? 'Buka profil akun di dalam game dan salin User ID yang tertera. Pastikan ID benar sebelum melanjutkan.' }}</p>
+                <p class="topup-id-guide-note">Kami hanya membutuhkan ID untuk memproses pesanan. Jangan pernah berikan password akun.</p>
+            </div>
+        </details>
 
         @if($products->isEmpty())
             <div class="empty">
@@ -72,6 +115,8 @@
 
                             <label class="nominal-item {{ $habis ? 'is-empty' : '' }}">
                                 <input type="radio" name="product_id" value="{{ $product->id }}"
+                                       data-product-name="{{ $product->name }}"
+                                       data-product-price="{{ number_format($product->price, 0, ',', '.') }}"
                                        {{ $habis ? 'disabled' : '' }}
                                        {{ ! $habis && (string) old('product_id') === (string) $product->id ? 'checked' : '' }}
                                        required>
@@ -85,7 +130,14 @@
                         @endforeach
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-lg mt-24">Lanjut ke Pembayaran â†’</button>
+                    <div class="topup-submitbar">
+                        <div class="topup-selection" aria-live="polite" aria-atomic="true">
+                            <span class="topup-selection-label">Pilihanmu</span>
+                            <strong data-selection-name>Belum ada nominal dipilih</strong>
+                            <span data-selection-price>Pilih nominal untuk melihat total</span>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">Lanjut ke Pembayaran</button>
+                    </div>
                 </div>
             </form>
         @endif
@@ -115,5 +167,28 @@
         @endif
     </div>
 </section>
+@push('scripts')
+<script>
+(function () {
+    var form = document.querySelector('form[action="{{ route('topup.checkout.store') }}"]');
+    if (!form) return;
+    var name = form.querySelector('[data-selection-name]');
+    var price = form.querySelector('[data-selection-price]');
+    var choices = form.querySelectorAll('input[name="product_id"]');
+    function updateSelection() {
+        var selected = form.querySelector('input[name="product_id"]:checked');
+        if (!selected) {
+            name.textContent = 'Belum ada nominal dipilih';
+            price.textContent = 'Pilih nominal untuk melihat total';
+            return;
+        }
+        name.textContent = selected.getAttribute('data-product-name');
+        price.textContent = 'Total Rp ' + selected.getAttribute('data-product-price');
+    }
+    choices.forEach(function (choice) { choice.addEventListener('change', updateSelection); });
+    updateSelection();
+})();
+</script>
+@endpush
 @endsection
 

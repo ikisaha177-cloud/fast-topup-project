@@ -39,12 +39,20 @@
 
     <div class="container hero-grid">
         <div class="hero-inner">
-            <span class="hero-badge"><span class="hero-dot"></span> Pembayaran aman, online 24/7</span>
+            <span class="hero-badge"><span class="hero-dot"></span> Harga terlihat sebelum checkout</span>
             <h1>Top Up Game &amp; Belanja Item<br><span class="text-gradient">Tanpa Ribet, Tanpa Nunggu</span></h1>
             <p>
                 Pilih game favoritmu, masukkan User ID, lalu tentukan nominal. Bayar pakai QRIS, e-wallet,
                 atau transfer bank — pesanan diproses setelah pembayaran terverifikasi dan tercatat rapi di akunmu.
             </p>
+
+            @if(! $isAdmin)
+                <form class="hero-game-search" method="GET" action="{{ route('topup.index') }}" role="search">
+                    <label class="hero-game-search-label" for="home-game-search">Cari game untuk top up</label>
+                    <input id="home-game-search" type="search" name="q" placeholder="Cari game, mis. Mobile Legends" autocomplete="off">
+                    <button type="submit" class="btn btn-primary">Cari game</button>
+                </form>
+            @endif
 
             <div class="hero-cta">
                 @if($isAdmin)
@@ -97,7 +105,7 @@
 
             <div class="float-mini m2">
                 <span class="mini-icon">@include('partials.icon', ['name' => 'shield', 'size' => 16])</span>
-                <span>100% Aman <small>Transaksi terlacak</small></span>
+                <span>Pesanan Terlacak <small>Status dan riwayat jelas</small></span>
             </div>
         </div>
     </div>
@@ -108,11 +116,11 @@
     <div class="ticker-track">
         @for($i = 0; $i < 2; $i++)
             <span class="ticker-item"><span class="tick-dot"></span> Pembayaran QRIS &amp; E-Wallet</span>
-            <span class="ticker-item"><span class="tick-dot"></span> Konfirmasi Pembayaran 24/7</span>
+            <span class="ticker-item"><span class="tick-dot"></span> Status Pesanan Bisa Dipantau</span>
             <span class="ticker-item"><span class="tick-dot"></span> Harga Resmi &amp; Transparan</span>
             <span class="ticker-item"><span class="tick-dot"></span> Riwayat Pesanan Lengkap</span>
-            <span class="ticker-item"><span class="tick-dot"></span> Penjual dengan Stok Real-time</span>
-            <span class="ticker-item"><span class="tick-dot"></span> Tanpa Biaya Layanan Tersembunyi</span>
+            <span class="ticker-item"><span class="tick-dot"></span> Pilihan Produk Sesuai Stok</span>
+            <span class="ticker-item"><span class="tick-dot"></span> Total Tampil Sebelum Bayar</span>
         @endfor
     </div>
 </div>
@@ -124,12 +132,18 @@
             <div>
                 <span class="eyebrow">Katalog Game</span>
                 <h2 class="section-title">Top Up Game Favoritmu</h2>
-                <p class="section-subtitle mb-0">Semua game populer dengan harga resmi dan proses terverifikasi.</p>
+                <p class="section-subtitle mb-0">Pilih game untuk melihat nominal dan harga sebelum checkout.</p>
             </div>
             @if(! $isAdmin)
                 <a href="{{ route('topup.index') }}" class="btn btn-ghost">Lihat Semua Game →</a>
             @endif
         </div>
+
+        <form class="catalog-search" method="GET" action="{{ route('topup.index') }}" role="search">
+            <label class="catalog-search-label" for="catalog-game-search">Cari berdasarkan nama atau kategori game</label>
+            <input id="catalog-game-search" type="search" name="q" placeholder="Cari Mobile Legends, FPS, dan lainnya" autocomplete="off">
+            <button type="submit" class="btn btn-primary">Cari game</button>
+        </form>
 
         <div class="grid grid-4">
             @forelse($featured as $index => $game)
@@ -279,7 +293,7 @@
         <div class="faq">
             <details class="faq-item reveal d1" open>
                 <summary>Berapa lama pesanan saya diproses?</summary>
-                <div class="faq-body">Setelah pembayaran terverifikasi admin, pesanan langsung diproses. Statusnya bisa kamu pantau di halaman Riwayat Transaksi.</div>
+                <div class="faq-body">Pesanan diproses setelah pembayaran terverifikasi. Jika verifikasi masih manual, status menunggu pemeriksaan admin. Pantau perkembangannya di halaman Riwayat Transaksi.</div>
             </details>
             <details class="faq-item reveal d2">
                 <summary>Metode pembayaran apa saja yang tersedia?</summary>
@@ -304,7 +318,7 @@
         <div class="cta-band reveal">
             <span class="eyebrow" style="justify-content:center;">Siap Mulai?</span>
             <h2>Siap Top Up Sekarang?</h2>
-            <p>Pilih game favoritmu dan selesaikan hanya dalam satu menit.</p>
+            <p>Pilih game dan nominal. Periksa total sebelum melanjutkan pembayaran.</p>
             <div class="hero-cta">
                 <a href="{{ route('topup.index') }}" class="btn btn-primary btn-lg">Mulai Top Up</a>
                 <a href="{{ route('marketplace.index') }}" class="btn btn-outline btn-lg">Cek Marketplace</a>

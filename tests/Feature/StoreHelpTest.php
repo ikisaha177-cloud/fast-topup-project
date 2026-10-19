@@ -26,7 +26,24 @@ class StoreHelpTest extends TestCase
         $response->assertOk()
             ->assertSee('Pertanyaan umum seputar Mobile Legends', false)
             ->assertSee('Berapa lama diamond masuk setelah bayar?', false)
-            ->assertSee('User ID saya ada di mana?', false);
+            ->assertSee('User ID saya ada di mana?', false)
+            ->assertSee('Di mana menemukan User ID?', false)
+            ->assertSee('Buka profil akun di dalam game; User ID tertera di bawah nama akun, biasanya 8-10 digit angka.', false)
+            ->assertSee('data-selection-name', false)
+            ->assertSee('data-selection-price', false)
+            ->assertSee('Lanjut ke Pembayaran', false);
+    }
+
+    public function test_id_guide_and_live_nominal_summary_render_for_topup_game()
+    {
+        $this->get('/top-up/mobile-legends')
+            ->assertOk()
+            ->assertSee('Di mana menemukan User ID?', false)
+            ->assertSee('Buka profil akun di dalam game; User ID tertera di bawah nama akun, biasanya 8-10 digit angka.', false)
+            ->assertSee('Jangan pernah berikan password akun.', false)
+            ->assertSee('data-selection-name', false)
+            ->assertSee('data-selection-price', false)
+            ->assertSee('Total Rp', false);
     }
 
     public function test_game_tanpa_faq_tidak_menampilkan_blok_faq()
