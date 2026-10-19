@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'whatsapp' => env('STORE_WHATSAPP', '6281234567890'),
+    'whatsapp' => env('STORE_WHATSAPP', '6282122202934'),
 
     'email' => env('STORE_EMAIL', 'support@FastTopup.test'),
 
