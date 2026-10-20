@@ -43,59 +43,58 @@ class TransactionService
             return false;
         }
 
-        if ($transaction->status === $status) {
-            return false;
-        }
+        $changed = false;
+        $orphanProof = null;
 
-        $reopening = $status === OrderStatus::PENDING && OrderStatus::isReopenable($transaction->status);
+        DB::transaction(function () use ($transaction, $status, $context, &$changed, &$orphanProof) {
+            // Serialize competing admin, buyer, expiry, and webhook transitions.
+            $locked = Transaction::whereKey($transaction->id)->lockForUpdate()->first();
 
-        if (! $reopening && ! OrderStatus::canTransition($transaction->status, $status)) {
-            return false;
-        }
-
-        // Stok dikembalikan saat pesanan yang masih memegang stok
-        // (pending/success) dibatalkan/digagal, dan dikunci ULANG saat
-        // keputusan gagal/batal dibuka kembali.
-        $shouldRestoreStock = in_array($status, [OrderStatus::FAILED, OrderStatus::CANCELLED], true)
-            && in_array($transaction->status, [OrderStatus::PENDING, OrderStatus::SUCCESS], true);
-
-        $shouldReserveStock = $reopening;
-
-        // Simpan path bukti lama untuk dibersihkan bila pesanan dibuka ulang
-        // (atributnya di-null-kan, jadi berkasnya tidak boleh tertinggal).
-        $orphanProof = $reopening ? $transaction->payment_proof : null;
-
-        // Dipakai closure agar bisa membatalkan tanpa melempar exception:
-        // stok tidak boleh pernah jadi negatif saat dikunci ulang.
-        $ok = true;
-
-        DB::transaction(function () use ($transaction, $status, $shouldRestoreStock, $shouldReserveStock, $context, &$ok) {
-            $product = Product::whereKey($transaction->product_id)->lockForUpdate()->first();
-
-            if ($product && $shouldRestoreStock) {
-                $product->increment('stock');
+            if (! $locked || $locked->status === $status) {
+                return;
             }
 
-            if ($product && $shouldReserveStock) {
-                if ((int) $product->stock < 1) {
-                    $ok = false; // stok habis terjual orang lain — biarkan tetap gagal
+            $reopening = $status === OrderStatus::PENDING && OrderStatus::isReopenable($locked->status);
 
+            if (! $reopening && ! OrderStatus::canTransition($locked->status, $status)) {
+                return;
+            }
+
+            $shouldRestoreStock = in_array($status, [OrderStatus::FAILED, OrderStatus::CANCELLED], true)
+                && in_array($locked->status, [OrderStatus::PENDING, OrderStatus::SUCCESS], true);
+            $shouldReserveStock = $reopening;
+
+            if ($shouldRestoreStock || $shouldReserveStock) {
+                $product = Product::whereKey($locked->product_id)->lockForUpdate()->first();
+
+                if ($product && $shouldReserveStock && (int) $product->stock < 1) {
                     return;
                 }
 
-                $product->decrement('stock');
+                if ($product && $shouldRestoreStock) {
+                    $product->increment('stock');
+                }
+
+                if ($product && $shouldReserveStock) {
+                    $product->decrement('stock');
+                }
             }
 
-            $transaction->update($this->attributesFor($transaction, $status, $context));
+            if ($reopening) {
+                $orphanProof = $locked->payment_proof;
+            }
+
+            $locked->update($this->attributesFor($locked, $status, $context));
+            $transaction->setRawAttributes($locked->getAttributes(), true);
+            $changed = true;
         });
 
-        if (! $ok) {
+        if (! $changed) {
             return false;
         }
 
-        // Hapus berkas bukti yang sudah tidak dirujuk lagi.
         if ($orphanProof) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($orphanProof);
+            \Illuminate\Support\Facades\Storage::disk('local')->delete($orphanProof);
         }
 
         if ($notify) {

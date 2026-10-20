@@ -39,7 +39,7 @@ class PaymentPortalTest extends TestCase
         config(['payment.verification' => 'hybrid']);
 
         Notification::fake();
-        Storage::fake('public');
+        Storage::fake('local');
 
         $this->seed();
     }
@@ -296,7 +296,7 @@ class PaymentPortalTest extends TestCase
 
         $this->assertSame('success', $transaction->status);
         $this->assertSame('auto', $transaction->confirmation_source);
-        Storage::disk('public')->assertExists($transaction->payment_proof);
+        Storage::disk('local')->assertExists($transaction->payment_proof);
 
         $this->actingAs($buyer)
             ->get(route('payment.show', $transaction->transaction_code))

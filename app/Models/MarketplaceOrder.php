@@ -156,12 +156,12 @@ class MarketplaceOrder extends Model
     }
 
     /**
-     * URL publik bukti pembayaran (via disk public).
+     * Route pembatas akses untuk bukti pembayaran privat.
      */
     public function paymentProofUrl()
     {
         return $this->hasPaymentProof()
-            ? asset('storage/' . $this->payment_proof)
+            ? route('payment-proof.show', ['type' => 'marketplace', 'code' => $this->order_code])
             : null;
     }
 

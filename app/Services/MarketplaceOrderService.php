@@ -119,7 +119,7 @@ class MarketplaceOrderService
 
         // Hapus berkas bukti yang sudah tidak dirujuk lagi.
         if ($orphanProof) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($orphanProof);
+            \Illuminate\Support\Facades\Storage::disk('local')->delete($orphanProof);
         }
 
         if ($notify) {

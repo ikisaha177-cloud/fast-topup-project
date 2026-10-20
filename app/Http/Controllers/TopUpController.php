@@ -146,8 +146,24 @@ class TopUpController extends Controller
                 ->with('error', 'Silakan pilih game dan nominal terlebih dahulu.');
         }
 
-        // Kode promo dihitung ulang setiap halaman checkout dibuka: subtotal bisa
-        // berubah (ganti nominal) dan promo bisa saja sudah kedaluwarsa.
+        $product = Product::whereKey($draft['product_id'] ?? null)
+            ->where('game_title_id', $draft['game_id'] ?? null)
+            ->where('is_active', true)
+            ->first();
+
+        if (! $product || (int) $product->stock < 1) {
+            session()->forget('topup_draft');
+
+            return redirect()->route('topup.show', $draft['game_slug'] ?? '')
+                ->withErrors(['product_id' => 'Produk sudah tidak tersedia atau stok habis.']);
+        }
+
+        // Never trust cached prices from session; refresh from canonical product row.
+        $draft['product_name'] = $product->name;
+        $draft['amount'] = (int) $product->price;
+        session()->put('topup_draft', $draft);
+
+        // Promo recalculated against current catalog price on every checkout view.
         $promo = $this->refreshDraftPromo($draft);
 
         return view('topup.checkout', [
@@ -241,7 +257,7 @@ class TopUpController extends Controller
             // Kunci baris product agar dua pembeli tidak berebut stok terakhir.
             $product = Product::whereKey($draft['product_id'])->lockForUpdate()->first();
 
-            if (! $product || ! $product->is_active) {
+            if (! $product || ! $product->is_active || (int) $product->game_title_id !== (int) $draft['game_id']) {
                 DB::rollBack();
 
                 return redirect()->route('topup.index')
@@ -254,6 +270,9 @@ class TopUpController extends Controller
                 return redirect()->route('topup.show', $draft['game_slug'])
                     ->withErrors(['product_id' => 'Stok "' . $product->name . '" habis. Pilih nominal lain.']);
             }
+
+            // Charge canonical catalog price, never a stale session amount.
+            $draft['amount'] = (int) $product->price;
 
             // Kode promo divalidasi ulang DI DALAM transaksi dengan baris promo
             // dikunci, supaya kuota pemakaian tidak bisa dilewati dua pembeli
@@ -366,7 +385,7 @@ class TopUpController extends Controller
 
         if ($request->hasFile('payment_proof')) {
             $proofPath = $request->file('payment_proof')
-                ->store('payment-proofs', 'public');
+                ->store('payment-proofs', 'local');
         }
 
         $claimed = $this->transactions->claimPayment($transaction, $proofPath);
@@ -381,7 +400,7 @@ class TopUpController extends Controller
         } elseif ($proofPath) {
             // Klaim tidak tercatat (mis. pesanan sudah dikonfirmasi atau sudah
             // punya bukti): jangan tinggalkan berkas unggahan tanpa rujukan.
-            Storage::disk('public')->delete($proofPath);
+            Storage::disk('local')->delete($proofPath);
         }
 
         // Verifikasi otomatis dari bukti (kebijakan hybrid/auto) memberi pesan

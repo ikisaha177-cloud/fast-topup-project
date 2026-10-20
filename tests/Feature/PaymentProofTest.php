@@ -34,7 +34,7 @@ class PaymentProofTest extends TestCase
         config(['payment.verification' => 'manual']);
 
         Notification::fake();
-        Storage::fake('public');
+        Storage::fake('local');
 
         $this->seed();
     }
@@ -83,6 +83,24 @@ class PaymentProofTest extends TestCase
         return $order;
     }
 
+    public function test_marketplace_payment_proof_is_private_to_owner_and_admin()
+    {
+        $buyer = $this->buyer();
+        $order = $this->makeOrder($buyer, MarketplaceProduct::first());
+
+        $this->actingAs($buyer)->post(route('marketplace.payment.claim', $order->order_code), [
+            'payment_proof' => UploadedFile::fake()->image('marketplace-proof.jpg'),
+        ]);
+
+        $this->actingAs($this->admin())
+            ->get(route('payment-proof.show', ['type' => 'marketplace', 'code' => $order->order_code]))
+            ->assertOk();
+
+        $this->actingAs($this->buyer())
+            ->get(route('payment-proof.show', ['type' => 'marketplace', 'code' => $order->order_code]))
+            ->assertForbidden();
+    }
+
     /** Bukti tersimpan & status tetap menunggu konfirmasi admin. */
     public function test_transaction_claim_with_proof_stores_file()
     {
@@ -100,8 +118,36 @@ class PaymentProofTest extends TestCase
         $this->assertSame('pending', $transaction->status);
         $this->assertNotNull($transaction->payment_claimed_at);
         $this->assertTrue($transaction->hasPaymentProof());
-        Storage::disk('public')->assertExists($transaction->payment_proof);
+        Storage::disk('local')->assertExists($transaction->payment_proof);
         $this->assertStringStartsWith('payment-proofs/', $transaction->payment_proof);
+    }
+
+    public function test_payment_proof_is_private_and_only_visible_to_owner_or_admin()
+    {
+        $buyer = $this->buyer();
+        $otherBuyer = $this->buyer();
+        $transaction = $this->makeTransaction($buyer, Product::first());
+
+        $this->actingAs($buyer)->post(route('topup.payment.claim', $transaction->transaction_code), [
+            'payment_proof' => UploadedFile::fake()->image('private-proof.jpg'),
+        ]);
+
+        $this->actingAs($otherBuyer)
+            ->get(route('payment-proof.show', ['type' => 'topup', 'code' => $transaction->transaction_code]))
+            ->assertForbidden();
+
+        $this->actingAs($buyer)
+            ->get(route('payment-proof.show', ['type' => 'topup', 'code' => $transaction->transaction_code]))
+            ->assertOk()
+            ->assertHeader('Cache-Control', 'max-age=0, no-store, private');
+
+        auth()->logout();
+        $this->get(route('payment-proof.show', ['type' => 'topup', 'code' => $transaction->transaction_code]))
+            ->assertForbidden();
+
+        $this->actingAs($this->admin())
+            ->get(route('payment-proof.show', ['type' => 'topup', 'code' => $transaction->transaction_code]))
+            ->assertOk();
     }
 
     /** Bukti bisa dilengkapi setelah menandai bayar (selama masih pending). */
@@ -124,7 +170,7 @@ class PaymentProofTest extends TestCase
         $transaction->refresh();
 
         $this->assertTrue($transaction->hasPaymentProof());
-        Storage::disk('public')->assertExists($transaction->payment_proof);
+        Storage::disk('local')->assertExists($transaction->payment_proof);
     }
 
     /** Tanpa unggah, penandaan tetap berhasil (alur lama tidak rusak). */
@@ -189,7 +235,7 @@ class PaymentProofTest extends TestCase
 
         $order->refresh();
         $this->assertTrue($order->hasPaymentProof());
-        Storage::disk('public')->assertExists($order->payment_proof);
+        Storage::disk('local')->assertExists($order->payment_proof);
 
         $this->actingAs($this->admin())
             ->get(route('admin.orders.show', $order->id))
@@ -211,7 +257,7 @@ class PaymentProofTest extends TestCase
 
         $transaction->refresh();
         $path = $transaction->payment_proof;
-        Storage::disk('public')->assertExists($path);
+        Storage::disk('local')->assertExists($path);
 
         // Admin menandai gagal, lalu membuka kembali.
         $this->actingAs($admin)
@@ -225,7 +271,7 @@ class PaymentProofTest extends TestCase
         $this->assertSame('pending', $transaction->status);
         $this->assertNull($transaction->payment_proof);
         $this->assertNull($transaction->payment_claimed_at);
-        Storage::disk('public')->assertMissing($path);
+        Storage::disk('local')->assertMissing($path);
     }
 
     /**
@@ -242,7 +288,7 @@ class PaymentProofTest extends TestCase
             'payment_proof' => UploadedFile::fake()->image('bukti1.jpg', 600, 400),
         ]);
         $primaryProof = $transaction->fresh()->payment_proof;
-        Storage::disk('public')->assertExists($primaryProof);
+        Storage::disk('local')->assertExists($primaryProof);
 
         // Klaim kedua dengan bukti baru pada pesanan yang sudah berbukti:
         // klaim ditolak (false), dan berkas kedua yang baru di-upload harus langsung dihapus.
@@ -250,7 +296,7 @@ class PaymentProofTest extends TestCase
             'payment_proof' => UploadedFile::fake()->image('bukti2.jpg', 600, 400),
         ]);
 
-        $allFiles = Storage::disk('public')->allFiles('payment-proofs');
+        $allFiles = Storage::disk('local')->allFiles('payment-proofs');
         $this->assertCount(1, $allFiles);
         $this->assertSame($primaryProof, $allFiles[0]);
     }

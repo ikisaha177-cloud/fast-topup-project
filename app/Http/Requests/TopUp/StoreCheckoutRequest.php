@@ -15,7 +15,7 @@ class StoreCheckoutRequest extends FormRequest
     {
         return [
             'game_slug'    => 'required|string|exists:game_titles,slug',
-            'user_game_id' => 'required|string|max:50',
+            'user_game_id' => ['required', 'string', 'max:50', 'regex:/^[A-Za-z0-9_-]+$/'],
             'server_id'    => 'nullable|string|max:50',
             'product_id'   => 'required|integer|exists:products,id',
         ];

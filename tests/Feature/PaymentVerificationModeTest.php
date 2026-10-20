@@ -34,7 +34,7 @@ class PaymentVerificationModeTest extends TestCase
         parent::setUp();
 
         Notification::fake();
-        Storage::fake('public');
+        Storage::fake('local');
 
         $this->seed();
     }
@@ -98,7 +98,7 @@ class PaymentVerificationModeTest extends TestCase
         $this->assertTrue($transaction->confirmedByAuto());
         $this->assertNotNull($transaction->confirmed_at);
         $this->assertTrue($transaction->hasPaymentProof());
-        Storage::disk('public')->assertExists($transaction->payment_proof);
+        Storage::disk('local')->assertExists($transaction->payment_proof);
     }
 
     /** Mode default (hybrid): tanpa bukti -> tetap menunggu admin. */

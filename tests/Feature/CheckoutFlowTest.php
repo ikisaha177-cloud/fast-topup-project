@@ -114,6 +114,30 @@ class CheckoutFlowTest extends TestCase
         $this->assertSame($stockBefore, $product->fresh()->stock);
     }
 
+    public function test_checkout_and_payment_use_current_catalog_price()
+    {
+        $user = User::factory()->create();
+        $game = GameTitle::first();
+        $product = Product::where('game_title_id', $game->id)->first();
+
+        $this->actingAs($user)->post(route('topup.checkout.store'), [
+            'game_slug' => $game->slug,
+            'user_game_id' => '12345678',
+            'product_id' => $product->id,
+        ]);
+
+        $newPrice = $product->price + 1000;
+        $product->update(['price' => $newPrice]);
+
+        $this->get(route('topup.checkout'))
+            ->assertOk()
+            ->assertSee(number_format($newPrice, 0, ',', '.'), false);
+
+        $this->post(route('topup.pay'), ['payment_method' => 'QRIS']);
+
+        $this->assertSame($newPrice, Transaction::first()->amount);
+    }
+
     public function test_topup_rejects_out_of_stock_product()
     {
         $user = User::factory()->create();

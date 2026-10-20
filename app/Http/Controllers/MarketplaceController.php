@@ -460,7 +460,7 @@ class MarketplaceController extends Controller
 
         if ($request->hasFile('payment_proof')) {
             $proofPath = $request->file('payment_proof')
-                ->store('payment-proofs', 'public');
+                ->store('payment-proofs', 'local');
         }
 
         $claimed = $this->orders->claimPayment($order, $proofPath);
@@ -475,7 +475,7 @@ class MarketplaceController extends Controller
         } elseif ($proofPath) {
             // Klaim tidak tercatat (mis. pesanan sudah dikonfirmasi atau sudah
             // punya bukti): jangan tinggalkan berkas unggahan tanpa rujukan.
-            Storage::disk('public')->delete($proofPath);
+            Storage::disk('local')->delete($proofPath);
         }
 
         // Verifikasi otomatis dari bukti (kebijakan hybrid/auto) memberi pesan

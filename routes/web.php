@@ -11,6 +11,7 @@ use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentPortalController;
+use App\Http\Controllers\PaymentProofController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ReviewController;
@@ -108,6 +109,10 @@ Route::post('/marketplace/{slug}/add', [MarketplaceController::class, 'addToCart
    karena admin tidak pernah membeli. */
 Route::post('/orders/{code}/review', [ReviewController::class, 'store'])
     ->middleware(['auth', 'not-admin', 'throttle:reviews'])->name('reviews.store');
+
+/* ---------- Bukti pembayaran privat: pemilik atau admin via policy ---------- */
+Route::get('/payment-proof/{type}/{code}', [PaymentProofController::class, 'show'])
+    ->middleware('throttle:30,1')->name('payment-proof.show');
 
 /* ---------- Invoice pembayaran (top up & marketplace) ----------
    Otorisasi lewat policy masing-masing model, jadi guest yang tahu kode
